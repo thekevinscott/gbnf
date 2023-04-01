@@ -47,7 +47,7 @@ import GBNF, { RuleType } from '../../../packages/gbnf/src/index.js';
   // parser.add('b')
   // console.log('-------------')
   // console.log('rules after ab:::::', JSON.stringify(parser.rules));
-  // if (!parser.rules.map(r => r.type).includes(RuleType.RANGE)) {
+  // if (!parser.rules.map(r => r.type).includes(RuleType.CHAR)) {
   //   console.error('Expected a range rule type')
   // }
   // if (!parser.rules.map(r => r.type).includes(RuleType.END)) {

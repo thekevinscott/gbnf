@@ -226,10 +226,10 @@ describe('creation with initial string', () => {
 
     // ranges
     ['root ::= [a-z]', '', [
-      { type: RuleType.RANGE, value: [['a'.charCodeAt(0), 'z'.charCodeAt(0)]], },
+      { type: RuleType.CHAR, value: [['a'.charCodeAt(0), 'z'.charCodeAt(0)]], },
     ]],
     ['root ::= [a-zA-Z]', '', [
-      { type: RuleType.RANGE, value: [['a'.charCodeAt(0), 'z'.charCodeAt(0)], ['A'.charCodeAt(0), 'Z'.charCodeAt(0)]], },
+      { type: RuleType.CHAR, value: [['a'.charCodeAt(0), 'z'.charCodeAt(0)], ['A'.charCodeAt(0), 'Z'.charCodeAt(0)]], },
     ]],
     ['root ::= [a-z]', 'a', [
       { type: RuleType.END },
@@ -258,7 +258,7 @@ describe('creation with initial string', () => {
 
     // range with ? modifier
     [`root ::= [a-z]?`, '', [
-      { type: RuleType.RANGE, value: [['a'.charCodeAt(0), 'z'.charCodeAt(0)]], },
+      { type: RuleType.CHAR, value: [['a'.charCodeAt(0), 'z'.charCodeAt(0)]], },
       { type: RuleType.END, },
     ]],
     [`root ::= [a-z]?`, 'a', [
@@ -273,40 +273,40 @@ describe('creation with initial string', () => {
 
     // range with + modifier
     [`root ::= [a-z]+`, '', [
-      { type: RuleType.RANGE, value: [['a'.charCodeAt(0), 'z'.charCodeAt(0)]], },
+      { type: RuleType.CHAR, value: [['a'.charCodeAt(0), 'z'.charCodeAt(0)]], },
     ]],
     [`root ::= [a-z]+`, 'l', [
-      { type: RuleType.RANGE, value: [['a'.charCodeAt(0), 'z'.charCodeAt(0)]], },
+      { type: RuleType.CHAR, value: [['a'.charCodeAt(0), 'z'.charCodeAt(0)]], },
       { type: RuleType.END, },
     ]],
     [`root ::= [a-zA-Z]+`, 'Z', [
-      { type: RuleType.RANGE, value: [['a'.charCodeAt(0), 'z'.charCodeAt(0)], ['A'.charCodeAt(0), 'Z'.charCodeAt(0)]], },
+      { type: RuleType.CHAR, value: [['a'.charCodeAt(0), 'z'.charCodeAt(0)], ['A'.charCodeAt(0), 'Z'.charCodeAt(0)]], },
       { type: RuleType.END, },
     ]],
     [`root ::= [a-zA-Z]+`, 'aZ', [
-      { type: RuleType.RANGE, value: [['a'.charCodeAt(0), 'z'.charCodeAt(0)], ['A'.charCodeAt(0), 'Z'.charCodeAt(0)]], },
+      { type: RuleType.CHAR, value: [['a'.charCodeAt(0), 'z'.charCodeAt(0)], ['A'.charCodeAt(0), 'Z'.charCodeAt(0)]], },
       { type: RuleType.END, },
     ]],
     [`root ::= [a-zA-Z]+`, 'azAZ', [
-      { type: RuleType.RANGE, value: [['a'.charCodeAt(0), 'z'.charCodeAt(0)], ['A'.charCodeAt(0), 'Z'.charCodeAt(0)]], },
+      { type: RuleType.CHAR, value: [['a'.charCodeAt(0), 'z'.charCodeAt(0)], ['A'.charCodeAt(0), 'Z'.charCodeAt(0)]], },
       { type: RuleType.END, },
     ]],
 
     // range with * modifier
     [`root ::= [a-z]*`, '', [
-      { type: RuleType.RANGE, value: [['a'.charCodeAt(0), 'z'.charCodeAt(0)]], },
+      { type: RuleType.CHAR, value: [['a'.charCodeAt(0), 'z'.charCodeAt(0)]], },
       { type: RuleType.END, },
     ]],
     [`root ::= [a-z]*`, 'a', [
-      { type: RuleType.RANGE, value: [['a'.charCodeAt(0), 'z'.charCodeAt(0)]], },
+      { type: RuleType.CHAR, value: [['a'.charCodeAt(0), 'z'.charCodeAt(0)]], },
       { type: RuleType.END, },
     ]],
     [`root ::= [a-zA-Z]+`, 'Z', [
-      { type: RuleType.RANGE, value: [['a'.charCodeAt(0), 'z'.charCodeAt(0)], ['A'.charCodeAt(0), 'Z'.charCodeAt(0)]], },
+      { type: RuleType.CHAR, value: [['a'.charCodeAt(0), 'z'.charCodeAt(0)], ['A'.charCodeAt(0), 'Z'.charCodeAt(0)]], },
       { type: RuleType.END, },
     ]],
     [`root ::= [a-zA-Z]+`, 'abczABCZ', [
-      { type: RuleType.RANGE, value: [['a'.charCodeAt(0), 'z'.charCodeAt(0)], ['A'.charCodeAt(0), 'Z'.charCodeAt(0)]], },
+      { type: RuleType.CHAR, value: [['a'.charCodeAt(0), 'z'.charCodeAt(0)], ['A'.charCodeAt(0), 'Z'.charCodeAt(0)]], },
       { type: RuleType.END, },
     ]],
 
@@ -343,7 +343,7 @@ describe('creation with initial string', () => {
     [
       `root  ::= termz ([-+*/] termz)* \\n termz  ::= [0-9]+`,
       '1', [
-        { type: RuleType.RANGE, value: [['0'.charCodeAt(0), '9'.charCodeAt(0)]], },
+        { type: RuleType.CHAR, value: [['0'.charCodeAt(0), '9'.charCodeAt(0)]], },
         {
           type: RuleType.CHAR, value: [
             '-'.charCodeAt(0),
@@ -358,7 +358,7 @@ describe('creation with initial string', () => {
     [
       `root  ::= expr "=" termy  \\nexpr  ::= termy ([-+*/] termy)*\\n termy  ::= [0-9]+`,
       '1', [
-        { type: RuleType.RANGE, value: [['0'.charCodeAt(0), '9'.charCodeAt(0)]], },
+        { type: RuleType.CHAR, value: [['0'.charCodeAt(0), '9'.charCodeAt(0)]], },
         {
           type: RuleType.CHAR, value: [
             '-'.charCodeAt(0),
@@ -375,7 +375,7 @@ describe('creation with initial string', () => {
     [
       `root  ::= (expr "=" terma "\\n")+\\nexpr  ::= terma ([-+*/] terma)*\\nterma  ::= [0-9]+`,
       '1', [
-        { type: RuleType.RANGE, value: [['0'.charCodeAt(0), '9'.charCodeAt(0)]], },
+        { type: RuleType.CHAR, value: [['0'.charCodeAt(0), '9'.charCodeAt(0)]], },
         {
           type: RuleType.CHAR, value: [
             '-'.charCodeAt(0),
@@ -393,26 +393,26 @@ describe('creation with initial string', () => {
       `root  ::= (expr "=" termb "\\n")+\\nexpr  ::= termb ([-+*/] termb)*\\ntermb  ::= [0-9]+`,
       '1+',
       [
-        { type: RuleType.RANGE, value: [['0'.charCodeAt(0), '9'.charCodeAt(0)]], },
+        { type: RuleType.CHAR, value: [['0'.charCodeAt(0), '9'.charCodeAt(0)]], },
       ],
     ],
     [
       `root  ::= (expr "=" termc "\\n")+\\nexpr  ::= termc ([-+*/] termc)*\\ntermc  ::= [0-9]+`,
       '1=', [
-        { type: RuleType.RANGE, value: [['0'.charCodeAt(0), '9'.charCodeAt(0)]], },
+        { type: RuleType.CHAR, value: [['0'.charCodeAt(0), '9'.charCodeAt(0)]], },
       ],
     ],
     [
       `root  ::= (expr "=" term "\\n")+\\nexpr  ::= term ([-+*/] term)*\\nterm  ::= [0-9]+`,
       '1+1', [
-        { type: RuleType.RANGE, value: [['0'.charCodeAt(0), '9'.charCodeAt(0)]], },
+        { type: RuleType.CHAR, value: [['0'.charCodeAt(0), '9'.charCodeAt(0)]], },
         { type: RuleType.CHAR, value: ['='.charCodeAt(0)], },
       ]
     ],
     [
       `root  ::= (expr "=" term "\\n")+\\nexpr  ::= term ([-+*/] term)*\\nterm  ::= [0-9]+`,
       '1=1', [
-        { type: RuleType.RANGE, value: [['0'.charCodeAt(0), '9'.charCodeAt(0)]], },
+        { type: RuleType.CHAR, value: [['0'.charCodeAt(0), '9'.charCodeAt(0)]], },
         { type: RuleType.CHAR, value: ['\n'.charCodeAt(0)], },
       ],
     ],
