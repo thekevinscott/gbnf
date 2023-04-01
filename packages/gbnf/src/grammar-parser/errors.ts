@@ -1,3 +1,5 @@
+// const escape = (str: string) => str.replace(/\n/g, '\\n').replace(/\t/g, '\\t');
+
 export class GrammarParseError extends Error {
   constructor(grammar: string, pos: number, reason: string) {
     super([

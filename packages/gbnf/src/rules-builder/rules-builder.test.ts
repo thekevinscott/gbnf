@@ -1,8 +1,10 @@
 import { RulesBuilder } from './rules-builder.js';
 import { InternalRuleDef, InternalRuleType, } from './types.js';
 
-describe('Grammar Parser Tests', () => {
-  test.each([
+interface Expectation { symbolIds: [string[]], rules: InternalRuleDef[][] }
+
+describe.only('Grammar Parser Tests', () => {
+  test.each(([
     [
       'single-string',
       `root ::= "foo"`,
@@ -21,7 +23,7 @@ describe('Grammar Parser Tests', () => {
     ],
     [
       'quote character',
-      `root ::= "\\\\""`,
+      `root::= "\\\""`,
       {
         "symbolIds": [["root", 0]],
         "rules": [
@@ -36,8 +38,8 @@ describe('Grammar Parser Tests', () => {
     [
       'two-lines-referencing-expression',
       `root ::= foo
-      foo  ::= "bar"
-      `,
+          foo  ::= "bar"
+          `,
       {
         "symbolIds": [
           ["root", 0],
@@ -57,13 +59,36 @@ describe('Grammar Parser Tests', () => {
       }
     ],
     [
+      'expression with dash',
+      `root ::= foo-bar
+          foo-bar ::= "bar"
+          `,
+      {
+        "symbolIds": [
+          ["root", 0],
+          ["foo-bar", 1]
+        ],
+        "rules": [
+          [
+            { "type": InternalRuleType.RULE_REF, "value": 1 },
+            { "type": InternalRuleType.END }],
+          [
+            { "type": InternalRuleType.CHAR, "value": ['b'.charCodeAt(0)] },
+            { "type": InternalRuleType.CHAR, "value": ['a'.charCodeAt(0)] },
+            { "type": InternalRuleType.CHAR, "value": ['r'.charCodeAt(0)] },
+            { "type": InternalRuleType.END }
+          ]
+        ]
+      }
+    ],
+    [
       'simple-grammar',
       `
-root  ::= (expr "=" term "\n")+
-      expr  ::= term ([-+*/] term)*
-  term  ::= [0-9]+
+    root  ::= (expr "=" term "\n")+
+          expr  ::= term ([-+*/] term)*
+      term  ::= [0-9]+
 
-      `,
+          `,
       {
         "symbolIds": [
           ["root", 0],
@@ -130,12 +155,12 @@ root  ::= (expr "=" term "\n")+
     ],
     [
       'longer-grammar',
-      `root  ::= (expr "=" ws term "\n")+
-  expr  ::= term ([-+*/] term)*
-  term  ::= ident | num | "(" ws expr ")" ws
-  ident ::= [a-z] [a-z0-9_]* ws
-  num   ::= [0-9]+ ws
-  ws    ::= [ \t\n]*`,
+      `root  ::= (expr "=" ws term "\\n")+
+      expr  ::= term ([-+*/] term)*
+      term  ::= ident | num | "(" ws expr ")" ws
+      ident ::= [a-z] [a-z0-9_]* ws
+      num   ::= [0-9]+ ws
+      ws    ::= [ \\t\\n]*`,
       {
         "symbolIds": [
           ["root", 0],
@@ -250,8 +275,6 @@ root  ::= (expr "=" term "\n")+
           ],
       },
     ],
-
-
     [
       'character unicode grammar',
       `root  ::= [ぁ-ゟ]`,
@@ -514,7 +537,7 @@ root  ::= (expr "=" term "\n")+
     ],
     [
       'longer negation',
-      `root ::= "\\\\"" ( [^"abcdefgh])* `,
+      `root ::= "\\\"" ( [^"abcdefgh])* `,
       {
         "symbolIds": [
           ["root", 0],
@@ -551,7 +574,7 @@ root  ::= (expr "=" term "\n")+
     ],
     [
       'longer negation with a range',
-      `root ::= "\\\\"" ( [^"abcdefghA-Z])* `,
+      `root ::= "\\\"" ( [^"abcdefghA-Z])* `,
       {
         "symbolIds": [
           ["root", 0],
@@ -635,13 +658,13 @@ root  ::= (expr "=" term "\n")+
         ']'.charCodeAt(0),
       ],
       [
-        'escaped \ char',
+        'escaped \\ char',
         "\\\\",
         '\\'.charCodeAt(0),
       ],
     ].map(([key, escapedChar, actualChar,],) => ([
       key,
-      `root ::= "\\${escapedChar}"`,
+      `root ::= "${escapedChar}"`,
       {
         "symbolIds": [["root", 0],],
         "rules": [
@@ -655,10 +678,10 @@ root  ::= (expr "=" term "\n")+
     [
       'simple arithmetic',
       `
-        root  ::= (expr "=" term "\n")+
-        expr  ::= term ([-+*/] term)*
-        term  ::= [0-9]+
-      `,
+            root  ::= (expr "=" term "\n")+
+            expr  ::= term ([-+*/] term)*
+            term  ::= [0-9]+
+          `,
       {
         "symbolIds": [
           ["root", 0],
@@ -727,8 +750,8 @@ root  ::= (expr "=" term "\n")+
     [
       'ranges with chars',
       `
-        root  ::= [a-z0-9_]*
-      `,
+            root  ::= [a-z0-9_]*
+          `,
       {
         "symbolIds": [
           ["root", 0],
@@ -755,8 +778,8 @@ root  ::= (expr "=" term "\n")+
     [
       'nested ranges with chars',
       `
-        root ::= [a-z] [a-z0-9_]* 
-      `,
+            root ::= [a-z] [a-z0-9_]* 
+          `,
       {
         "symbolIds": [
           ["root", 0],
@@ -785,10 +808,10 @@ root  ::= (expr "=" term "\n")+
     [
       'expression with nested range with chars',
       `
-        root ::= ident
-        ident ::= [a-z] [a-z0-9_]* ws
-        ws    ::= [ \t\n]*
-      `,
+            root ::= ident
+            ident ::= [a-z] [a-z0-9_]* ws
+            ws    ::= [ \\t\\n]*
+          `,
       {
         "symbolIds": [
           ["root", 0],
@@ -835,15 +858,204 @@ root  ::= (expr "=" term "\n")+
       }
     ],
     [
+      'lots of escapes',
+      `root ::= "\\x2A" "\\u006F" "\\U0001F4A9" "\\t" "\\n" "\\r" "\\"" "\\[" "\\]" "\\\\"`,
+      {
+        symbolIds: [
+          ["root", 0],
+        ],
+        rules: [
+          [
+            {
+              "type": "CHAR",
+              "value": [42],
+            },
+            {
+              "type": "CHAR",
+              "value": [111],
+            },
+            {
+              "type": "CHAR",
+              "value": [128169],
+            },
+            {
+              "type": "CHAR",
+              "value": [9],
+            },
+            {
+              "type": "CHAR",
+              "value": [10],
+            },
+            {
+              "type": "CHAR",
+              "value": [13],
+            },
+            {
+              "type": "CHAR",
+              "value": [34],
+            },
+            {
+              "type": "CHAR",
+              "value": [91],
+            },
+            {
+              "type": "CHAR",
+              "value": [93],
+            },
+            {
+              "type": "CHAR",
+              "value": [92],
+            },
+            {
+              "type": "END"
+            }
+          ],
+        ]
+      },
+    ],
+    [
+      'lots of escape and alternate escapes',
+      `root ::= "\\x2A" "\\u006F" "\\U0001F4A9" "\\t" "\\n" "\\r" "\\"" "\\[" "\\]" "\\\\" ("\\x2A" | "\\u006F" | "\\U0001F4A9" | "\\t" | "\\n" | "\\r" | "\\"" | "\\[" | "\\]"  | "\\\\" )`,
+      {
+        symbolIds: [
+          ["root", 0],
+          ["root_1", 1],
+        ],
+        rules: [
+          [
+            {
+              "type": "CHAR",
+              "value": [42],
+            },
+            {
+              "type": "CHAR",
+              "value": [111],
+            },
+            {
+              "type": "CHAR",
+              "value": [128169],
+            },
+            {
+              "type": "CHAR",
+              "value": [9],
+            },
+            {
+              "type": "CHAR",
+              "value": [10],
+            },
+            {
+              "type": "CHAR",
+              "value": [13],
+            },
+            {
+              "type": "CHAR",
+              "value": [34],
+            },
+            {
+              "type": "CHAR",
+              "value": [91],
+            },
+            {
+              "type": "CHAR",
+              "value": [93],
+            },
+            {
+              "type": "CHAR",
+              "value": [92],
+            },
+            {
+              "type": "RULE_REF",
+              "value": 1
+            },
+            {
+              "type": "END"
+            }
+          ],
+          [
+            {
+              "type": "CHAR",
+              "value": [42],
+            },
+            {
+              "type": "ALT",
+            },
+            {
+              "type": "CHAR",
+              "value": [111],
+            },
+            {
+              "type": "ALT",
+            },
+            {
+              "type": "CHAR",
+              "value": [128169],
+            },
+            {
+              "type": "ALT",
+            },
+            {
+              "type": "CHAR",
+              "value": [9],
+            },
+            {
+              "type": "ALT",
+            },
+            {
+              "type": "CHAR",
+              "value": [10],
+            },
+            {
+              "type": "ALT",
+            },
+            {
+              "type": "CHAR",
+              "value": [13],
+            },
+            {
+              "type": "ALT",
+            },
+            {
+              "type": "CHAR",
+              "value": [34],
+            },
+            {
+              "type": "ALT",
+            },
+            {
+              "type": "CHAR",
+              "value": [91],
+            },
+            {
+              "type": "ALT",
+            },
+            {
+              "type": "CHAR",
+              "value": [93],
+            },
+            {
+              "type": "ALT",
+            },
+            {
+              "type": "CHAR",
+              "value": [92],
+            },
+            {
+              "type": "END"
+            }
+          ]
+        ]
+      },
+    ],
+    [
       'arithmetic',
       `
-        root  ::= (expr "=" ws term "\n")+
-        expr  ::= term ([-+*/] term)*
-        term  ::= ident | num | "(" ws expr ")" ws
-        ident ::= [a-z] [a-z0-9_]* ws
-        num   ::= [0-9]+ ws
-        ws    ::= [ \t\n]*
-      `,
+            root  ::= (expr "=" ws term "\\n")+
+            expr  ::= term ([-+*/] term)*
+            term  ::= ident | num | "(" ws expr ")" ws
+            ident ::= [a-z] [a-z0-9_]* ws
+            num   ::= [0-9]+ ws
+            ws    ::= [ \\t\\n]*
+          `,
       {
         "symbolIds": [
           ["root", 0],
@@ -957,9 +1169,1388 @@ root  ::= (expr "=" term "\n")+
           ],
         ]
       }
-    ]
-  ])('parses grammar %s', (_key, grammar, { symbolIds, rules }) => {
-    const parsedGrammar = new RulesBuilder(grammar);
+    ],
+    [
+      "json.gbnf (string)",
+      `
+      root ::=
+  "\\\"" (
+    [^"\\\\\x7F\\x00-\\x1F] |
+    "\\\\" (["\\\\/bfnrt] | "u" [0-9a-fA-F] [0-9a-fA-F] [0-9a-fA-F] [0-9a-fA-F]) # escapes
+  )* "\\\"" 
+      `,
+      {
+        "symbolIds": [
+          ["root", 0],
+          ["root_1", 1],
+          ["root_2", 2],
+          ["root_3", 3],
+        ],
+        "rules": [
+          [
+            {
+              "type": "CHAR",
+              "value": [34],
+            },
+            {
+              "type": "RULE_REF",
+              "value": 3
+            },
+            {
+              "type": "CHAR",
+              "value": [34],
+            },
+            {
+              "type": "END"
+            }
+          ],
+          [
+            {
+              "type": "CHAR_NOT",
+              "value": [34],
+            },
+            {
+              "type": "CHAR_ALT",
+              "value": 92
+            },
+            {
+              "type": "CHAR_ALT",
+              "value": 127
+            },
+            {
+              "type": "CHAR_ALT",
+              "value": 0
+            },
+            {
+              "type": "CHAR_RNG_UPPER",
+              "value": 31
+            },
+            {
+              "type": "ALT",
+            },
+            {
+              "type": "CHAR",
+              "value": [92],
+            },
+            {
+              "type": "RULE_REF",
+              "value": 2
+            },
+            {
+              "type": "END"
+            }
+          ],
+          [
+            {
+              "type": "CHAR",
+              "value": [34],
+            },
+            {
+              "type": "CHAR_ALT",
+              "value": 92
+            },
+            {
+              "type": "CHAR_ALT",
+              "value": 47
+            },
+            {
+              "type": "CHAR_ALT",
+              "value": 98
+            },
+            {
+              "type": "CHAR_ALT",
+              "value": 102
+            },
+            {
+              "type": "CHAR_ALT",
+              "value": 110
+            },
+            {
+              "type": "CHAR_ALT",
+              "value": 114
+            },
+            {
+              "type": "CHAR_ALT",
+              "value": 116
+            },
+            {
+              "type": "ALT",
+            },
+            {
+              "type": "CHAR",
+              "value": [117],
+            },
+            {
+              "type": "CHAR",
+              "value": [48],
+            },
+            {
+              "type": "CHAR_RNG_UPPER",
+              "value": 57
+            },
+            {
+              "type": "CHAR_ALT",
+              "value": 97
+            },
+            {
+              "type": "CHAR_RNG_UPPER",
+              "value": 102
+            },
+            {
+              "type": "CHAR_ALT",
+              "value": 65
+            },
+            {
+              "type": "CHAR_RNG_UPPER",
+              "value": 70
+            },
+            {
+              "type": "CHAR",
+              "value": [48],
+            },
+            {
+              "type": "CHAR_RNG_UPPER",
+              "value": 57
+            },
+            {
+              "type": "CHAR_ALT",
+              "value": 97
+            },
+            {
+              "type": "CHAR_RNG_UPPER",
+              "value": 102
+            },
+            {
+              "type": "CHAR_ALT",
+              "value": 65
+            },
+            {
+              "type": "CHAR_RNG_UPPER",
+              "value": 70
+            },
+            {
+              "type": "CHAR",
+              "value": [48],
+            },
+            {
+              "type": "CHAR_RNG_UPPER",
+              "value": 57
+            },
+            {
+              "type": "CHAR_ALT",
+              "value": 97
+            },
+            {
+              "type": "CHAR_RNG_UPPER",
+              "value": 102
+            },
+            {
+              "type": "CHAR_ALT",
+              "value": 65
+            },
+            {
+              "type": "CHAR_RNG_UPPER",
+              "value": 70
+            },
+            {
+              "type": "CHAR",
+              "value": [48],
+            },
+            {
+              "type": "CHAR_RNG_UPPER",
+              "value": 57
+            },
+            {
+              "type": "CHAR_ALT",
+              "value": 97
+            },
+            {
+              "type": "CHAR_RNG_UPPER",
+              "value": 102
+            },
+            {
+              "type": "CHAR_ALT",
+              "value": 65
+            },
+            {
+              "type": "CHAR_RNG_UPPER",
+              "value": 70
+            },
+            {
+              "type": "END"
+            }
+          ],
+          [
+            {
+              "type": "RULE_REF",
+              "value": 1
+            },
+            {
+              "type": "RULE_REF",
+              "value": 3
+            },
+            {
+              "type": "ALT",
+            },
+            {
+              "type": "END"
+            }
+          ]
+        ]
+      }
+    ],
+    [
+      "json.gbnf (full)",
+      `
+    root   ::= object
+    value  ::= object | array | string | number | ("true" | "false" | "null") ws
+
+    object ::=
+      "{" ws (
+                string ":" ws value
+        ("," ws string ":" ws value)*
+      )? "}" ws
+
+    array  ::=
+      "[" ws (
+                value
+        ("," ws value)*
+      )? "]" ws
+
+          string ::=
+      "\\\"" (
+        [^"\\\\\x7F\\x00-\\x1F] |
+        "\\\\" (["\\\\/bfnrt] | "u" [0-9a-fA-F] [0-9a-fA-F] [0-9a-fA-F] [0-9a-fA-F]) # escapes
+      )* "\\\"" ws
+
+    number ::= ("-"? ([0-9] | [1-9] [0-9]*)) ("." [0-9]+)? ([eE] [-+]? [0-9]+)? ws
+
+    # Optional space: by convention, applied in this grammar after literal chars when allowed
+    ws ::= ([ \\t\\n] ws)?
+
+          `,
+      {
+        "symbolIds": [
+          ["root", 0],
+          ["object", 1],
+          ["value", 2],
+          ["array", 3],
+          ["string", 4],
+          ["number", 5],
+          ["value_6", 6],
+          ["ws", 7],
+          ["object_8", 8],
+          ["object_9", 9],
+          ["object_10", 10],
+          ["object_11", 11],
+          ["array_12", 12],
+          ["array_13", 13],
+          ["array_14", 14],
+          ["array_15", 15],
+          ["string_16", 16],
+          ["string_17", 17],
+          ["string_18", 18],
+          ["number_19", 19],
+          ["number_20", 20],
+          ["number_21", 21],
+          ["number_22", 22],
+          ["number_23", 23],
+          ["number_24", 24],
+          ["number_25", 25],
+          ["number_26", 26],
+          ["number_27", 27],
+          ["number_28", 28],
+          ["number_29", 29],
+          ["ws_30", 30],
+          ["ws_31", 31],
+        ],
+        "rules": [
+          [
+            {
+              "type": "RULE_REF",
+              "value": 1
+            },
+            {
+              "type": "END"
+            }
+          ],
+          [
+            {
+              "type": "CHAR",
+              "value": [
+                123
+              ]
+            },
+            {
+              "type": "RULE_REF",
+              "value": 7
+            },
+            {
+              "type": "RULE_REF",
+              "value": 11
+            },
+            {
+              "type": "CHAR",
+              "value": [
+                125
+              ]
+            },
+            {
+              "type": "RULE_REF",
+              "value": 7
+            },
+            {
+              "type": "END"
+            }
+          ],
+          [
+            {
+              "type": "RULE_REF",
+              "value": 1
+            },
+            {
+              "type": "ALT"
+            },
+            {
+              "type": "RULE_REF",
+              "value": 3
+            },
+            {
+              "type": "ALT"
+            },
+            {
+              "type": "RULE_REF",
+              "value": 4
+            },
+            {
+              "type": "ALT"
+            },
+            {
+              "type": "RULE_REF",
+              "value": 5
+            },
+            {
+              "type": "ALT"
+            },
+            {
+              "type": "RULE_REF",
+              "value": 6
+            },
+            {
+              "type": "RULE_REF",
+              "value": 7
+            },
+            {
+              "type": "END"
+            }
+          ],
+          [
+            {
+              "type": "CHAR",
+              "value": [
+                91
+              ]
+            },
+            {
+              "type": "RULE_REF",
+              "value": 7
+            },
+            {
+              "type": "RULE_REF",
+              "value": 15
+            },
+            {
+              "type": "CHAR",
+              "value": [
+                93
+              ]
+            },
+            {
+              "type": "RULE_REF",
+              "value": 7
+            },
+            {
+              "type": "END"
+            }
+          ],
+          [
+            {
+              "type": "CHAR",
+              "value": [
+                34
+              ]
+            },
+            {
+              "type": "RULE_REF",
+              "value": 18
+            },
+            {
+              "type": "CHAR",
+              "value": [
+                34
+              ]
+            },
+            {
+              "type": "RULE_REF",
+              "value": 7
+            },
+            {
+              "type": "END"
+            }
+          ],
+          [
+            {
+              "type": "RULE_REF",
+              "value": 19
+            },
+            {
+              "type": "RULE_REF",
+              "value": 25
+            },
+            {
+              "type": "RULE_REF",
+              "value": 29
+            },
+            {
+              "type": "RULE_REF",
+              "value": 7
+            },
+            {
+              "type": "END"
+            }
+          ],
+          [
+            {
+              "type": "CHAR",
+              "value": [
+                116
+              ]
+            },
+            {
+              "type": "CHAR",
+              "value": [
+                114
+              ]
+            },
+            {
+              "type": "CHAR",
+              "value": [
+                117
+              ]
+            },
+            {
+              "type": "CHAR",
+              "value": [
+                101
+              ]
+            },
+            {
+              "type": "ALT"
+            },
+            {
+              "type": "CHAR",
+              "value": [
+                102
+              ]
+            },
+            {
+              "type": "CHAR",
+              "value": [
+                97
+              ]
+            },
+            {
+              "type": "CHAR",
+              "value": [
+                108
+              ]
+            },
+            {
+              "type": "CHAR",
+              "value": [
+                115
+              ]
+            },
+            {
+              "type": "CHAR",
+              "value": [
+                101
+              ]
+            },
+            {
+              "type": "ALT"
+            },
+            {
+              "type": "CHAR",
+              "value": [
+                110
+              ]
+            },
+            {
+              "type": "CHAR",
+              "value": [
+                117
+              ]
+            },
+            {
+              "type": "CHAR",
+              "value": [
+                108
+              ]
+            },
+            {
+              "type": "CHAR",
+              "value": [
+                108
+              ]
+            },
+            {
+              "type": "END"
+            }
+          ],
+          [
+            {
+              "type": "RULE_REF",
+              "value": 31
+            },
+            {
+              "type": "END"
+            }
+          ],
+          [
+            {
+              "type": "RULE_REF",
+              "value": 4
+            },
+            {
+              "type": "CHAR",
+              "value": [
+                58
+              ]
+            },
+            {
+              "type": "RULE_REF",
+              "value": 7
+            },
+            {
+              "type": "RULE_REF",
+              "value": 2
+            },
+            {
+              "type": "RULE_REF",
+              "value": 10
+            },
+            {
+              "type": "END"
+            }
+          ],
+          [
+            {
+              "type": "CHAR",
+              "value": [
+                44
+              ]
+            },
+            {
+              "type": "RULE_REF",
+              "value": 7
+            },
+            {
+              "type": "RULE_REF",
+              "value": 4
+            },
+            {
+              "type": "CHAR",
+              "value": [
+                58
+              ]
+            },
+            {
+              "type": "RULE_REF",
+              "value": 7
+            },
+            {
+              "type": "RULE_REF",
+              "value": 2
+            },
+            {
+              "type": "END"
+            }
+          ],
+          [
+            {
+              "type": "RULE_REF",
+              "value": 9
+            },
+            {
+              "type": "RULE_REF",
+              "value": 10
+            },
+            {
+              "type": "ALT"
+            },
+            {
+              "type": "END"
+            }
+          ],
+          [
+            {
+              "type": "RULE_REF",
+              "value": 8
+            },
+            {
+              "type": "ALT"
+            },
+            {
+              "type": "END"
+            }
+          ],
+          [
+            {
+              "type": "RULE_REF",
+              "value": 2
+            },
+            {
+              "type": "RULE_REF",
+              "value": 14
+            },
+            {
+              "type": "END"
+            }
+          ],
+          [
+            {
+              "type": "CHAR",
+              "value": [
+                44
+              ]
+            },
+            {
+              "type": "RULE_REF",
+              "value": 7
+            },
+            {
+              "type": "RULE_REF",
+              "value": 2
+            },
+            {
+              "type": "END"
+            }
+          ],
+          [
+            {
+              "type": "RULE_REF",
+              "value": 13
+            },
+            {
+              "type": "RULE_REF",
+              "value": 14
+            },
+            {
+              "type": "ALT"
+            },
+            {
+              "type": "END"
+            }
+          ],
+          [
+            {
+              "type": "RULE_REF",
+              "value": 12
+            },
+            {
+              "type": "ALT"
+            },
+            {
+              "type": "END"
+            }
+          ],
+          [
+            {
+              "type": "CHAR_NOT",
+              "value": [
+                34
+              ]
+            },
+            {
+              "type": "CHAR_ALT",
+              "value": 92
+            },
+            {
+              "type": "CHAR_ALT",
+              "value": 127
+            },
+            {
+              "type": "CHAR_ALT",
+              "value": 0
+            },
+            {
+              "type": "CHAR_RNG_UPPER",
+              "value": 31
+            },
+            {
+              "type": "ALT"
+            },
+            {
+              "type": "CHAR",
+              "value": [
+                92
+              ]
+            },
+            {
+              "type": "RULE_REF",
+              "value": 17
+            },
+            {
+              "type": "END"
+            }
+          ],
+          [
+            {
+              "type": "CHAR",
+              "value": [
+                34
+              ]
+            },
+            {
+              "type": "CHAR_ALT",
+              "value": 92
+            },
+            {
+              "type": "CHAR_ALT",
+              "value": 47
+            },
+            {
+              "type": "CHAR_ALT",
+              "value": 98
+            },
+            {
+              "type": "CHAR_ALT",
+              "value": 102
+            },
+            {
+              "type": "CHAR_ALT",
+              "value": 110
+            },
+            {
+              "type": "CHAR_ALT",
+              "value": 114
+            },
+            {
+              "type": "CHAR_ALT",
+              "value": 116
+            },
+            {
+              "type": "ALT"
+            },
+            {
+              "type": "CHAR",
+              "value": [
+                117
+              ]
+            },
+            {
+              "type": "CHAR",
+              "value": [
+                48
+              ]
+            },
+            {
+              "type": "CHAR_RNG_UPPER",
+              "value": 57
+            },
+            {
+              "type": "CHAR_ALT",
+              "value": 97
+            },
+            {
+              "type": "CHAR_RNG_UPPER",
+              "value": 102
+            },
+            {
+              "type": "CHAR_ALT",
+              "value": 65
+            },
+            {
+              "type": "CHAR_RNG_UPPER",
+              "value": 70
+            },
+            {
+              "type": "CHAR",
+              "value": [
+                48
+              ]
+            },
+            {
+              "type": "CHAR_RNG_UPPER",
+              "value": 57
+            },
+            {
+              "type": "CHAR_ALT",
+              "value": 97
+            },
+            {
+              "type": "CHAR_RNG_UPPER",
+              "value": 102
+            },
+            {
+              "type": "CHAR_ALT",
+              "value": 65
+            },
+            {
+              "type": "CHAR_RNG_UPPER",
+              "value": 70
+            },
+            {
+              "type": "CHAR",
+              "value": [
+                48
+              ]
+            },
+            {
+              "type": "CHAR_RNG_UPPER",
+              "value": 57
+            },
+            {
+              "type": "CHAR_ALT",
+              "value": 97
+            },
+            {
+              "type": "CHAR_RNG_UPPER",
+              "value": 102
+            },
+            {
+              "type": "CHAR_ALT",
+              "value": 65
+            },
+            {
+              "type": "CHAR_RNG_UPPER",
+              "value": 70
+            },
+            {
+              "type": "CHAR",
+              "value": [
+                48
+              ]
+            },
+            {
+              "type": "CHAR_RNG_UPPER",
+              "value": 57
+            },
+            {
+              "type": "CHAR_ALT",
+              "value": 97
+            },
+            {
+              "type": "CHAR_RNG_UPPER",
+              "value": 102
+            },
+            {
+              "type": "CHAR_ALT",
+              "value": 65
+            },
+            {
+              "type": "CHAR_RNG_UPPER",
+              "value": 70
+            },
+            {
+              "type": "END"
+            }
+          ],
+          [
+            {
+              "type": "RULE_REF",
+              "value": 16
+            },
+            {
+              "type": "RULE_REF",
+              "value": 18
+            },
+            {
+              "type": "ALT"
+            },
+            {
+              "type": "END"
+            }
+          ],
+          [
+            {
+              "type": "RULE_REF",
+              "value": 20
+            },
+            {
+              "type": "RULE_REF",
+              "value": 21
+            },
+            {
+              "type": "END"
+            }
+          ],
+          [
+            {
+              "type": "CHAR",
+              "value": [
+                45
+              ]
+            },
+            {
+              "type": "ALT"
+            },
+            {
+              "type": "END"
+            }
+          ],
+          [
+            {
+              "type": "CHAR",
+              "value": [
+                48
+              ]
+            },
+            {
+              "type": "CHAR_RNG_UPPER",
+              "value": 57
+            },
+            {
+              "type": "ALT"
+            },
+            {
+              "type": "CHAR",
+              "value": [
+                49
+              ]
+            },
+            {
+              "type": "CHAR_RNG_UPPER",
+              "value": 57
+            },
+            {
+              "type": "RULE_REF",
+              "value": 22
+            },
+            {
+              "type": "END"
+            }
+          ],
+          [
+            {
+              "type": "CHAR",
+              "value": [
+                48
+              ]
+            },
+            {
+              "type": "CHAR_RNG_UPPER",
+              "value": 57
+            },
+            {
+              "type": "RULE_REF",
+              "value": 22
+            },
+            {
+              "type": "ALT"
+            },
+            {
+              "type": "END"
+            }
+          ],
+          [
+            {
+              "type": "CHAR",
+              "value": [
+                46
+              ]
+            },
+            {
+              "type": "RULE_REF",
+              "value": 24
+            },
+            {
+              "type": "END"
+            }
+          ],
+          [
+            {
+              "type": "CHAR",
+              "value": [
+                48
+              ]
+            },
+            {
+              "type": "CHAR_RNG_UPPER",
+              "value": 57
+            },
+            {
+              "type": "RULE_REF",
+              "value": 24
+            },
+            {
+              "type": "ALT"
+            },
+            {
+              "type": "CHAR",
+              "value": [
+                48
+              ]
+            },
+            {
+              "type": "CHAR_RNG_UPPER",
+              "value": 57
+            },
+            {
+              "type": "END"
+            }
+          ],
+          [
+            {
+              "type": "RULE_REF",
+              "value": 23
+            },
+            {
+              "type": "ALT"
+            },
+            {
+              "type": "END"
+            }
+          ],
+          [
+            {
+              "type": "CHAR",
+              "value": [
+                101
+              ]
+            },
+            {
+              "type": "CHAR_ALT",
+              "value": 69
+            },
+            {
+              "type": "RULE_REF",
+              "value": 27
+            },
+            {
+              "type": "RULE_REF",
+              "value": 28
+            },
+            {
+              "type": "END"
+            }
+          ],
+          [
+            {
+              "type": "CHAR",
+              "value": [
+                45
+              ]
+            },
+            {
+              "type": "CHAR_ALT",
+              "value": 43
+            },
+            {
+              "type": "ALT"
+            },
+            {
+              "type": "END"
+            }
+          ],
+          [
+            {
+              "type": "CHAR",
+              "value": [
+                48
+              ]
+            },
+            {
+              "type": "CHAR_RNG_UPPER",
+              "value": 57
+            },
+            {
+              "type": "RULE_REF",
+              "value": 28
+            },
+            {
+              "type": "ALT"
+            },
+            {
+              "type": "CHAR",
+              "value": [
+                48
+              ]
+            },
+            {
+              "type": "CHAR_RNG_UPPER",
+              "value": 57
+            },
+            {
+              "type": "END"
+            }
+          ],
+          [
+            {
+              "type": "RULE_REF",
+              "value": 26
+            },
+            {
+              "type": "ALT"
+            },
+            {
+              "type": "END"
+            }
+          ],
+          [
+            {
+              "type": "CHAR",
+              "value": [
+                32
+              ]
+            },
+            {
+              "type": "CHAR_ALT",
+              "value": 9
+            },
+            {
+              "type": "CHAR_ALT",
+              "value": 10
+            },
+            {
+              "type": "RULE_REF",
+              "value": 7
+            },
+            {
+              "type": "END"
+            }
+          ],
+          [
+            {
+              "type": "RULE_REF",
+              "value": 30
+            },
+            {
+              "type": "ALT"
+            },
+            {
+              "type": "END"
+            }
+          ]
+        ]
+      }
+    ],
+    [
+      "japanese",
+      `
+# A probably incorrect grammar for Japanese
+root        ::= jp-char+ ([ \\t\\n] jp-char+)*
+jp-char     ::= hiragana | katakana | punctuation | cjk
+hiragana    ::= [ぁ-ゟ]
+katakana    ::= [ァ-ヿ]
+punctuation ::= [、-〾]
+cjk         ::= [一-鿿]
+
+          `,
+      {
+        "symbolIds": [
+          ["root", 0],
+          ["jp-char", 1],
+          ["root_2", 2],
+          ["root_3", 3],
+          ["root_4", 4],
+          ["root_5", 5],
+          ["hiragana", 6],
+          ["katakana", 7],
+          ["punctuation", 8],
+          ["cjk", 9],
+        ],
+        "rules": [
+          [
+            {
+              "type": "RULE_REF",
+              "value": 2
+            },
+            {
+              "type": "RULE_REF",
+              "value": 5
+            },
+            {
+              "type": "END"
+            }
+          ],
+          [
+            {
+              "type": "RULE_REF",
+              "value": 6
+            },
+            {
+              "type": "ALT"
+            },
+            {
+              "type": "RULE_REF",
+              "value": 7
+            },
+            {
+              "type": "ALT"
+            },
+            {
+              "type": "RULE_REF",
+              "value": 8
+            },
+            {
+              "type": "ALT"
+            },
+            {
+              "type": "RULE_REF",
+              "value": 9
+            },
+            {
+              "type": "END"
+            }
+          ],
+          [
+            {
+              "type": "RULE_REF",
+              "value": 1
+            },
+            {
+              "type": "RULE_REF",
+              "value": 2
+            },
+            {
+              "type": "ALT"
+            },
+            {
+              "type": "RULE_REF",
+              "value": 1
+            },
+            {
+              "type": "END"
+            }
+          ],
+          [
+            {
+              "type": "CHAR",
+              "value": [
+                32
+              ]
+            },
+            {
+              "type": "CHAR_ALT",
+              "value": 9
+            },
+            {
+              "type": "CHAR_ALT",
+              "value": 10
+            },
+            {
+              "type": "RULE_REF",
+              "value": 4
+            },
+            {
+              "type": "END"
+            }
+          ],
+          [
+            {
+              "type": "RULE_REF",
+              "value": 1
+            },
+            {
+              "type": "RULE_REF",
+              "value": 4
+            },
+            {
+              "type": "ALT"
+            },
+            {
+              "type": "RULE_REF",
+              "value": 1
+            },
+            {
+              "type": "END"
+            }
+          ],
+          [
+            {
+              "type": "RULE_REF",
+              "value": 3
+            },
+            {
+              "type": "RULE_REF",
+              "value": 5
+            },
+            {
+              "type": "ALT"
+            },
+            {
+              "type": "END"
+            }
+          ],
+          [
+            {
+              "type": "CHAR",
+              "value": [
+                12353
+              ]
+            },
+            {
+              "type": "CHAR_RNG_UPPER",
+              "value": 12447
+            },
+            {
+              "type": "END"
+            }
+          ],
+          [
+            {
+              "type": "CHAR",
+              "value": [
+                12449
+              ]
+            },
+            {
+              "type": "CHAR_RNG_UPPER",
+              "value": 12543
+            },
+            {
+              "type": "END"
+            }
+          ],
+          [
+            {
+              "type": "CHAR",
+              "value": [
+                12289
+              ]
+            },
+            {
+              "type": "CHAR_RNG_UPPER",
+              "value": 12350
+            },
+            {
+              "type": "END"
+            }
+          ],
+          [
+            {
+              "type": "CHAR",
+              "value": [
+                19968
+              ]
+            },
+            {
+              "type": "CHAR_RNG_UPPER",
+              "value": 40959
+            },
+            {
+              "type": "END"
+            }
+          ]
+        ]
+      }
+    ],
+  ] as [string, string, Expectation,][]).map(([key, grammar, rules]) => {
+    return [key, grammar.split('\n').map(l => l.trim()).join('\\n'), rules];
+  }))('parses grammar %s `%s`', (_key, grammar, { symbolIds, rules }) => {
+    const parsedGrammar = new RulesBuilder(grammar.split('\\n').join('\n'));
     expect(parsedGrammar.rules).toEqual(rules);
     expect(Array.from(parsedGrammar.symbolIds.entries())).toEqual(symbolIds);
   });

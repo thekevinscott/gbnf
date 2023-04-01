@@ -531,7 +531,7 @@ describe('creation with initial string', () => {
       ],
     ],
     [
-      `root ::= "\\\\"" ( [^"abcdefghA-Z])* `,
+      `root ::= "\\\"" ( [^"abcdefghA-Z])* `,
       `" is not only in its lyrism, its vow to sustin it in its poo-sion, its r,v:l'y, it's tory,`,
       [
         {
