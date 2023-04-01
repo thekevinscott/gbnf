@@ -7,10 +7,12 @@ import type { GraphRule, Rule, } from "./graph/types.js";
 
 export const getGrammarParser = (ruleDefs: InternalRuleDef[][], rootId: number) => {
   const stackedRules: GraphRule[][][] = ruleDefs.map(buildRuleStack);
-  class _GrammarParser implements AbstractGrammarParser {
+  class _GrammarParser<StopToken> implements AbstractGrammarParser<StopToken> {
     #graph: Graph;
+    stopToken: StopToken;
 
-    constructor(src: string) {
+    constructor(src: string, stopToken: StopToken = null) {
+      this.stopToken = stopToken;
       this.#graph = new Graph(stackedRules, rootId);
       this.add(src);
     }
