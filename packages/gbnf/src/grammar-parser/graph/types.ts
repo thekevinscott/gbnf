@@ -7,6 +7,7 @@ export interface PrintOpts { pointers?: Set<VisibleGraphPointer>; colorize: Colo
 
 export enum RuleType {
   CHAR = 'CHAR',
+  CHAR_EXCLUDE = 'CHAR_EXCLUDE',
   REF = 'REF',
   END = 'END',
 }
@@ -17,12 +18,17 @@ export interface RuleChar {
   type: RuleType.CHAR;
   value: (number | Range)[];
 }
+
+export interface RuleCharExclude {
+  type: RuleType.CHAR_EXCLUDE;
+  value: (number | Range)[];
+}
 export interface RuleEnd {
   type: RuleType.END;
 }
-export type GraphRule = RuleChar | RuleRef | RuleEnd;
+export type GraphRule = RuleChar | RuleCharExclude | RuleRef | RuleEnd;
 // RuleRefs should never be exposed to the end user.
-export type Rule = RuleChar | RuleEnd;
+export type Rule = RuleCharExclude | RuleChar | RuleEnd;
 export type ReturnRuleValue = Rule;
 
 /** Type Guards */
@@ -32,4 +38,5 @@ export const isRule = (rule?: unknown): rule is GraphRule => !!rule && typeof ru
 export const isRuleRef = (rule?: GraphRule): rule is RuleRef => rule.type === RuleType.REF;
 export const isRuleEnd = (rule?: GraphRule): rule is RuleEnd => rule.type === RuleType.END;
 export const isRuleChar = (rule?: GraphRule): rule is RuleChar => rule.type === RuleType.CHAR;
+export const isRuleCharExcluded = (rule?: GraphRule): rule is RuleCharExclude => rule.type === RuleType.CHAR_EXCLUDE;
 export const isRange = (range?: unknown): range is Range => Array.isArray(range) && range.length === 2 && range.every(n => typeof n === 'number');

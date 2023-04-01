@@ -1,7 +1,10 @@
 import {
+  InternalRuleDefChar,
+  InternalRuleDefCharNot,
   isRuleDefAlt,
   isRuleDefChar,
   isRuleDefCharAlt,
+  isRuleDefCharNot,
   isRuleDefCharRngUpper,
   isRuleDefEnd,
   isRuleDefRef,
@@ -10,11 +13,19 @@ import {
 import {
   GraphRule,
   RuleChar,
+  RuleCharExclude,
   RuleRef,
   RuleType,
   isRange,
   isRuleEnd,
 } from "./graph/types.js";
+
+function makeCharRule<R extends (InternalRuleDefChar | InternalRuleDefCharNot)>(ruleDef: R): R extends InternalRuleDefChar ? RuleChar : RuleCharExclude {
+  return {
+    type: isRuleDefCharNot(ruleDef) ? RuleType.CHAR_EXCLUDE : RuleType.CHAR,
+    value: [...ruleDef.value,],
+  } as R extends InternalRuleDefChar ? RuleChar : RuleCharExclude;
+}
 
 export const buildRuleStack = (linearRules: InternalRuleDef[]): GraphRule[][] => {
   let paths: GraphRule[] = [];
@@ -24,12 +35,9 @@ export const buildRuleStack = (linearRules: InternalRuleDef[]): GraphRule[][] =>
   let idx = 0;
   while (idx < linearRules.length) {
     const ruleDef = linearRules[idx];
-    if (isRuleDefChar(ruleDef)) {
+    if (isRuleDefChar(ruleDef) || isRuleDefCharNot(ruleDef)) {
       // this could be a single char, or a range, or a sequence of alts; we don't know until we step through it.
-      const charRule: RuleChar = {
-        type: RuleType.CHAR,
-        value: [...ruleDef.value,],
-      };
+      const charRule = makeCharRule(ruleDef);
       idx += 1;
       let rule = linearRules[idx];
       while (idx < linearRules.length && (isRuleDefCharRngUpper(rule) || isRuleDefCharAlt(rule))) {

@@ -120,6 +120,20 @@ describe('additional strings', () => {
       { type: RuleType.CHAR, value: ['z'.charCodeAt(0)], },
     ]],
 
+    // char not
+    ['root ::= [^f] "o"', 'g', 'o', [
+      { type: RuleType.END },
+    ]],
+    ['root ::= [^A-Z]', '', 'a', [
+      { type: RuleType.END },
+    ]],
+    ['root ::= [^A-Z0-9]', '', 'a', [
+      { type: RuleType.END },
+    ]],
+    ['root ::= [^A-Z0-9_-]', '', 'a', [
+      { type: RuleType.END },
+    ]],
+
     // expressions
     ['root ::= foo\\nfoo ::= "foo"', '', 'f', [
       { type: RuleType.CHAR, value: ['o'.charCodeAt(0)], },
@@ -259,12 +273,59 @@ describe('additional strings', () => {
       { type: RuleType.CHAR, value: [['a'.charCodeAt(0), 'z'.charCodeAt(0)], ['A'.charCodeAt(0), 'Z'.charCodeAt(0)]], },
       { type: RuleType.END, },
     ]],
-    [
-      'root ::= "foo" | "bar" | "baz" | "bazaar" | "barrington" ',
-      'baza', 'a', [
-        { type: RuleType.CHAR, value: ['r'.charCodeAt(0)], },
-      ]
-    ],
+    ['root ::= "foo" | "bar" | "baz" | "bazaar" | "barrington" ', 'baza', 'a', [
+      { type: RuleType.CHAR, value: ['r'.charCodeAt(0)], },
+    ]],
+
+    // char not with modifiers
+    ['root ::= [^f]+ "o"', 'aaa', 'a', [
+      { type: RuleType.CHAR_EXCLUDE, value: ['f'.charCodeAt(0)], },
+      { type: RuleType.CHAR, value: ['o'.charCodeAt(0)], },
+    ]],
+    ['root ::= [^A-Z]+', 'abc', 'd', [
+      {
+        type: RuleType.CHAR_EXCLUDE, value: [
+          [
+            'A'.charCodeAt(0),
+            'Z'.charCodeAt(0),
+          ],
+        ],
+      },
+      { type: RuleType.END, },
+    ]],
+    ['root ::= [^A-Z0-9]*', 'abc', 'd', [
+      {
+        type: RuleType.CHAR_EXCLUDE, value: [
+          [
+            'A'.charCodeAt(0),
+            'Z'.charCodeAt(0),
+          ],
+          [
+            '0'.charCodeAt(0),
+            '9'.charCodeAt(0),
+          ],
+        ],
+      },
+      { type: RuleType.END, },
+    ]],
+    ['root ::= [^A-Z0-9_-]*', 'abc', 'd', [
+      {
+        type: RuleType.CHAR_EXCLUDE, value: [
+          [
+            'A'.charCodeAt(0),
+            'Z'.charCodeAt(0),
+          ],
+          [
+            '0'.charCodeAt(0),
+            '9'.charCodeAt(0),
+          ],
+          '_'.charCodeAt(0),
+          '-'.charCodeAt(0),
+        ],
+      },
+      { type: RuleType.END, },
+    ]],
+
   ])('it parses a grammar `%s` with starting `%s` and additional `%s`', (grammar, starting, additional, expected) => {
     const Parser = GBNF(grammar.split('\\n').join('\n'));
     const parser = new Parser(starting);

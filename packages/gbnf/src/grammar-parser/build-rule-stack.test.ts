@@ -45,7 +45,57 @@ describe('buildRuleStack', () => {
     ]]);
   });
 
-  describe('CHAR', () => {
+  test('it builds rule stack for char_not', () => {
+    expect(buildRuleStack([
+      { type: InternalRuleType.CHAR_NOT, value: [120], },
+      { type: InternalRuleType.ALT, },
+      { type: InternalRuleType.CHAR_NOT, value: [121], },
+      { type: InternalRuleType.ALT, },
+      { type: InternalRuleType.CHAR_NOT, value: [122], },
+    ])).toEqual([[
+      { type: RuleType.CHAR_EXCLUDE, value: [120], },
+      { type: RuleType.END, },
+    ], [
+      { type: RuleType.CHAR_EXCLUDE, value: [121], },
+      { type: RuleType.END, },
+    ], [
+      { type: RuleType.CHAR_EXCLUDE, value: [122], },
+      { type: RuleType.END, },
+    ]]);
+  });
+
+  test('it builds rule stack for mixed char and char_not', () => {
+    expect(buildRuleStack([
+      { type: InternalRuleType.CHAR_NOT, value: [120], },
+      { type: InternalRuleType.ALT, },
+      { type: InternalRuleType.CHAR, value: [121], },
+      { type: InternalRuleType.ALT, },
+      { type: InternalRuleType.CHAR_NOT, value: [122], },
+    ])).toEqual([[
+      { type: RuleType.CHAR_EXCLUDE, value: [120], },
+      { type: RuleType.END, },
+    ], [
+      { type: RuleType.CHAR, value: [121], },
+      { type: RuleType.END, },
+    ], [
+      { type: RuleType.CHAR_EXCLUDE, value: [122], },
+      { type: RuleType.END, },
+    ]]);
+  });
+
+  test('it builds rule stack for a char_not with two characters and a range', () => {
+    expect(buildRuleStack([
+      { type: InternalRuleType.CHAR_NOT, value: [120], },
+      { type: InternalRuleType.CHAR_ALT, value: 121, },
+      { type: InternalRuleType.CHAR_ALT, value: 122, },
+      { type: InternalRuleType.CHAR_RNG_UPPER, value: 130, },
+    ])).toEqual([[
+      { type: RuleType.CHAR_EXCLUDE, value: [120, 121, [122, 130]], },
+      { type: RuleType.END, },
+    ]]);
+  });
+
+  describe('ranges', () => {
     describe('no modifiers', () => {
       test.each([
         [`[a-z]`, [

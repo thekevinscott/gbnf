@@ -4,7 +4,7 @@ import { GraphNode, } from "./graph-node.js";
 import { getSerializedRuleKey, } from "./get-serialized-rule-key.js";
 import { colorize, } from "./colorize.js";
 import { GenericSet, } from "./generic-set.js";
-import { GraphRule, Rule, RuleRef, isRange, isRuleChar, isRuleEnd, isRuleRef, } from "./types.js";
+import { GraphRule, Rule, RuleRef, isRange, isRuleChar, isRuleCharExcluded, isRuleEnd, isRuleRef, } from "./types.js";
 import { isPointInRange, } from "../is-point-in-range.js";
 
 const customInspectSymbol = Symbol.for('nodejs.util.inspect.custom');
@@ -69,18 +69,27 @@ export class Graph {
   parse(codePoint: number) {
     for (const { rule, pointers, } of this.iterateOverPointers()) {
       if (isRuleChar(rule)) {
-        this.setValid(pointers, rule.value.reduce((
+        const valid = rule.value.reduce((
           isValid,
           possibleCodePoint,
         ) => {
           if (isValid) {
             return true;
           }
-          if (isRange(possibleCodePoint)) {
-            return isPointInRange(codePoint, possibleCodePoint);
+          return isRange(possibleCodePoint) ? isPointInRange(codePoint, possibleCodePoint) : codePoint === possibleCodePoint;
+        }, false);
+        this.setValid(pointers, valid);
+      } else if (isRuleCharExcluded(rule)) {
+        const valid = rule.value.reduce((
+          isValid,
+          possibleCodePoint,
+        ) => {
+          if (!isValid) {
+            return false;
           }
-          return codePoint === possibleCodePoint;
-        }, false));
+          return isRange(possibleCodePoint) ? !isPointInRange(codePoint, possibleCodePoint) : codePoint !== possibleCodePoint;
+        }, true);
+        this.setValid(pointers, valid);
       } else if (!isRuleEnd(rule)) {
         throw new Error(`Unsupported rule type: ${rule.type}`);
       }

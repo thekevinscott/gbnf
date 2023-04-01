@@ -20,6 +20,20 @@ describe('Grammar Parser Tests', () => {
 
     ],
     [
+      'quote character',
+      `root ::= "\\\\""`,
+      {
+        "symbolIds": [["root", 0]],
+        "rules": [
+          [
+            { "type": InternalRuleType.CHAR, "value": ['"'.charCodeAt(0)] },
+            { "type": InternalRuleType.END }
+          ]
+        ]
+      }
+
+    ],
+    [
       'two-lines-referencing-expression',
       `root ::= foo
       foo  ::= "bar"
@@ -449,7 +463,7 @@ root  ::= (expr "=" term "\n")+
         ],
         "rules": [
           [
-            { "type": InternalRuleType.CHAR_NOT, "value": '\n'.charCodeAt(0) },
+            { "type": InternalRuleType.CHAR_NOT, "value": ['\n'.charCodeAt(0)] },
             { "type": InternalRuleType.END },
           ],
         ]
@@ -467,7 +481,7 @@ root  ::= (expr "=" term "\n")+
         ],
         "rules": [
           [
-            { "type": InternalRuleType.CHAR_NOT, "value": '0'.charCodeAt(0) },
+            { "type": InternalRuleType.CHAR_NOT, "value": ['0'.charCodeAt(0)] },
             { "type": InternalRuleType.CHAR_RNG_UPPER, "value": '9'.charCodeAt(0) },
             { "type": InternalRuleType.END },
           ],
@@ -489,14 +503,90 @@ root  ::= (expr "=" term "\n")+
             { "type": InternalRuleType.END },
           ],
           [
-            { "type": InternalRuleType.CHAR_NOT, "value": '\n'.charCodeAt(0) },
+            { "type": InternalRuleType.CHAR_NOT, "value": ['\n'.charCodeAt(0)] },
             { "type": InternalRuleType.RULE_REF, "value": 1 },
             { "type": InternalRuleType.ALT },
-            { "type": InternalRuleType.CHAR_NOT, "value": '\n'.charCodeAt(0) },
+            { "type": InternalRuleType.CHAR_NOT, "value": ['\n'.charCodeAt(0)] },
             { "type": InternalRuleType.END },
           ],
         ]
       }
+    ],
+    [
+      'longer negation',
+      `root ::= "\\\\"" ( [^"abcdefgh])* `,
+      {
+        "symbolIds": [
+          ["root", 0],
+          ["root_1", 1],
+          ["root_2", 2],
+        ],
+        "rules": [
+          [
+            { "type": InternalRuleType.CHAR, "value": [34] },
+            { "type": InternalRuleType.RULE_REF, "value": 2 },
+            { "type": InternalRuleType.END },
+          ],
+          [
+            { "type": InternalRuleType.CHAR_NOT, "value": [34] },
+            { "type": InternalRuleType.CHAR_ALT, "value": 97 },
+            { "type": InternalRuleType.CHAR_ALT, "value": 98 },
+            { "type": InternalRuleType.CHAR_ALT, "value": 99 },
+            { "type": InternalRuleType.CHAR_ALT, "value": 100 },
+            { "type": InternalRuleType.CHAR_ALT, "value": 101 },
+            { "type": InternalRuleType.CHAR_ALT, "value": 102 },
+            { "type": InternalRuleType.CHAR_ALT, "value": 103 },
+            { "type": InternalRuleType.CHAR_ALT, "value": 104 },
+            { "type": InternalRuleType.END },
+          ],
+          [
+            { "type": InternalRuleType.RULE_REF, "value": 1 },
+            { "type": InternalRuleType.RULE_REF, "value": 2 },
+            { "type": InternalRuleType.ALT },
+            { "type": InternalRuleType.END },
+          ],
+        ]
+      }
+
+    ],
+    [
+      'longer negation with a range',
+      `root ::= "\\\\"" ( [^"abcdefghA-Z])* `,
+      {
+        "symbolIds": [
+          ["root", 0],
+          ["root_1", 1],
+          ["root_2", 2],
+        ],
+        "rules": [
+          [
+            { "type": InternalRuleType.CHAR, "value": [34] },
+            { "type": InternalRuleType.RULE_REF, "value": 2 },
+            { "type": InternalRuleType.END },
+          ],
+          [
+            { "type": InternalRuleType.CHAR_NOT, "value": [34] },
+            { "type": InternalRuleType.CHAR_ALT, "value": 97 },
+            { "type": InternalRuleType.CHAR_ALT, "value": 98 },
+            { "type": InternalRuleType.CHAR_ALT, "value": 99 },
+            { "type": InternalRuleType.CHAR_ALT, "value": 100 },
+            { "type": InternalRuleType.CHAR_ALT, "value": 101 },
+            { "type": InternalRuleType.CHAR_ALT, "value": 102 },
+            { "type": InternalRuleType.CHAR_ALT, "value": 103 },
+            { "type": InternalRuleType.CHAR_ALT, "value": 104 },
+            { "type": InternalRuleType.CHAR_ALT, "value": 65 },
+            { "type": InternalRuleType.CHAR_RNG_UPPER, "value": 90 },
+            { "type": InternalRuleType.END },
+          ],
+          [
+            { "type": InternalRuleType.RULE_REF, "value": 1 },
+            { "type": InternalRuleType.RULE_REF, "value": 2 },
+            { "type": InternalRuleType.ALT },
+            { "type": InternalRuleType.END },
+          ],
+        ]
+      }
+
     ],
     ...[
       [
