@@ -82,6 +82,12 @@ jobs:
         working-directory: ./packages/gbnf
         run: 'pnpm test'
 
+      - name: Upload coverage reports to Codecov
+        uses: codecov/codecov-action@v4.0.1
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          slug: thekevinscott/gbnf
+
   build:
     name: 'Build'
     runs-on: ubuntu-latest
