@@ -8,10 +8,10 @@ export type Pointers = GenericSet<ResolvedGraphPointer, string>;
 export interface PrintOpts { pointers?: Pointers; colorize: Colorize; showPosition: boolean };
 
 export enum RuleType {
-  CHAR,
-  CHAR_EXCLUDE,
-  REF,
-  END,
+  CHAR = 'char',
+  CHAR_EXCLUDE = 'char_exclude',
+  REF = 'ref',
+  END = 'end',
 }
 
 export type Range = [number, number];
@@ -32,6 +32,7 @@ export type UnresolvedRule = RuleChar | RuleCharExclude | RuleRef | RuleEnd;
 // RuleRefs should never be exposed to the end user.
 export type ResolvedRule = RuleCharExclude | RuleChar | RuleEnd;
 export type PublicRule = ResolvedRule;
+export type PublicRuleType = Extract<RuleType, RuleType.CHAR | RuleType.CHAR_EXCLUDE | RuleType.END>;
 
 /** Type Guards */
 export const isGraphRule = (rule?: unknown): rule is UnresolvedRule => !!rule && typeof rule === 'object' && 'type' in rule && isRuleType(rule.type);
