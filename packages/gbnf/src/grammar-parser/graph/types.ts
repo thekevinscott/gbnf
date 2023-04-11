@@ -10,6 +10,10 @@ export interface PrintOpts { pointers?: Pointers; colorize: Colorize; showPositi
 export enum RuleType {
   CHAR = 'char',
   CHAR_EXCLUDE = 'char_exclude',
+<<<<<<< HEAD
+=======
+  REF = 'ref',
+>>>>>>> 92f72a8 (Update type exports)
   END = 'end',
 }
 
