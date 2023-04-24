@@ -1,3 +1,4 @@
+import { describe, test, expect } from 'vitest';
 import { RulesBuilder } from './rules-builder.js';
 import { InternalRuleDef, InternalRuleType, } from './types.js';
 
@@ -2552,7 +2553,7 @@ cjk         ::= [一-鿿]
   }))('parses grammar %s `%s`', (_key, grammar, { symbolIds, rules }) => {
     const parsedGrammar = new RulesBuilder(grammar.split('\\n').join('\n'));
     expect(parsedGrammar.rules).toEqual(rules);
-    expect(Array.from(parsedGrammar.symbolIds.entries())).toEqual(symbolIds);
+    expect(Array.from([...parsedGrammar.symbolIds])).toEqual(symbolIds);
   });
 });
 

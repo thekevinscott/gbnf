@@ -12,7 +12,7 @@ export const buildErrorPosition = (src: string, pos: number): string[] => {
   const grammarLines = src.split('\n');
 
   let lineIdx = 0;
-  while (pos > grammarLines[lineIdx].length - 1) {
+  while (grammarLines[lineIdx] && pos > grammarLines[lineIdx].length - 1) {
     pos -= grammarLines[lineIdx].length;
     lineIdx += 1;
   }
