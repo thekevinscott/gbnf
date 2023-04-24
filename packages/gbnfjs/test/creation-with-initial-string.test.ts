@@ -81,7 +81,15 @@ describe('creation with initial string', () => {
     [`root ::= [a-z]*`, '0', new InputParseError('0', 0)],
     ['root ::= [a-z]*', 'az0', new InputParseError('az0', 2)],
 
+    // sticking to llama.cpp's implementation, for a char_not rule _and_ a char rule
+    // side by side, _either_ is valid.
+    // that means that input explicitly forbidden by char_not can be allowed by the char
+    // rule.
+    // it seems weird. but it's the way it is.
+    // so below, anything in b-z is allowed, because of the second rule. Anything _not_ a-z is
+    // also allowed, because of the first rule. So really the only character disallowed is 'a'.
     [`root ::= ( [^abcdefgh] | [b-z])*`, 'a', new InputParseError('a', 0)],
+
   ])('it throws if encountering a grammar `%s` with invalid input: `%s`', (grammar, input, error) => {
     expect(() => {
       const graph = GBNF(grammar.split('\\n').join('\n'));
@@ -132,6 +140,32 @@ describe('creation with initial string', () => {
     ['root ::= "foo" | "bar" | "baz"', 'ba', [
       { type: RuleType.CHAR, value: ['r'.charCodeAt(0)], },
       { type: RuleType.CHAR, value: ['z'.charCodeAt(0)], },
+    ]],
+
+    // chars that shadow built-in characters
+    [`root ::= "["`, '[', [
+      { type: RuleType.END },
+    ]],
+    [`root ::= "]"`, ']', [
+      { type: RuleType.END },
+    ]],
+    [`root ::= "[]"`, '[]', [
+      { type: RuleType.END },
+    ]],
+    [`root ::= "{"`, '{', [
+      { type: RuleType.END },
+    ]],
+    [`root ::= "}"`, '}', [
+      { type: RuleType.END },
+    ]],
+    [`root ::= "{}"`, '{}', [
+      { type: RuleType.END },
+    ]],
+    [`root ::= "[{}]"`, '[{}]', [
+      { type: RuleType.END },
+    ]],
+    [`root ::= "[{\\"}]"`, '[{"}]', [
+      { type: RuleType.END },
     ]],
 
     // char not
