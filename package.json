@@ -1,0 +1,22 @@
+{
+  "name": "@coder/root",
+  "private": true,
+  "type": "module",
+  "version": "0.0.1",
+  "scripts": {
+    "dev": "wireit"
+  },
+  "wireit": {
+    "dev": {
+      "command": "pnpm --filter ./dev dev"
+    }
+  },
+  "author": "Kevin Scott",
+  "license": "MIT",
+  "dependencies": {},
+  "devDependencies": {
+    "@types/node": "^20.11.22",
+    "typescript": "^5.3.3",
+    "wireit": "^0.14.4"
+  }
+}
