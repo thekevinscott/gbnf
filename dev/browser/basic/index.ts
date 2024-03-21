@@ -1,9 +1,5 @@
 import GBNF from '../../../packages/gbnf/src/index.js';
 
-// const grammarBytes = `
-// foo ::= "bar"
-// root         ::= foo
-// `;
 const grammarBytes = `
 root  ::= (expr "=" ws term "\n")+
 expr  ::= term ([-+*/] term)*
@@ -14,5 +10,4 @@ ws    ::= [ \t\n]*
 `;
 
 const gbnf = GBNF(grammarBytes);
-// gbnf.parse();
 console.log(gbnf)

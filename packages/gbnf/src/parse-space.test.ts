@@ -1,4 +1,4 @@
-import { parseSpace } from './parseSpace.js';
+import { parseSpace } from './parse-space.js';
 
 describe('parseSpace function', () => {
   it('should return the input string when no whitespace or comments are present', () => {

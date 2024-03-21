@@ -1,4 +1,4 @@
-export interface llama_grammar_element {
+export interface Rule {
   type: string;
   value: number;
 }
