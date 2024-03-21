@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Interactive: GBNF Dev</title>
+  <link rel="stylesheet" href="../global.css" />
+  <style>
+  </style>
+</head>
+<body>
+  <form id="form">
+    <select id="grammar-selector">
+      <option value=""> - </option>
+    </select>
+    <wc-monaco-editor id="grammar"></wc-monaco-editor>
+
+    <button id="submit" type="submit">Parse</button>
+  </form>
+  <hr />
+  <script type="module" src="./index.ts"></script>
+</body>
+</html>

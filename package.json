@@ -1,22 +1,21 @@
 {
-  "name": "@coder/root",
+  "name": "@gbnf/root",
   "private": true,
   "type": "module",
-  "version": "0.0.1",
-  "scripts": {
-    "dev": "wireit"
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/thekevinscott/gbnf.git"
   },
-  "wireit": {
-    "dev": {
-      "command": "pnpm --filter ./dev dev"
-    }
-  },
+  "scripts": {},
+  "wireit": {},
+  "keywords": [],
   "author": "Kevin Scott",
   "license": "MIT",
-  "dependencies": {},
   "devDependencies": {
-    "@types/node": "^20.11.22",
+    "@types/jest": "^29.5.12",
+    "rimraf": "^5.0.5",
     "typescript": "^5.3.3",
+    "vite-plugin-dts": "^3.7.3",
     "wireit": "^0.14.4"
   }
 }

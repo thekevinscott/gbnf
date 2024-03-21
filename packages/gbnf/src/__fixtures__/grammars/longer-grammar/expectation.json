@@ -1,0 +1,384 @@
+{
+  "symbolIds": [
+    [
+      "root",
+      0
+    ],
+    [
+      "root_1",
+      1
+    ],
+    [
+      "expr",
+      2
+    ],
+    [
+      "ws",
+      3
+    ],
+    [
+      "term",
+      4
+    ],
+    [
+      "root_5",
+      5
+    ],
+    [
+      "expr_6",
+      6
+    ],
+    [
+      "expr_7",
+      7
+    ],
+    [
+      "ident",
+      8
+    ],
+    [
+      "num",
+      9
+    ],
+    [
+      "ident_10",
+      10
+    ],
+    [
+      "num_11",
+      11
+    ],
+    [
+      "ws_12",
+      12
+    ]
+  ],
+  "rules": [
+    [
+      {
+        "type": "RULE_REF",
+        "value": 5
+      },
+      {
+        "type": "END",
+        "value": 0
+      }
+    ],
+    [
+      {
+        "type": "RULE_REF",
+        "value": 2
+      },
+      {
+        "type": "CHAR",
+        "value": 61
+      },
+      {
+        "type": "RULE_REF",
+        "value": 3
+      },
+      {
+        "type": "RULE_REF",
+        "value": 4
+      },
+      {
+        "type": "CHAR",
+        "value": 10
+      },
+      {
+        "type": "CHAR",
+        "value": 110
+      },
+      {
+        "type": "END",
+        "value": 0
+      }
+    ],
+    [
+      {
+        "type": "RULE_REF",
+        "value": 4
+      },
+      {
+        "type": "RULE_REF",
+        "value": 7
+      },
+      {
+        "type": "END",
+        "value": 0
+      }
+    ],
+    [
+      {
+        "type": "RULE_REF",
+        "value": 12
+      },
+      {
+        "type": "END",
+        "value": 0
+      }
+    ],
+    [
+      {
+        "type": "RULE_REF",
+        "value": 8
+      },
+      {
+        "type": "ALT",
+        "value": 0
+      },
+      {
+        "type": "RULE_REF",
+        "value": 9
+      },
+      {
+        "type": "ALT",
+        "value": 0
+      },
+      {
+        "type": "CHAR",
+        "value": 40
+      },
+      {
+        "type": "RULE_REF",
+        "value": 3
+      },
+      {
+        "type": "RULE_REF",
+        "value": 2
+      },
+      {
+        "type": "CHAR",
+        "value": 41
+      },
+      {
+        "type": "RULE_REF",
+        "value": 3
+      },
+      {
+        "type": "END",
+        "value": 0
+      }
+    ],
+    [
+      {
+        "type": "RULE_REF",
+        "value": 1
+      },
+      {
+        "type": "RULE_REF",
+        "value": 5
+      },
+      {
+        "type": "ALT",
+        "value": 0
+      },
+      {
+        "type": "RULE_REF",
+        "value": 1
+      },
+      {
+        "type": "END",
+        "value": 0
+      }
+    ],
+    [
+      {
+        "type": "CHAR",
+        "value": 114
+      },
+      {
+        "type": "CHAR",
+        "value": 114
+      },
+      {
+        "type": "CHAR",
+        "value": 114
+      },
+      {
+        "type": "CHAR",
+        "value": 114
+      },
+      {
+        "type": "RULE_REF",
+        "value": 4
+      },
+      {
+        "type": "END",
+        "value": 0
+      }
+    ],
+    [
+      {
+        "type": "RULE_REF",
+        "value": 6
+      },
+      {
+        "type": "RULE_REF",
+        "value": 7
+      },
+      {
+        "type": "ALT",
+        "value": 0
+      },
+      {
+        "type": "END",
+        "value": 0
+      }
+    ],
+    [
+      {
+        "type": "CHAR",
+        "value": 114
+      },
+      {
+        "type": "CHAR_RNG_UPPER",
+        "value": 114
+      },
+      {
+        "type": "CHAR",
+        "value": 114
+      },
+      {
+        "type": "RULE_REF",
+        "value": 10
+      },
+      {
+        "type": "RULE_REF",
+        "value": 3
+      },
+      {
+        "type": "END",
+        "value": 0
+      }
+    ],
+    [
+      {
+        "type": "RULE_REF",
+        "value": 11
+      },
+      {
+        "type": "RULE_REF",
+        "value": 3
+      },
+      {
+        "type": "END",
+        "value": 0
+      }
+    ],
+    [
+      {
+        "type": "CHAR",
+        "value": 114
+      },
+      {
+        "type": "CHAR_RNG_UPPER",
+        "value": 114
+      },
+      {
+        "type": "CHAR",
+        "value": 114
+      },
+      {
+        "type": "CHAR",
+        "value": 114
+      },
+      {
+        "type": "CHAR_RNG_UPPER",
+        "value": 114
+      },
+      {
+        "type": "CHAR",
+        "value": 114
+      },
+      {
+        "type": "CHAR",
+        "value": 114
+      },
+      {
+        "type": "RULE_REF",
+        "value": 10
+      },
+      {
+        "type": "ALT",
+        "value": 0
+      },
+      {
+        "type": "END",
+        "value": 0
+      }
+    ],
+    [
+      {
+        "type": "CHAR",
+        "value": 114
+      },
+      {
+        "type": "CHAR_RNG_UPPER",
+        "value": 114
+      },
+      {
+        "type": "CHAR",
+        "value": 114
+      },
+      {
+        "type": "RULE_REF",
+        "value": 11
+      },
+      {
+        "type": "ALT",
+        "value": 0
+      },
+      {
+        "type": "CHAR",
+        "value": 114
+      },
+      {
+        "type": "CHAR_RNG_UPPER",
+        "value": 114
+      },
+      {
+        "type": "CHAR",
+        "value": 114
+      },
+      {
+        "type": "END",
+        "value": 0
+      }
+    ],
+    [
+      {
+        "type": "CHAR",
+        "value": 114
+      },
+      {
+        "type": "CHAR",
+        "value": 114
+      },
+      {
+        "type": "CHAR",
+        "value": 114
+      },
+      {
+        "type": "CHAR",
+        "value": 114
+      },
+      {
+        "type": "CHAR",
+        "value": 114
+      },
+      {
+        "type": "RULE_REF",
+        "value": 12
+      },
+      {
+        "type": "ALT",
+        "value": 0
+      },
+      {
+        "type": "END",
+        "value": 0
+      }
+    ]
+  ]
+}

@@ -18,7 +18,8 @@ export const parseChar = (src: string, pos: number): [number, string] | number =
         throw new Error(`Unknown escape at ${src}`);
     }
   } else if (src[0]) {
-    return decode_utf8(src)[0];
+    return src.charCodeAt(0);
+    // return decode_utf8(src)[0];
   }
   throw new Error("Unexpected end of input");
 };

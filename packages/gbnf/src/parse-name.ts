@@ -1,12 +1,13 @@
 import { isWordChar } from "./is-word-char.js";
 
-export const parseName = (src: string, pos: number): number => {
+export const parseName = (src: string, pos: number): string => {
+  let name = '';
   while (pos < src.length && isWordChar(src[pos])) {
+    name += src[pos];
     pos++;
   }
-  console.log('pos', pos)
-  if (pos === 0) {
+  if (!name) {
     throw new Error(`Expecting name at ${src}`);
   }
-  return pos;
+  return name;
 }

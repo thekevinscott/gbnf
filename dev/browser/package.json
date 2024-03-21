@@ -1,26 +1,24 @@
 {
-  "name": "@dev/browser",
+  "name": "@gbnf/dev-browser",
   "type": "module",
   "private": true,
-  "version": "0.0.1",
   "scripts": {
-    "gen": "antlr4ng -Dlanguage=TypeScript grammars/Expr.g4 -no-listener -no-visitor -o src/generated -Xexact-output-dir",
     "dev": "wireit"
   },
   "wireit": {
     "dev": {
-      "command": "vite --host --config ./vite.config.ts",
+      "command": "vite --host --config ./vite.config.ts --port 5175",
       "dependencies": []
     }
   },
   "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "author": "Kevin Scott",
+  "license": "MIT",
   "dependencies": {
-    "@xenova/transformers": "github:xenova/transformers.js"
+    "@vanillawc/wc-monaco-editor": "^1.10.15"
   },
   "devDependencies": {
     "vite": "^5.1.4",
-    "vite-plugin-node-polyfills": "^0.21.0"
+    "wireit": "^0.14.4"
   }
 }

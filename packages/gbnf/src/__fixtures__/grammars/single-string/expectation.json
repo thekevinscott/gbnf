@@ -1,0 +1,28 @@
+{
+  "symbolIds": [
+    [
+      "root",
+      0
+    ]
+  ],
+  "rules": [
+    [
+      {
+        "type": "CHAR",
+        "value": 102
+      },
+      {
+        "type": "CHAR",
+        "value": 111
+      },
+      {
+        "type": "CHAR",
+        "value": 111
+      },
+      {
+        "type": "END",
+        "value": 0
+      }
+    ]
+  ]
+}

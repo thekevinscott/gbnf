@@ -2,15 +2,15 @@
   "extends": "../../tsconfig.json",
   "compilerOptions": {
     "outDir": "./dist",
-    "rootDir": "./src"
+    "rootDir": "backup"
   },
-  "include": ["./src/**/*.ts"],
+  "include": ["backup/**/*.ts"],
   "exclude": [
     "node_modules",
     ".vscode-test",
     "dist",
     ".wireit",
     "env",
-    "./src/**/*.test.ts"
+    "backup/**/*.test.ts"
   ]
 }

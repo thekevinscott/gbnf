@@ -1,0 +1,15 @@
+name: Cut release from new tag
+
+on:
+  push:
+    tags:
+      - "v*"
+
+jobs:
+  tagged-release:
+    name: "Tagged Release"
+    runs-on: "ubuntu-latest"
+
+    steps:
+      - name: Release
+        uses: softprops/action-gh-release@v2
