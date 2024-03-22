@@ -10,4 +10,4 @@ export const parseSpace = (src: string, pos: number, newline_ok: boolean): numbe
     }
   }
   return pos;
-}
+};

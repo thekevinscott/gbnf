@@ -1,1 +1,1 @@
-export { GBNF as default } from './gbnf.js';
+export { GBNF as default, } from './gbnf.js';

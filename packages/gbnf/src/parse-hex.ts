@@ -1,5 +1,5 @@
 export const parseHex = (src: string, pos: number, size: number): [number, string] => {
-  let end: number = size;
+  const end: number = size;
   let value: number = 0;
   for (; pos < end && src[pos]; pos++) {
     value <<= 4;
@@ -17,5 +17,5 @@ export const parseHex = (src: string, pos: number, size: number): [number, strin
   if (pos !== end) {
     throw new Error(`Expecting ${size} hex chars at ${src}`);
   }
-  return [value, src.slice(pos)];
-}
+  return [value, src.slice(pos),];
+};

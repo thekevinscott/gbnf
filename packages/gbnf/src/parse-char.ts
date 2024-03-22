@@ -1,4 +1,4 @@
-import { parseHex } from "./parse-hex.js";
+import { parseHex, } from "./parse-hex.js";
 
 export const parseChar = (src: string, pos: number): [number, string] | number => {
   if (src[0] === '\\') {
@@ -24,17 +24,17 @@ export const parseChar = (src: string, pos: number): [number, string] | number =
   throw new Error("Unexpected end of input");
 };
 
-const decode_utf8 = (src: string): [number, string] => {
-  const lookup: number[] = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 3, 4];
-  const first_byte: number = src.charCodeAt(0);
-  const highbits: number = first_byte >> 4;
-  const len: number = lookup[highbits];
-  const mask: number = (1 << (8 - len)) - 1;
-  let value: number = first_byte & mask;
-  let end: number = len; // may overrun!
-  let pos: number = 1;
-  for (; pos < end && src[pos]; pos++) {
-    value = (value << 6) + (src.charCodeAt(pos) & 0x3F);
-  }
-  return [value, src.slice(pos)];
-}
+// const decode_utf8 = (src: string): [number, string] => {
+//   const lookup: number[] = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 3, 4,];
+//   const first_byte: number = src.charCodeAt(0);
+//   const highbits: number = first_byte >> 4;
+//   const len: number = lookup[highbits];
+//   const mask: number = (1 << (8 - len)) - 1;
+//   let value: number = first_byte & mask;
+//   const end: number = len; // may overrun!
+//   let pos: number = 1;
+//   for (; pos < end && src[pos]; pos++) {
+//     value = (value << 6) + (src.charCodeAt(pos) & 0x3F);
+//   }
+//   return [value, src.slice(pos),];
+// };

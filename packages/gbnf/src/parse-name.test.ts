@@ -1,16 +1,16 @@
 import { parseName } from './parse-name.js';
 
-describe.only('parseName', () => {
+describe('parseName', () => {
   it('should return correct position when encountering a valid name', () => {
     const src = 'validName';
-    const pos = parseName(src, 0);
-    expect(pos).toEqual(src.length);
+    const name = parseName(src, 0);
+    expect(name).toEqual(src);
   });
 
   it('should return correct position when encountering a valid name starting at a non-zero position', () => {
     const src = '123validName';
-    const pos = parseName(src, 3);
-    expect(pos).toEqual(src.length);
+    const name = parseName(src, 3);
+    expect(name).toEqual('validName');
   });
 
   it('should throw an error when encountering an invalid name', () => {

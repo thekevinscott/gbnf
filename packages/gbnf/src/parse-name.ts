@@ -1,4 +1,4 @@
-import { isWordChar } from "./is-word-char.js";
+import { isWordChar, } from "./is-word-char.js";
 
 export const parseName = (src: string, pos: number): string => {
   let name = '';
@@ -10,4 +10,4 @@ export const parseName = (src: string, pos: number): string => {
     throw new Error(`Expecting name at ${src}`);
   }
   return name;
-}
+};
