@@ -10,4 +10,3 @@ ws    ::= [ \t\n]*
 `;
 
 const gbnf = GBNF(grammarBytes);
-console.log(gbnf)

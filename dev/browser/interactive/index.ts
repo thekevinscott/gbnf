@@ -38,11 +38,9 @@ const parseGBNF = (grammarContents: string) => {
   try {
     gbnf = GBNF(grammarContents)
     gbnf.parse();
-    console.log(gbnf);
   } catch (err) {
     console.error(err)
   }
-  console.log('gbnf', gbnf.rules);
 }
 
 parseGBNF((grammar as any).value);

@@ -8,6 +8,5 @@ export const GBNF = (grammar: string) => {
   if (state.symbolIds.get('root') === undefined) {
     throw new Error("Grammar does not contain a 'root' symbol");
   }
-  console.log('Rules:', state.rules);
   return state;
 };
