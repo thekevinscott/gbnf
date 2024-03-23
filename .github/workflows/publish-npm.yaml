@@ -36,6 +36,7 @@ jobs:
             ${{ runner.os }}-pnpm-store-
 
       - name: Install dependencies
+        working-directory: ./packages/gbnf
         run: pnpm install
 
       - name: Build package
