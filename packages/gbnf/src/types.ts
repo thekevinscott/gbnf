@@ -1,4 +1,44 @@
-export interface Rule {
-  type: string;
+export enum RuleType {
+  CHAR = 'CHAR',
+  CHAR_RNG_UPPER = 'CHAR_RNG_UPPER',
+  // CHAR_RNG = 'CHAR_RNG',
+  RULE_REF = 'RULE_REF',
+  ALT = 'ALT',
+  END = 'END',
+
+  CHAR_NOT = 'CHAR_NOT',
+  CHAR_ALT = 'CHAR_ALT',
+
+  // only used for external rules
+  RANGE = 'RANGE',
+}
+
+export type Range = [number, number];
+
+export interface RuleWithRangeValues {
+  type: RuleType.RANGE,
+  value: Range[];
+}
+export interface RuleWithNumericValue {
+  type: RuleType.CHAR | RuleType.RULE_REF | RuleType.CHAR_ALT | RuleType.CHAR_NOT | RuleType.CHAR_RNG_UPPER;
   value: number;
 }
+interface RuleWithoutValue {
+  type: RuleType.ALT | RuleType.END;
+}
+export type RuleDef = RuleWithNumericValue | RuleWithoutValue | RuleWithRangeValues;
+
+export type SymbolIds = Map<string, number>;
+export type RuleStack = RuleDef[][];
+
+
+export const isRuleType = (type?: unknown): type is RuleType => !!type && Object.values(RuleType).includes(type as RuleType);
+export const isRule = (rule?: unknown): rule is RuleDef => !!rule && typeof rule === 'object' && 'type' in rule && isRuleType(rule.type);
+export const isRuleChar = (rule?: RuleDef): rule is (
+  { type: RuleType.CHAR, value: number }
+) => [RuleType.CHAR,].includes(rule?.type);
+export const isRuleCharAlt = (rule?: RuleDef): rule is (
+  { type: RuleType.CHAR_ALT, value: number }
+) => [RuleType.CHAR_ALT,].includes(rule?.type);
+export const isRuleCharRngUpper = (rule?: RuleDef): rule is { type: RuleType.CHAR_RNG_UPPER, value: number } => rule.type === RuleType.CHAR_RNG_UPPER;
+export const isRuleRange = (rule?: RuleDef): rule is { type: RuleType.RANGE, value: Range[] } => rule.type === RuleType.RANGE;

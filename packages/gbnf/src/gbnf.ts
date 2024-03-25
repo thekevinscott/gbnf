@@ -1,12 +1,14 @@
-import { GrammarParser, } from "./grammar-parser.js";
+import { getGrammarParser, } from "./grammar-parser/grammar-parser.js";
+import { RulesBuilder, } from "./rules-builder/rules-builder.js";
 
 export const GBNF = (grammar: string) => {
-  const state = new GrammarParser(grammar);
-  if (state.rules.length === 0) {
+  const { rules, symbolIds, } = new RulesBuilder(grammar);
+  if (rules.length === 0) {
     throw new Error(`Failed to parse grammar: ${grammar}`);
   }
-  if (state.symbolIds.get('root') === undefined) {
+  if (symbolIds.get('root') === undefined) {
     throw new Error("Grammar does not contain a 'root' symbol");
   }
-  return state;
+
+  return getGrammarParser(rules, symbolIds);
 };
