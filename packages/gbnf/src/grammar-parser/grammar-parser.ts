@@ -39,26 +39,11 @@ export const getGrammarParser = (ruleDefs: RuleDef[][], symbolIds: SymbolIds) =>
       this.add(src);
     }
 
-    private get hasValidRules(): boolean {
-      return this.rules.filter(r => r !== undefined).length > 0;
-    }
-
-    start = performance.now();
-    checkDuration() {
-      if (performance.now() - this.start > 50) {
-        // throw new Error('took too long, probably an infinite loop');
-      }
-    }
-
     public add = (src: string) => {
       let strPos = 0;
-      this.start = performance.now();
-      console.log('path "baz"', this.stacks[0][0]);
-      console.log('path "bazaar"', this.stacks[0][1]);
       const updateRulePointers = (_pointer: RulePointer, depth = 0): RulePointer => {
         let rulePointerIdx = 0;
         while (rulePointerIdx < _pointer.length) {
-          this.checkDuration();
           const pointer = _pointer[rulePointerIdx];
           if (Array.isArray(pointer)) {
             _pointer[rulePointerIdx] = updateRulePointers(pointer, depth + 1);
@@ -135,7 +120,7 @@ export const getGrammarParser = (ruleDefs: RuleDef[][], symbolIds: SymbolIds) =>
         return _pointer;
       };
       while (strPos < src.length) {
-        if (this.hasValidRules === false) {
+        if (hasValidRules(this.rules) === false) {
           throw new Error('Invalid input string, cannot be parsed');
         }
         this.rulePointer = updateRulePointers(this.rulePointer);
@@ -144,7 +129,7 @@ export const getGrammarParser = (ruleDefs: RuleDef[][], symbolIds: SymbolIds) =>
       }
       // console.log(this.rulePointer[0], this.stacks[0][1]);
 
-      if (this.hasValidRules === false) {
+      if (hasValidRules(this.rules) === false) {
         throw new Error('Invalid input string, cannot be parsed');
       }
     };
@@ -180,3 +165,5 @@ const isPointInRange = (point: number, range: number[][]) => {
     return point >= start && point <= end;
   }, false);
 };
+
+const hasValidRules = (rules: RuleDef[]): boolean => rules.filter(r => r !== undefined).length > 0;
