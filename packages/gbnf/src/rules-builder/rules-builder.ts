@@ -2,12 +2,12 @@ import { isWordChar, } from "./is-word-char.js";
 import { parseChar, } from "./parse-char.js";
 import { parseName, } from "./parse-name.js";
 import { parseSpace, } from "./parse-space.js";
-import { RuleType, RuleDef, SymbolIds, } from "../types.js";
+import { RuleType, Rule, SymbolIds, } from "../types.js";
 
 export class RulesBuilder {
   private pos = 0;
   symbolIds: SymbolIds;
-  rules: RuleDef[][];
+  rules: Rule[][];
   src: string;
   start: number = performance.now();
   constructor(src: string) {
@@ -84,7 +84,7 @@ export class RulesBuilder {
 
   addRule = (
     rule_id: number,
-    rule: RuleDef[]
+    rule: Rule[]
   ): void => {
     this.rules[rule_id] = rule;
   };
@@ -92,7 +92,7 @@ export class RulesBuilder {
 
   parseSequence = (
     rule_name: string,
-    outElements: RuleDef[],
+    outElements: Rule[],
     depth = 0,
   ): void => {
     const is_nested = depth !== 0;
@@ -172,7 +172,7 @@ export class RulesBuilder {
           throw new Error(`Expecting preceding item to */+/? at ${this.pos}`);
         }
         const subRuleId: number = this.generateSymbolId(rule_name);
-        const subRule: RuleDef[] = outElements.slice(lastSymStart);
+        const subRule: Rule[] = outElements.slice(lastSymStart);
         if (src[this.pos] === '*' || src[this.pos] === '+') {
           subRule.push({ type: RuleType.RULE_REF, value: subRuleId, });
         }
@@ -197,7 +197,7 @@ export class RulesBuilder {
     depth = 0,
   ): void => {
     const src = this.src;
-    const rule: RuleDef[] = [];
+    const rule: Rule[] = [];
     this.parseSequence(rule_name, rule, depth);
     while (src[this.pos] === '|') {
       if (performance.now() - this.start > 50) {

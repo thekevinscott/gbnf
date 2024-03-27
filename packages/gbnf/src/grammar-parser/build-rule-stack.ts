@@ -1,4 +1,4 @@
-import { RuleDef, RuleType, RuleWithRangeValues, RuleWithNumericValue, isRuleChar, isRuleCharRngUpper, isRuleRange, isRuleCharAlt, } from "../types.js";
+import { Rule, RuleType, RuleWithRangeValues, RuleWithNumericValue, isRuleChar, isRuleCharRngUpper, isRuleRange, isRuleCharAlt, } from "../types.js";
 
 
 
@@ -8,10 +8,10 @@ const buildRangeRule = (prevRule: RuleWithNumericValue, currentRule: RuleWithNum
   value: [[prevRule.value, currentRule.value,],],
 });
 
-export const buildRuleStack = (linearRules: RuleDef[]): RuleDef[][] => {
-  let paths: RuleDef[] = [];
+export const buildRuleStack = (linearRules: Rule[]): Rule[][] => {
+  let paths: Rule[] = [];
 
-  const stack: RuleDef[][] = [];
+  const stack: Rule[][] = [];
 
   let idx = 0;
   while (idx < linearRules.length) {
