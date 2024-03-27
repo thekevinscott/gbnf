@@ -377,6 +377,14 @@ describe('GrammarParser', () => {
         { type: RuleType.RANGE, value: [['a'.charCodeAt(0), 'z'.charCodeAt(0)], ['A'.charCodeAt(0), 'Z'.charCodeAt(0)]], },
         { type: RuleType.END, },
       ]],
+
+      // real world bugs
+      [
+        'root ::= "foo" | "bar" | "baz" | "bazaar" | "barrington" ',
+        'bazaa', [
+          { type: RuleType.CHAR, value: 'r'.charCodeAt(0), },
+        ]
+      ],
     ])('it parses a grammar `%s` against input: `%s`', (grammar, input, expected) => {
       const Parser = GBNF(grammar.split('\\n').join('\n'));
       const parser = new Parser(input);
@@ -466,18 +474,6 @@ describe('GrammarParser', () => {
       const parser = new Parser(starting);
       expect(() => parser.add(additional)).toThrow();
     });
-
-
-
-
-
-
-
-
-
-
-
-
 
     test.each([
       // single char rule
@@ -656,6 +652,12 @@ describe('GrammarParser', () => {
         { type: RuleType.RANGE, value: [['a'.charCodeAt(0), 'z'.charCodeAt(0)], ['A'.charCodeAt(0), 'Z'.charCodeAt(0)]], },
         { type: RuleType.END, },
       ]],
+      [
+        'root ::= "foo" | "bar" | "baz" | "bazaar" | "barrington" ',
+        'baza', 'a', [
+          { type: RuleType.CHAR, value: 'r'.charCodeAt(0), },
+        ]
+      ],
     ])('it parses a grammar `%s` with starting `%s` and additional `%s`', (grammar, starting, additional, expected) => {
       const Parser = GBNF(grammar.split('\\n').join('\n'));
       const parser = new Parser(starting);

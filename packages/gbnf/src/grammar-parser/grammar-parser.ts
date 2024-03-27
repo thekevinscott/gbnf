@@ -53,6 +53,8 @@ export const getGrammarParser = (ruleDefs: RuleDef[][], symbolIds: SymbolIds) =>
     public add = (src: string) => {
       let strPos = 0;
       this.start = performance.now();
+      console.log('path "baz"', this.stacks[0][0]);
+      console.log('path "bazaar"', this.stacks[0][1]);
       const updateRulePointers = (_pointer: RulePointer, depth = 0): RulePointer => {
         let rulePointerIdx = 0;
         while (rulePointerIdx < _pointer.length) {
@@ -63,11 +65,17 @@ export const getGrammarParser = (ruleDefs: RuleDef[][], symbolIds: SymbolIds) =>
             rulePointerIdx++;
           } else {
             const { stackPos, pathPos, rulePos, } = pointer;
+            // if (rulePos >= 3) { // second z
+            //   console.log('pointer', pointer);
+            // }
             const rule = this.stacks[stackPos][pathPos][rulePos];
             if (rule === undefined) {
               throw new Error('Out of bounds rule');
             }
             const char = src[strPos];
+            if (rulePos >= 0) {
+              console.log(`char (${char}) rule (${rulePos}) for path`, pointer.pathPos, 'is', rule);
+            }
             if (rule.type === RuleType.CHAR) {
               const ruleChar = String.fromCharCode(rule.value);
               const valid = char === ruleChar;
@@ -113,12 +121,12 @@ export const getGrammarParser = (ruleDefs: RuleDef[][], symbolIds: SymbolIds) =>
                   pathPos,
                   rulePos: rulePos + 1,
                 };
+                rulePointerIdx++;
               } else {
                 // reached the end of this path, remove it
                 _pointer = _pointer.filter((_, i) => i !== rulePointerIdx);
               }
 
-              rulePointerIdx++;
             } else {
               throw new Error(`Unsupported rule type: ${rule.type}`);
             }
@@ -131,8 +139,10 @@ export const getGrammarParser = (ruleDefs: RuleDef[][], symbolIds: SymbolIds) =>
           throw new Error('Invalid input string, cannot be parsed');
         }
         this.rulePointer = updateRulePointers(this.rulePointer);
+        console.log(this.rulePointer);
         strPos++;
       }
+      // console.log(this.rulePointer[0], this.stacks[0][1]);
 
       if (this.hasValidRules === false) {
         throw new Error('Invalid input string, cannot be parsed');
