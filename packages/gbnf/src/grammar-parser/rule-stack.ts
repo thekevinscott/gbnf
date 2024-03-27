@@ -1,10 +1,10 @@
-import { RuleDef, } from "../types.js";
+import { Rule, } from "../types.js";
 
 export class RuleStack {
-  paths: RuleDef[][];
+  paths: Rule[][];
   valid: boolean[];
 
-  constructor(rules: RuleDef[][]) {
+  constructor(rules: Rule[][]) {
     this.paths = rules;
     this.valid = Array(rules.length).fill('').map(() => true);
   }

@@ -26,19 +26,19 @@ export interface RuleWithNumericValue {
 interface RuleWithoutValue {
   type: RuleType.ALT | RuleType.END;
 }
-export type RuleDef = RuleWithNumericValue | RuleWithoutValue | RuleWithRangeValues;
+export type Rule = RuleWithNumericValue | RuleWithoutValue | RuleWithRangeValues;
 
 export type SymbolIds = Map<string, number>;
-export type RuleStack = RuleDef[][];
+export type RuleStack = Rule[][];
 
 
 export const isRuleType = (type?: unknown): type is RuleType => !!type && Object.values(RuleType).includes(type as RuleType);
-export const isRule = (rule?: unknown): rule is RuleDef => !!rule && typeof rule === 'object' && 'type' in rule && isRuleType(rule.type);
-export const isRuleChar = (rule?: RuleDef): rule is (
+export const isRule = (rule?: unknown): rule is Rule => !!rule && typeof rule === 'object' && 'type' in rule && isRuleType(rule.type);
+export const isRuleChar = (rule?: Rule): rule is (
   { type: RuleType.CHAR, value: number }
 ) => [RuleType.CHAR,].includes(rule?.type);
-export const isRuleCharAlt = (rule?: RuleDef): rule is (
+export const isRuleCharAlt = (rule?: Rule): rule is (
   { type: RuleType.CHAR_ALT, value: number }
 ) => [RuleType.CHAR_ALT,].includes(rule?.type);
-export const isRuleCharRngUpper = (rule?: RuleDef): rule is { type: RuleType.CHAR_RNG_UPPER, value: number } => rule.type === RuleType.CHAR_RNG_UPPER;
-export const isRuleRange = (rule?: RuleDef): rule is { type: RuleType.RANGE, value: Range[] } => rule.type === RuleType.RANGE;
+export const isRuleCharRngUpper = (rule?: Rule): rule is { type: RuleType.CHAR_RNG_UPPER, value: number } => rule.type === RuleType.CHAR_RNG_UPPER;
+export const isRuleRange = (rule?: Rule): rule is { type: RuleType.RANGE, value: Range[] } => rule.type === RuleType.RANGE;

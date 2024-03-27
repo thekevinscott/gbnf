@@ -1,7 +1,7 @@
 {
   "name": "gbnf",
   "type": "module",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "repository": {
     "type": "git",
     "url": "https://github.com/thekevinscott/gbnf.git"
@@ -13,8 +13,8 @@
   "module": "./dist/index.js",
   "exports": {
     ".": {
-      "import": "./dist/gbnf.js",
-      "require": "./dist/gbnf.umd.cjs"
+      "import": "./dist/index.js",
+      "require": "./dist/index.umd.cjs"
     }
   },
   "scripts": {

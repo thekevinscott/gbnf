@@ -1,4 +1,4 @@
-import { RuleDef, RuleType, SymbolIds, } from "../types.js";
+import { Rule, RuleType, SymbolIds, } from "../types.js";
 import { buildRuleStack, } from "./build-rule-stack.js";
 
 // type RulePointer = (number | RulePointer)[];
@@ -6,7 +6,7 @@ import { buildRuleStack, } from "./build-rule-stack.js";
 type Pointer = { stackPos: number; pathPos: number; rulePos: number; };
 type RulePointer = (Pointer | RulePointer)[];
 
-const getRulePosition = (stacks: RuleDef[][][], stackPos: number): RulePointer => {
+const getRulePosition = (stacks: Rule[][][], stackPos: number): RulePointer => {
   const stack = stacks[stackPos];
   return stack.map((_, pathPos) => {
     const rule = stack[pathPos][0];
@@ -21,11 +21,11 @@ const getRulePosition = (stacks: RuleDef[][][], stackPos: number): RulePointer =
   });
 };
 
-export const getGrammarParser = (ruleDefs: RuleDef[][], symbolIds: SymbolIds) => {
+export const getGrammarParser = (ruleDefs: Rule[][], symbolIds: SymbolIds) => {
   class GrammarParser {
     symbolIds: SymbolIds = symbolIds;
-    stacks: RuleDef[][][] = ruleDefs.map(buildRuleStack);
-    ruleSet = new Set<RuleDef>();
+    stacks: Rule[][][] = ruleDefs.map(buildRuleStack);
+    ruleSet = new Set<Rule>();
     rulePointer: RulePointer;
 
     constructor(src: string) {
@@ -135,8 +135,8 @@ export const getGrammarParser = (ruleDefs: RuleDef[][], symbolIds: SymbolIds) =>
     };
 
     // returns a flat stack of rules
-    get rules(): RuleDef[] {
-      const rules = new Map<string, RuleDef>();
+    get rules(): Rule[] {
+      const rules = new Map<string, Rule>();
       const recur = (rulePointer: RulePointer): void => {
         for (const pointer of rulePointer) {
           if (Array.isArray(pointer)) {
@@ -166,4 +166,4 @@ const isPointInRange = (point: number, range: number[][]) => {
   }, false);
 };
 
-const hasValidRules = (rules: RuleDef[]): boolean => rules.filter(r => r !== undefined).length > 0;
+const hasValidRules = (rules: Rule[]): boolean => rules.filter(r => r !== undefined).length > 0;
