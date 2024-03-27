@@ -6,9 +6,16 @@
     "type": "git",
     "url": "https://github.com/thekevinscott/gbnf.git"
   },
-  "main": "./dist/gbnf.js",
+  "files": [
+    "dist"
+  ],
+  "main": "./dist/index.umd.cjs",
+  "module": "./dist/index.js",
   "exports": {
-    ".": "./dist/gbnf.js"
+    ".": {
+      "import": "./dist/gbnf.js",
+      "require": "./dist/gbnf.umd.cjs"
+    }
   },
   "scripts": {
     "lint": "wireit",

@@ -148,18 +148,6 @@ export class RulesBuilder {
           }
         }
         this.pos = parseSpace(src, this.pos + 1, is_nested);
-        /*
-         // const startPos = this.pos;
-         // this.pos += 1;
-         // while (src[this.pos] !== ']') {
-         //   this.pos += 1;
-         // }
-         // this.pos += 1;
-         // const endPos = this.pos;
-         // const regexString = src.slice(startPos, endPos);
-         // rules.push({ type: RuleType.REGEX, value: regexString, });
-         // this.pos = parseSpace(src, this.pos + 1, is_nested);
-         */
       } else if (isWordChar(src[this.pos])) {
         const name = parseName(src, this.pos);
         const refRuleId: number = this.getSymbolId(name, name.length);
