@@ -1,4 +1,4 @@
-import { RuleDef, RuleType, SymbolIds, isRule, } from "../types.js";
+import { RuleDef, RuleType, SymbolIds, } from "../types.js";
 import { buildRuleStack, } from "./build-rule-stack.js";
 
 // type RulePointer = (number | RulePointer)[];
