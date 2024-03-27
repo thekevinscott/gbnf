@@ -2,13 +2,14 @@ import { isWordChar, } from "./is-word-char.js";
 import { parseChar, } from "./parse-char.js";
 import { parseName, } from "./parse-name.js";
 import { parseSpace, } from "./parse-space.js";
-import { Rule, } from "./types.js";
+import { RuleType, RuleDef, SymbolIds, } from "../types.js";
 
-export class GrammarParser {
+export class RulesBuilder {
   private pos = 0;
-  symbolIds: Map<string, number>;
-  rules: Rule[][];
+  symbolIds: SymbolIds;
+  rules: RuleDef[][];
   src: string;
+  start: number = performance.now();
   constructor(src: string) {
     this.symbolIds = new Map();
     this.rules = [];
@@ -27,7 +28,7 @@ export class GrammarParser {
     // Validate the state to ensure that all rules are defined
     for (const rule of this.rules) {
       for (const elem of rule) {
-        if (elem.type === 'RULE_REF') {
+        if (elem.type === RuleType.RULE_REF) {
           // Ensure that the rule at that location exists
           if (elem.value >= this.rules.length || this.rules[elem.value].length === 0) {
             // Get the name of the rule that is missing
@@ -83,105 +84,118 @@ export class GrammarParser {
 
   addRule = (
     rule_id: number,
-    rule: Rule[]
+    rule: RuleDef[]
   ): void => {
-    // if (rule_id !== this.rules.length) {
-    //   throw new Error(`Rule id mismatch at ${this.pos}: ${}`);
-    // this.rules.push(rule);
-    // if (this.rules.length <= rule_id) {
-    //   this.rules.length = rule_id + 1;
-    // }
     this.rules[rule_id] = rule;
   };
 
 
   parseSequence = (
     rule_name: string,
-    out_elements: Rule[],
+    outElements: RuleDef[],
     depth = 0,
   ): void => {
     const is_nested = depth !== 0;
     const src = this.src;
-    let lastSymStart: number = out_elements.length;
+    let lastSymStart: number = outElements.length;
     while (src[this.pos]) {
+      if (performance.now() - this.start > 50) {
+        throw new Error('Too long');
+      }
       if (src[this.pos] === '"') {
+        // console.log('start quote', src.slice(this.pos))
         this.pos += 1;
-        lastSymStart = out_elements.length;
+        lastSymStart = outElements.length;
         while (src[this.pos] !== '"') {
-          const charValue: number | [number, string] = parseChar(src.slice(this.pos), this.pos);
-          if (Array.isArray(charValue)) {
-            out_elements.push({ type: 'CHAR', value: charValue[0], });
-            this.pos += charValue[1].length; // Adjusting pos by the length of parsed characters
-          } else {
-            out_elements.push({ type: 'CHAR', value: charValue, });
-            this.pos += 1;
+          if (performance.now() - this.start > 50) {
+            throw new Error('Too long');
           }
+          const [value, incPos,] = parseChar(src, this.pos);
+          // console.log('char', value, incPos);
+          // if (Array.isArray(charValue)) {
+          outElements.push({ type: RuleType.CHAR, value, });
+          this.pos += incPos; // Adjusting pos by the length of parsed characters
+          // } else {
+          //   outElements.push({ type: RuleType.CHAR, value: charValue, });
+          //   this.pos += 1;
+          // }
         }
+        // console.log('end quote', src.slice(this.pos))
         this.pos = parseSpace(src, this.pos + 1, is_nested);
       } else if (src[this.pos] === '[') {
         this.pos += 1;
-        // let start_type = 'CHAR';
+        let startType: RuleType = RuleType.CHAR;
         if (src[this.pos] === '^') {
           this.pos += 1;
-          // start_type = 'CHAR_NOT';
+          startType = RuleType.CHAR_NOT;
         }
-        lastSymStart = out_elements.length;
+        lastSymStart = outElements.length;
         while (src[this.pos] !== ']') {
-          const charValue: number | [number, string] = parseChar(src, this.pos);
-          if (Array.isArray(charValue)) {
-            out_elements.push({ type: 'CHAR', value: charValue[0], });
-            this.pos += charValue[1].length; // Adjusting pos by the length of parsed characters
-          } else {
-            out_elements.push({ type: 'CHAR', value: charValue, });
-            this.pos += 1;
+          if (performance.now() - this.start > 50) {
+            throw new Error('Too long');
           }
+          const type = lastSymStart < outElements.length ? RuleType.CHAR_ALT : startType;
+          const [startcharValue, incPos,] = parseChar(src, this.pos);
+          this.pos += incPos;
+          // console.log('push it!', type, startcharValue, String.fromCharCode(startcharValue));
+          outElements.push({ type, value: startcharValue, });
+
           if (src[this.pos] === '-' && src[this.pos + 1] !== ']') {
-            const endcharValue: number | [number, string] = parseChar(src, this.pos + 1);
-            if (Array.isArray(endcharValue)) {
-              out_elements.push({ type: 'CHAR_RNG_UPPER', value: endcharValue[0], });
-              this.pos += endcharValue[1].length; // Adjusting pos by the length of parsed characters
-            } else {
-              out_elements.push({ type: 'CHAR_RNG_UPPER', value: endcharValue, });
-              this.pos += 1;
-            }
+            this.pos += 1;
+            const [endcharValue, incPos,] = parseChar(src, this.pos);
+            outElements.push({ type: RuleType.CHAR_RNG_UPPER, value: endcharValue, });
+            this.pos += incPos;
           }
         }
         this.pos = parseSpace(src, this.pos + 1, is_nested);
+        /*
+         // const startPos = this.pos;
+         // this.pos += 1;
+         // while (src[this.pos] !== ']') {
+         //   this.pos += 1;
+         // }
+         // this.pos += 1;
+         // const endPos = this.pos;
+         // const regexString = src.slice(startPos, endPos);
+         // rules.push({ type: RuleType.REGEX, value: regexString, });
+         // this.pos = parseSpace(src, this.pos + 1, is_nested);
+         */
       } else if (isWordChar(src[this.pos])) {
         const name = parseName(src, this.pos);
         const refRuleId: number = this.getSymbolId(name, name.length);
         this.pos += name.length;
         this.pos = parseSpace(src, this.pos, is_nested);
 
-        lastSymStart = out_elements.length;
-        out_elements.push({ type: 'RULE_REF', value: refRuleId, });
+        lastSymStart = outElements.length;
+        outElements.push({ type: RuleType.RULE_REF, value: refRuleId, });
       } else if (src[this.pos] === '(') {
         this.pos = parseSpace(src, this.pos + 1, true);
         const subRuleId: number = this.generateSymbolId(rule_name);
+        // console.log('src', src.slice(this.pos));
         this.parseAlternates(rule_name, subRuleId, depth + 1);
-        lastSymStart = out_elements.length;
-        out_elements.push({ type: 'RULE_REF', value: subRuleId, });
+        lastSymStart = outElements.length;
+        outElements.push({ type: RuleType.RULE_REF, value: subRuleId, });
         if (src[this.pos] !== ')') {
           throw new Error(`Expecting ')' at ${this.pos}`);
         }
         this.pos = parseSpace(src, this.pos + 1, is_nested);
       } else if (src[this.pos] === '*' || src[this.pos] === '+' || src[this.pos] === '?') {
-        if (lastSymStart === out_elements.length) {
+        if (lastSymStart === outElements.length) {
           throw new Error(`Expecting preceding item to */+/? at ${this.pos}`);
         }
         const subRuleId: number = this.generateSymbolId(rule_name);
-        const subRule: Rule[] = out_elements.slice(lastSymStart);
+        const subRule: RuleDef[] = outElements.slice(lastSymStart);
         if (src[this.pos] === '*' || src[this.pos] === '+') {
-          subRule.push({ type: 'RULE_REF', value: subRuleId, });
+          subRule.push({ type: RuleType.RULE_REF, value: subRuleId, });
         }
-        subRule.push({ type: 'ALT', value: 0, });
+        subRule.push({ type: RuleType.ALT, });
         if (src[this.pos] === '+') {
-          subRule.push(...out_elements.slice(lastSymStart));
+          subRule.push(...outElements.slice(lastSymStart));
         }
-        subRule.push({ type: 'END', value: 0, });
+        subRule.push({ type: RuleType.END, });
         this.addRule(subRuleId, subRule);
-        out_elements.splice(lastSymStart);
-        out_elements.push({ type: 'RULE_REF', value: subRuleId, });
+        outElements.splice(lastSymStart);
+        outElements.push({ type: RuleType.RULE_REF, value: subRuleId, });
         this.pos = parseSpace(src, this.pos + 1, is_nested);
       } else {
         break;
@@ -195,14 +209,17 @@ export class GrammarParser {
     depth = 0,
   ): void => {
     const src = this.src;
-    const rule: Rule[] = [];
+    const rule: RuleDef[] = [];
     this.parseSequence(rule_name, rule, depth);
     while (src[this.pos] === '|') {
-      rule.push({ type: 'ALT', value: 0, });
+      if (performance.now() - this.start > 50) {
+        throw new Error('Too long');
+      }
+      rule.push({ type: RuleType.ALT, });
       this.pos = parseSpace(src, this.pos + 1, true);
       this.parseSequence(rule_name, rule, depth);
     }
-    rule.push({ type: 'END', value: 0, });
+    rule.push({ type: RuleType.END, });
     this.addRule(rule_id, rule);
   };
 }
