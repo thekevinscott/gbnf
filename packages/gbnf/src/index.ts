@@ -1,2 +1,3 @@
 export { GBNF as default, } from './gbnf.js';
-export { Rule, Range, RuleType, } from './types.js';
+export type { Rule, Range, } from './types.js';
+export { RuleType, } from './types.js';
