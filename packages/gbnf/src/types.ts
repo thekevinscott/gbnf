@@ -1,5 +1,3 @@
-import { RulePointer, RulePointers } from "./grammar-parser/rule-pointer.js";
-
 export enum RuleType {
   CHAR = 'CHAR',
   CHAR_RNG_UPPER = 'CHAR_RNG_UPPER',
@@ -37,6 +35,12 @@ export type Rule = RuleWithNumericValue | RuleWithoutValue | RuleWithRangeValues
 export type SymbolIds = Map<string, number>;
 export type RuleStack = Rule[][];
 
+export interface RulePosition {
+  stackPos: number;
+  pathPos: number;
+  rulePos: number;
+}
+
 /** Type Guards */
 export const isRuleWithNumericValue = (rule?: Rule): rule is RuleWithNumericValue => [RuleType.CHAR, RuleType.RULE_REF, RuleType.CHAR_ALT, RuleType.CHAR_NOT, RuleType.CHAR_RNG_UPPER,].includes(rule.type);
 export const isRuleType = (type?: unknown): type is RuleType => !!type && Object.values(RuleType).includes(type as RuleType);
@@ -46,5 +50,3 @@ export const isRuleChar = (rule?: Rule): rule is ({ type: RuleType.CHAR, value: 
 export const isRuleCharAlt = (rule?: Rule): rule is ({ type: RuleType.CHAR_ALT, value: number }) => [RuleType.CHAR_ALT,].includes(rule?.type);
 export const isRuleCharRngUpper = (rule?: Rule): rule is { type: RuleType.CHAR_RNG_UPPER, value: number } => rule.type === RuleType.CHAR_RNG_UPPER;
 export const isRuleRange = (rule?: Rule): rule is { type: RuleType.RANGE, value: Range[] } => rule.type === RuleType.RANGE;
-export const isRulePointer = (pointer?: RulePointer | RulePointers): pointer is RulePointer => pointer instanceof RulePointer;
-export const isRulePointers = (pointer: RulePointer | RulePointers): pointer is RulePointers => Array.isArray(pointer);
