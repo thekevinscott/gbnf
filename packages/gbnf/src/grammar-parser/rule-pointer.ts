@@ -90,7 +90,11 @@ export class RulePointer {
 
   addReferenceRule = (rule: RuleRef, position: RulePosition) => {
     for (let pathPos = 0; pathPos < this.#stacks.getStackSize(rule.value); pathPos++) {
-      this.addPosition(rule.value, pathPos, 0, position);
+      const nextPosition = {
+        ...position,
+        rulePos: position.rulePos + 1,
+      };
+      this.addPosition(rule.value, pathPos, 0, nextPosition);
     }
   };
 
@@ -103,7 +107,7 @@ export class RulePointer {
       } else if (isRuleEnd(rule)) {
         if (position.previous) {
           this.delete(position);
-          this.addPosition(position.previous.stackPos, position.previous.pathPos, position.previous.rulePos + 1, position.previous.previous);
+          this.addPosition(position.previous.stackPos, position.previous.pathPos, position.previous.rulePos, position.previous.previous);
         } else {
           yield { rule, position, };
         }
