@@ -1,7 +1,7 @@
 {
   "name": "gbnf",
   "type": "module",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "repository": {
     "type": "git",
     "url": "https://github.com/thekevinscott/gbnf.git"
@@ -20,14 +20,26 @@
   "scripts": {
     "lint": "wireit",
     "test": "vitest",
-    "build": "wireit"
+    "build": "wireit",
+    "build:check": "wireit",
+    "build:esm": "wireit",
+    "build:umd": "wireit"
   },
   "wireit": {
     "lint": {
       "command": "eslint -c .eslintrc.cjs src --ext .ts"
     },
+    "build:check": {
+      "command": "[[ -f ./dist/index.js ]] && [[ -f ./dist/index.umd.cjs ]] && [[ -f ./dist/index.d.ts ]]"
+    },
+    "build:esm": {
+      "command": "tsc"
+    },
+    "build:umd": {
+      "command": "vite build"
+    },
     "build": {
-      "command": "rimraf ./dist && vite build && cp ../../README.md ./README.md",
+      "command": "rimraf ./dist && pnpm build:umd && pnpm build:esm && cp ../../README.md ./README.md",
       "files": [
         "../../README.md",
         "./src/**/*.ts",
@@ -44,9 +56,9 @@
   "keywords": [],
   "author": "Kevin Scott",
   "license": "MIT",
-  "dependencies": {},
   "devDependencies": {
     "@types/jest": "^29.5.12",
+    "@types/node": "^20.11.30",
     "@typescript-eslint/eslint-plugin": "^7.3.1",
     "eslint": "^8.57.0",
     "eslint-config-prettier": "^9.1.0",
