@@ -121,3 +121,7 @@ jobs:
       - name: 'Build'
         working-directory: ./packages/gbnf
         run: 'pnpm build'
+
+      - name: 'Check build output'
+        working-directory: ./packages/gbnf
+        run: 'pnpm build:check'

@@ -13,7 +13,7 @@ export const getGrammarParser = (ruleDefs: Rule[][], symbolIds: SymbolIds) => {
     symbolIds = symbolIds;
     stacks = ruleDefs.map(buildRuleStack);
 
-    private rulePointer: RulePointer;
+    rulePointer: RulePointer;
 
     constructor(src: string) {
       const rootId = this.symbolIds.get('root');
