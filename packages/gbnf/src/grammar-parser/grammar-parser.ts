@@ -33,7 +33,7 @@ export const getGrammarParser = (ruleDefs: Rule[][], symbolIds: SymbolIds) => {
         for (const { rule, position, } of this.rulePointer) {
           const char = src[strPos];
           if (isRuleChar(rule)) {
-            const ruleChar = String.fromCharCode(rule.value);
+            const ruleChar = String.fromCharCode(rule.value[0]);
             const valid = char === ruleChar;
             if (!valid) {
               this.rulePointer.delete(position);
