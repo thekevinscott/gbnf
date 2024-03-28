@@ -17,11 +17,6 @@ export const getGrammarParser = (ruleDefs: Rule[][], symbolIds: SymbolIds) => {
     constructor(src: string) {
       const rootId = this.symbolIds.get('root');
       this.rulePointer = new RulePointer(this.stacks, rootId);
-      // for (const rules of this.ruleDefs) {
-      //   for (const rule of rules) {
-      //     this.ruleSet.add(rule);
-      //   }
-      // }
       this.add(src);
     }
 
