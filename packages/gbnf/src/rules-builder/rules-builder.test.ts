@@ -10,9 +10,9 @@ describe('Grammar Parser Tests', () => {
         "symbolIds": [["root", 0]],
         "rules": [
           [
-            { "type": RuleType.CHAR, "value": 'f'.charCodeAt(0) },
-            { "type": RuleType.CHAR, "value": 'o'.charCodeAt(0) },
-            { "type": RuleType.CHAR, "value": 'o'.charCodeAt(0) },
+            { "type": RuleType.CHAR, "value": ['f'.charCodeAt(0)] },
+            { "type": RuleType.CHAR, "value": ['o'.charCodeAt(0)] },
+            { "type": RuleType.CHAR, "value": ['o'.charCodeAt(0)] },
             { "type": RuleType.END }
           ]
         ]
@@ -34,9 +34,9 @@ describe('Grammar Parser Tests', () => {
             { "type": RuleType.RULE_REF, "value": 1 },
             { "type": RuleType.END }],
           [
-            { "type": RuleType.CHAR, "value": 'b'.charCodeAt(0) },
-            { "type": RuleType.CHAR, "value": 'a'.charCodeAt(0) },
-            { "type": RuleType.CHAR, "value": 'r'.charCodeAt(0) },
+            { "type": RuleType.CHAR, "value": ['b'.charCodeAt(0)] },
+            { "type": RuleType.CHAR, "value": ['a'.charCodeAt(0)] },
+            { "type": RuleType.CHAR, "value": ['r'.charCodeAt(0)] },
             { "type": RuleType.END }
           ]
         ]
@@ -69,9 +69,9 @@ root  ::= (expr "=" term "\n")+
             { "type": RuleType.END }],
           [
             { "type": RuleType.RULE_REF, "value": 2 },
-            { "type": RuleType.CHAR, "value": 61 },
+            { "type": RuleType.CHAR, "value": [61] },
             { "type": RuleType.RULE_REF, "value": 3 },
-            { "type": RuleType.CHAR, "value": 10 },
+            { "type": RuleType.CHAR, "value": [10] },
             { "type": RuleType.END }
           ],
           [
@@ -89,7 +89,7 @@ root  ::= (expr "=" term "\n")+
             { "type": RuleType.END }
           ],
           [
-            { "type": RuleType.CHAR, "value": 45 },
+            { "type": RuleType.CHAR, "value": [45] },
             { "type": RuleType.CHAR_ALT, "value": 43 },
             { "type": RuleType.CHAR_ALT, "value": 42 },
             { "type": RuleType.CHAR_ALT, "value": 47 },
@@ -103,11 +103,11 @@ root  ::= (expr "=" term "\n")+
             { "type": RuleType.END }
           ],
           [
-            { "type": RuleType.CHAR, "value": 48 },
+            { "type": RuleType.CHAR, "value": [48] },
             { "type": RuleType.CHAR_RNG_UPPER, "value": 57 },
             { "type": RuleType.RULE_REF, "value": 7 },
             { "type": RuleType.ALT },
-            { "type": RuleType.CHAR, "value": 48 },
+            { "type": RuleType.CHAR, "value": [48] },
             { "type": RuleType.CHAR_RNG_UPPER, "value": 57 },
             { "type": RuleType.END }
           ]
@@ -146,10 +146,10 @@ root  ::= (expr "=" term "\n")+
             ],
             [
               { value: 2, type: RuleType.RULE_REF },
-              { value: 61, type: RuleType.CHAR },
+              { value: [61], type: RuleType.CHAR },
               { value: 3, type: RuleType.RULE_REF },
               { value: 4, type: RuleType.RULE_REF },
-              { value: 10, type: RuleType.CHAR },
+              { value: [10], type: RuleType.CHAR },
               { type: RuleType.END },
             ],
             [
@@ -166,10 +166,10 @@ root  ::= (expr "=" term "\n")+
               { type: RuleType.ALT },
               { value: 9, type: RuleType.RULE_REF },
               { type: RuleType.ALT },
-              { value: 40, type: RuleType.CHAR },
+              { value: [40], type: RuleType.CHAR },
               { value: 3, type: RuleType.RULE_REF },
               { value: 2, type: RuleType.RULE_REF },
-              { value: 41, type: RuleType.CHAR },
+              { value: [41], type: RuleType.CHAR },
               { value: 3, type: RuleType.RULE_REF },
               { type: RuleType.END },
             ],
@@ -181,7 +181,7 @@ root  ::= (expr "=" term "\n")+
               { type: RuleType.END },
             ],
             [
-              { value: 45, type: RuleType.CHAR },
+              { value: [45], type: RuleType.CHAR },
               { value: 43, type: RuleType.CHAR_ALT },
               { value: 42, type: RuleType.CHAR_ALT },
               { value: 47, type: RuleType.CHAR_ALT },
@@ -195,7 +195,7 @@ root  ::= (expr "=" term "\n")+
               { type: RuleType.END },
             ],
             [
-              { value: 97, type: RuleType.CHAR },
+              { value: [97], type: RuleType.CHAR },
               { value: 122, type: RuleType.CHAR_RNG_UPPER },
               { value: 10, type: RuleType.RULE_REF },
               { value: 3, type: RuleType.RULE_REF },
@@ -207,7 +207,7 @@ root  ::= (expr "=" term "\n")+
               { type: RuleType.END },
             ],
             [
-              { value: 97, type: RuleType.CHAR },
+              { value: [97], type: RuleType.CHAR },
               { value: 122, type: RuleType.CHAR_RNG_UPPER },
               { value: 48, type: RuleType.CHAR_ALT },
               { value: 57, type: RuleType.CHAR_RNG_UPPER },
@@ -217,16 +217,16 @@ root  ::= (expr "=" term "\n")+
               { type: RuleType.END },
             ],
             [
-              { value: 48, type: RuleType.CHAR },
+              { value: [48], type: RuleType.CHAR },
               { value: 57, type: RuleType.CHAR_RNG_UPPER },
               { value: 11, type: RuleType.RULE_REF },
               { type: RuleType.ALT },
-              { value: 48, type: RuleType.CHAR },
+              { value: [48], type: RuleType.CHAR },
               { value: 57, type: RuleType.CHAR_RNG_UPPER },
               { type: RuleType.END },
             ],
             [
-              { value: 32, type: RuleType.CHAR },
+              { value: [32], type: RuleType.CHAR },
               { value: 9, type: RuleType.CHAR_ALT },
               { value: 10, type: RuleType.CHAR_ALT },
               { value: 12, type: RuleType.RULE_REF },
@@ -244,7 +244,7 @@ root  ::= (expr "=" term "\n")+
       {
         "symbolIds": [["root", 0]],
         "rules": [[
-          { "type": RuleType.CHAR, "value": 'ぁ'.charCodeAt(0) },
+          { "type": RuleType.CHAR, "value": ['ぁ'.charCodeAt(0)] },
           { "type": RuleType.CHAR_RNG_UPPER, "value": 'ゟ'.charCodeAt(0) },
           { "type": RuleType.END },
         ]]
@@ -256,7 +256,7 @@ root  ::= (expr "=" term "\n")+
       {
         "symbolIds": [["root", 0]],
         "rules": [[
-          { "type": RuleType.CHAR, "value": 'a'.charCodeAt(0) },
+          { "type": RuleType.CHAR, "value": ['a'.charCodeAt(0)] },
           { "type": RuleType.CHAR_ALT, "value": 'z'.charCodeAt(0) },
           { "type": RuleType.END },
         ]]
@@ -268,7 +268,7 @@ root  ::= (expr "=" term "\n")+
       {
         "symbolIds": [["root", 0]],
         "rules": [[
-          { "type": RuleType.CHAR, "value": 'a'.charCodeAt(0) },
+          { "type": RuleType.CHAR, "value": ['a'.charCodeAt(0)] },
           { "type": RuleType.CHAR_RNG_UPPER, "value": 'z'.charCodeAt(0) },
           { "type": RuleType.CHAR_ALT, "value": 'A'.charCodeAt(0) },
           { "type": RuleType.CHAR_RNG_UPPER, "value": 'Z'.charCodeAt(0) },
@@ -284,7 +284,7 @@ root  ::= (expr "=" term "\n")+
       {
         "symbolIds": [["root", 0]],
         "rules": [[
-          { "type": RuleType.CHAR, "value": 'a'.charCodeAt(0) },
+          { "type": RuleType.CHAR, "value": ['a'.charCodeAt(0)] },
           { "type": RuleType.CHAR_RNG_UPPER, "value": 'z'.charCodeAt(0) },
           { "type": RuleType.CHAR_ALT, "value": '-'.charCodeAt(0) },
           { "type": RuleType.END },
@@ -301,14 +301,14 @@ root  ::= (expr "=" term "\n")+
         ],
         "rules": [
           [
-            { "type": RuleType.CHAR, "value": 'f'.charCodeAt(0) },
+            { "type": RuleType.CHAR, "value": ['f'.charCodeAt(0)] },
             { "type": RuleType.RULE_REF, "value": 1 },
             { "type": RuleType.END },
           ],
           [
-            { "type": RuleType.CHAR, "value": 'b'.charCodeAt(0) },
+            { "type": RuleType.CHAR, "value": ['b'.charCodeAt(0)] },
             { "type": RuleType.ALT },
-            { "type": RuleType.CHAR, "value": 'a'.charCodeAt(0) },
+            { "type": RuleType.CHAR, "value": ['a'.charCodeAt(0)] },
             { "type": RuleType.END },
           ],
         ]
@@ -327,7 +327,7 @@ root  ::= (expr "=" term "\n")+
             { "type": RuleType.RULE_REF, "value": 1 },
             { "type": RuleType.END }],
           [
-            { "type": RuleType.CHAR, "value": 'f'.charCodeAt(0) },
+            { "type": RuleType.CHAR, "value": ['f'.charCodeAt(0)] },
             { "type": RuleType.ALT },
             { "type": RuleType.END }],
         ]
@@ -346,7 +346,7 @@ root  ::= (expr "=" term "\n")+
             { "type": RuleType.RULE_REF, "value": 1 },
             { "type": RuleType.END }],
           [
-            { "type": RuleType.CHAR, "value": 'f'.charCodeAt(0) },
+            { "type": RuleType.CHAR, "value": ['f'.charCodeAt(0)] },
             { "type": RuleType.RULE_REF, "value": 1 },
             { "type": RuleType.ALT },
             { "type": RuleType.END }],
@@ -366,10 +366,10 @@ root  ::= (expr "=" term "\n")+
             { "type": RuleType.RULE_REF, "value": 1 },
             { "type": RuleType.END }],
           [
-            { "type": RuleType.CHAR, "value": 'f'.charCodeAt(0) },
+            { "type": RuleType.CHAR, "value": ['f'.charCodeAt(0)] },
             { "type": RuleType.RULE_REF, "value": 1 },
             { "type": RuleType.ALT },
-            { "type": RuleType.CHAR, "value": 'f'.charCodeAt(0) },
+            { "type": RuleType.CHAR, "value": ['f'.charCodeAt(0)] },
             { "type": RuleType.END }],
         ]
       }
@@ -385,7 +385,7 @@ root  ::= (expr "=" term "\n")+
             { "type": RuleType.END },
           ],
           [
-            { "type": RuleType.CHAR, "value": 'a'.charCodeAt(0) },
+            { "type": RuleType.CHAR, "value": ['a'.charCodeAt(0)] },
             { "type": RuleType.CHAR_RNG_UPPER, "value": 'z'.charCodeAt(0) },
             { "type": RuleType.CHAR_ALT, "value": 'A'.charCodeAt(0) },
             { "type": RuleType.CHAR_RNG_UPPER, "value": 'Z'.charCodeAt(0) },
@@ -418,14 +418,14 @@ root  ::= (expr "=" term "\n")+
         ],
         "rules": [
           [
-            { "type": RuleType.CHAR, "value": 'f'.charCodeAt(0) },
+            { "type": RuleType.CHAR, "value": ['f'.charCodeAt(0)] },
             { "type": RuleType.RULE_REF, "value": 2 },
             { "type": RuleType.END },
           ],
           [
-            { "type": RuleType.CHAR, "value": 'b'.charCodeAt(0) },
+            { "type": RuleType.CHAR, "value": ['b'.charCodeAt(0)] },
             { "type": RuleType.ALT },
-            { "type": RuleType.CHAR, "value": 'a'.charCodeAt(0) },
+            { "type": RuleType.CHAR, "value": ['a'.charCodeAt(0)] },
             { "type": RuleType.END },
           ],
           [
@@ -485,7 +485,7 @@ root  ::= (expr "=" term "\n")+
         "rules": [
           [
             { "type": RuleType.RULE_REF, "value": 1 },
-            { "type": RuleType.CHAR, "value": '\n'.charCodeAt(0) },
+            { "type": RuleType.CHAR, "value": ['\n'.charCodeAt(0)] },
             { "type": RuleType.END },
           ],
           [
@@ -556,7 +556,7 @@ root  ::= (expr "=" term "\n")+
         "symbolIds": [["root", 0],],
         "rules": [
           [
-            { "type": RuleType.CHAR, "value": actualChar },
+            { "type": RuleType.CHAR, "value": [actualChar] },
             { "type": RuleType.END },
           ],
         ]
