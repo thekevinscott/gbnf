@@ -52,7 +52,7 @@ export const getGrammarParser = (ruleDefs: Rule[][], symbolIds: SymbolIds) => {
             if (this.rulePointer.hasNextRule(position)) {
               this.rulePointer.increment(position);
             } else {
-              this.rulePointer.delete(position, true);
+              this.rulePointer.delete(position);
             }
 
           } else {

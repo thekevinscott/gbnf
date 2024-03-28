@@ -1,4 +1,4 @@
-import { Rule, RulePosition, RuleRef, isRuleRange, isRuleRef, isRuleWithNumericValue, } from "../types.js";
+import { Rule, RulePosition, RuleRef, isRuleEnd, isRuleRange, isRuleRef, isRuleWithNumericValue, } from "../types.js";
 
 export class RulePointer {
   #stacks: Rule[][][];
@@ -46,6 +46,13 @@ export class RulePointer {
       if (isRuleRef(rule)) {
         this.delete(position);
         this.addReferenceRule(rule, position);
+      } else if (isRuleEnd(rule)) {
+        if (position.previous) {
+          this.delete(position);
+          this.addPosition(position.previous.stackPos, position.previous.pathPos, position.previous.rulePos + 1, position.previous.previous);
+        } else {
+          yield { rule, position, };
+        }
       } else {
         yield { rule, position, };
       }
@@ -56,7 +63,7 @@ export class RulePointer {
       if (isRuleRef(nextRule)) {
         this.addReferenceRule(nextRule, position);
       } else {
-        console.log('not hanlded yet');
+        throw new Error('not hanlded yet');
       }
     }
   };
@@ -78,12 +85,8 @@ export class RulePointer {
     return rulePos + 1 < this.#stacks[stackPos][pathPos].length;
   };
 
-  delete = (position: RulePosition, isEndingRule = false) => {
+  delete = (position: RulePosition) => {
     this.#positions.delete(position);
-
-    if (isEndingRule && position.previous) {
-      console.log('ending rule');
-    }
   };
 
   get rules(): Rule[] {
