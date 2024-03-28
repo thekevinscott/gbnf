@@ -31,14 +31,18 @@ import GBNF, { RuleType } from '../../../packages/gbnf/src/index.js';
 
 (() => {
   // [`root ::= [a-z]+`, 'az0',],
-  console.log('range with +, "az"')
-  const GrammarParser = GBNF(`root::=[a-z]+`);
+  // console.log('range with +, "az"')
+  const GrammarParser = GBNF(`root ::= ("ab" | "cd") "zz"`);
   const parser = new GrammarParser('');
-  console.log('rules:::::', JSON.stringify(parser.rules));
+  console.log('rules before anything:::::', JSON.stringify(parser.rules));
+  console.log('-------------')
   parser.add('a')
-  console.log('rules:::::', JSON.stringify(parser.rules));
-  parser.add('z')
-  console.log('rules:::::', JSON.stringify(parser.rules));
+  console.log('-------------')
+  console.log('rules after a:::::', JSON.stringify(parser.rules));
+  console.log('-------------')
+  parser.add('b')
+  console.log('-------------')
+  console.log('rules after ab:::::', JSON.stringify(parser.rules));
   // if (!parser.rules.map(r => r.type).includes(RuleType.RANGE)) {
   //   console.error('Expected a range rule type')
   // }

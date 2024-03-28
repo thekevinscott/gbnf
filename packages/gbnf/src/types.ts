@@ -27,6 +27,9 @@ export interface RuleRef {
   type: RuleType.RULE_REF;
   value: number;
 }
+interface RuleEnd {
+  type: RuleType.END;
+}
 interface RuleWithoutValue {
   type: RuleType.ALT | RuleType.END;
 }
@@ -39,6 +42,7 @@ export interface RulePosition {
   stackPos: number;
   pathPos: number;
   rulePos: number;
+  previous?: RulePosition;
 }
 
 /** Type Guards */
@@ -46,6 +50,7 @@ export const isRuleWithNumericValue = (rule?: Rule): rule is RuleWithNumericValu
 export const isRuleType = (type?: unknown): type is RuleType => !!type && Object.values(RuleType).includes(type as RuleType);
 export const isRule = (rule?: unknown): rule is Rule => !!rule && typeof rule === 'object' && 'type' in rule && isRuleType(rule.type);
 export const isRuleRef = (rule?: Rule): rule is RuleRef => rule.type === RuleType.RULE_REF;
+export const isRuleEnd = (rule?: Rule): rule is RuleEnd => rule.type === RuleType.END;
 export const isRuleChar = (rule?: Rule): rule is ({ type: RuleType.CHAR, value: number }) => [RuleType.CHAR,].includes(rule?.type);
 export const isRuleCharAlt = (rule?: Rule): rule is ({ type: RuleType.CHAR_ALT, value: number }) => [RuleType.CHAR_ALT,].includes(rule?.type);
 export const isRuleCharRngUpper = (rule?: Rule): rule is { type: RuleType.CHAR_RNG_UPPER, value: number } => rule.type === RuleType.CHAR_RNG_UPPER;

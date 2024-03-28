@@ -1,4 +1,4 @@
-import { Rule, RuleType, SymbolIds, isRuleChar, isRuleRange, } from "../types.js";
+import { Rule, SymbolIds, isRuleChar, isRuleEnd, isRuleRange, } from "../types.js";
 import { AbstractGrammarParser, } from "./abstract-grammar-parser.js";
 import { buildRuleStack, } from "./build-rule-stack.js";
 import { hasValidRules, } from "./has-valid-rules.js";
@@ -25,46 +25,40 @@ export const getGrammarParser = (ruleDefs: Rule[][], symbolIds: SymbolIds) => {
       this.add(src);
     }
 
-    #updateRulePointers = (src: string, strPos: number): void => {
-      for (const { rule, position, } of this.rulePointer) {
-        const char = src[strPos];
-        if (isRuleChar(rule)) {
-          const ruleChar = String.fromCharCode(rule.value);
-          const valid = char === ruleChar;
-          if (!valid) {
-            this.rulePointer.delete(position);
-          } else {
-            this.rulePointer.increment(position);
-          }
-        } else if (isRuleRange(rule)) {
-          const charCodePoint = src.charCodeAt(strPos);
-          const valid = isPointInRange(charCodePoint, rule.value);
-          if (!valid) {
-            this.rulePointer.delete(position);
-          } else {
-            this.rulePointer.increment(position);
-          }
-        } else if (rule.type === RuleType.END) {
-          if (this.rulePointer.hasNextRule(position)) {
-            this.rulePointer.increment(position);
-          } else {
-            this.rulePointer.delete(position);
-          }
-
-        } else {
-          throw new Error(`Unsupported rule type: ${rule.type}`);
-        }
-      }
-    };
-
     public add = (src: string) => {
-      let strPos = 0;
-      while (strPos < src.length) {
+      for (let strPos = 0; strPos < src.length; strPos++) {
         if (hasValidRules(this.rules) === false) {
           throw new Error('Invalid input string, cannot be parsed');
         }
-        this.#updateRulePointers(src, strPos);
-        strPos++;
+        for (const { rule, position, } of this.rulePointer) {
+          const char = src[strPos];
+          if (isRuleChar(rule)) {
+            const ruleChar = String.fromCharCode(rule.value);
+            const valid = char === ruleChar;
+            if (!valid) {
+              this.rulePointer.delete(position);
+            } else {
+              this.rulePointer.increment(position);
+            }
+          } else if (isRuleRange(rule)) {
+            const charCodePoint = src.charCodeAt(strPos);
+            const valid = isPointInRange(charCodePoint, rule.value);
+            if (!valid) {
+              this.rulePointer.delete(position);
+            } else {
+              this.rulePointer.increment(position);
+            }
+          } else if (isRuleEnd(rule)) {
+            if (this.rulePointer.hasNextRule(position)) {
+              this.rulePointer.increment(position);
+            } else {
+              this.rulePointer.delete(position, true);
+            }
+
+          } else {
+            throw new Error(`Unsupported rule type: ${rule.type}`);
+          }
+        }
       }
 
       if (hasValidRules(this.rules) === false) {

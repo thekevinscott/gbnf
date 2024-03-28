@@ -4,25 +4,19 @@ export class RulePointer {
   #stacks: Rule[][][];
   // during iteration, if we encounter reference rules, we make a note of it
   // and add to our list for the next iteration cycle
-  #nextRules: RuleRef[] = [];
-  prevPointers?: RulePointer[];
+  #nextRuleAndPositions: { rule: Rule; position: RulePosition; }[] = [];
 
-  paths = new Set<RulePosition>();
-  constructor(stacks: Rule[][][], stackPos: number, rulePos: number = 0, prevPointers?: RulePointer[]) {
+  #positions = new Set<RulePosition>();
+  constructor(stacks: Rule[][][], stackPos: number, rulePos: number = 0) {
     this.#stacks = stacks;
     const stack = stacks[stackPos];
 
-    for (let i = 0; i < stack.length; i++) {
-      this.paths.add({
-        stackPos,
-        pathPos: i,
-        rulePos,
-      });
+    for (let pathPos = 0; pathPos < stack.length; pathPos++) {
+      this.addPosition(stackPos, pathPos, rulePos);
     }
-    this.prevPointers = prevPointers;
   }
 
-  getRule = ({ stackPos, pathPos, rulePos, }: RulePosition): Rule => {
+  getRule = ({ stackPos, pathPos, rulePos, }: Omit<RulePosition, 'previous'>): Rule => {
     const rule = this.#stacks[stackPos][pathPos][rulePos];
     if (rule === undefined) {
       throw new Error('Out of bounds rule');
@@ -30,43 +24,51 @@ export class RulePointer {
     return rule;
   };
 
-  addReferenceRule = (rule: RuleRef) => {
+  addPosition = (stackPos: number, pathPos: number, rulePos: number, previous?: RulePosition) => {
+    this.#positions.add({
+      stackPos,
+      pathPos,
+      rulePos,
+      previous,
+    });
+  };
+
+  addReferenceRule = (rule: RuleRef, position: RulePosition) => {
     const referenceRule = this.#stacks[rule.value];
     for (let pathPos = 0; pathPos < referenceRule.length; pathPos++) {
-      this.paths.add({
-        stackPos: rule.value,
-        pathPos,
-        rulePos: 0,
-      });
+      this.addPosition(rule.value, pathPos, 0, position);
     }
   };
 
   *[Symbol.iterator](): IterableIterator<{ rule: Rule; position: RulePosition; }> {
-    for (const position of this.paths) {
+    for (const position of this.#positions) {
       const rule = this.getRule(position);
       if (isRuleRef(rule)) {
         this.delete(position);
-        this.addReferenceRule(rule);
+        this.addReferenceRule(rule, position);
       } else {
         yield { rule, position, };
       }
     }
 
-    while (this.#nextRules.length) {
-      const nextRule = this.#nextRules.shift();
-      this.addReferenceRule(nextRule);
+    while (this.#nextRuleAndPositions.length) {
+      const { rule: nextRule, position, } = this.#nextRuleAndPositions.shift();
+      if (isRuleRef(nextRule)) {
+        this.addReferenceRule(nextRule, position);
+      } else {
+        console.log('not hanlded yet');
+      }
     }
   };
 
   increment = (position: RulePosition) => {
     const nextRule = this.getRule({
-      stackPos: position.stackPos,
-      pathPos: position.pathPos,
+      ...position,
       rulePos: position.rulePos + 1,
     });
     if (isRuleRef(nextRule)) {
       // add this reference rule to our paths, for handling on the next iteration cyucle
-      this.#nextRules.push(nextRule);
+      this.#nextRuleAndPositions.push({ rule: nextRule, position, });
     } else {
       position.rulePos += 1;
     }
@@ -76,8 +78,12 @@ export class RulePointer {
     return rulePos + 1 < this.#stacks[stackPos][pathPos].length;
   };
 
-  delete = (position: RulePosition) => {
-    this.paths.delete(position);
+  delete = (position: RulePosition, isEndingRule = false) => {
+    this.#positions.delete(position);
+
+    if (isEndingRule && position.previous) {
+      console.log('ending rule');
+    }
   };
 
   get rules(): Rule[] {

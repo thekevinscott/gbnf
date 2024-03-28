@@ -379,12 +379,20 @@ describe('GrammarParser', () => {
       ]],
 
       // real world bugs
+      // "baz" and "bazaar" are ambiguous, and a string "bazaa" should not result in an 'a' CHAR rule
       [
         'root ::= "foo" | "bar" | "baz" | "bazaar" | "barrington" ',
         'bazaa', [
           { type: RuleType.CHAR, value: 'r'.charCodeAt(0), },
         ]
       ],
+      // // should be able to step _into_ a rule, and then continue with the previous rule
+      // [
+      //   'root ::= ("bar" | "foo") "zyx"',
+      //   'bar', [
+      //     { type: RuleType.CHAR, value: 'z'.charCodeAt(0), },
+      //   ]
+      // ],
     ])('it parses a grammar `%s` against input: `%s`', (grammar, input, expected) => {
       const Parser = GBNF(grammar.split('\\n').join('\n'));
       const parser = new Parser(input);
