@@ -1,42 +1,65 @@
 import { Rule, RulePosition, RuleRef, isRuleEnd, isRuleRange, isRuleRef, isRuleWithNumericValue, } from "../types.js";
 
+type RuleId = number;
 class Stacks {
-  #rules = new Map<number, Rule>();
-  #stacks: number[][][];
+  #rules = new Map<RuleId, Rule>();
+  #stacks: RuleId[][][];
 
   constructor(stacks: Rule[][][]) {
-    const keys = new Map<string, number>();
-    this.#stacks = stacks.map(stack => {
-      return stack.map(path => {
-        return path.map(rule => {
-          const key = getKey(rule);
-          let id = keys.get(key);
-          if (id === undefined) {
-            id = keys.size;
-            keys.set(key, id);
-          }
-          this.#rules.set(id, rule);
-          return id;
-        });
-      });
-    });
+    const keys = new Map<string, RuleId>();
+    this.#stacks = stacks.map(stack => stack.map(path => path.map(rule => {
+      const key = getKey(rule);
+      let id = keys.get(key);
+      if (id === undefined) {
+        id = keys.size;
+        keys.set(key, id);
+      }
+      this.#rules.set(id, rule);
+      return id;
+    })));
   }
 
-  getStackSize(stackIdx: number): number {
-    return this.#stacks[stackIdx].length;
-  }
+  getStackSize = (stackIdx: number): number => this.#stacks[stackIdx].length;
 
-  getPathSize(stackPos: number, pathPos: number): number {
-    return this.#stacks[stackPos][pathPos].length;
-  }
+  getPathSize = (stackPos: number, pathPos: number): number => this.#stacks[stackPos][pathPos].length;
 
-  getRule(stackPos: number, pathPos: number, rulePos: number): Rule {
-    const id = this.#stacks[stackPos][pathPos][rulePos];
-    if (id === undefined) {
+  getRule = ({ stackPos, pathPos, rulePos, }: Omit<RulePosition, 'previous'>): {
+    ruleId: RuleId;
+    rule: Rule;
+  } => {
+    const ruleId = this.#stacks[stackPos][pathPos][rulePos];
+    if (ruleId === undefined) {
       throw new Error('Out of bounds rule');
     }
-    return this.#rules.get(id);
+    return {
+      ruleId,
+      rule: this.#rules.get(ruleId),
+    };
+  };
+}
+
+class Positions {
+  #positions = new Set<RulePosition>();
+  #stacks: Stacks;
+
+  constructor(stacks: Stacks) {
+    this.#stacks = stacks;
   }
+
+  add = (position: RulePosition) => {
+    // const { rule, ruleId } = this.#stacks.getRule(position);
+    this.#positions.add(position);
+  };
+
+  delete = (position: RulePosition) => {
+    this.#positions.delete(position);
+  };
+
+  *[Symbol.iterator](): IterableIterator<RulePosition> {
+    for (const position of this.#positions) {
+      yield position;
+    }
+  };
 }
 
 export class RulePointer {
@@ -45,21 +68,16 @@ export class RulePointer {
   // and add to our list for the next iteration cycle
   #nextRuleAndPositions: { rule: Rule; position: RulePosition; }[] = [];
 
-  #positions = new Set<RulePosition>();
+  #positions: Positions;
   constructor(stacks: Rule[][][], stackPos: number, rulePos: number = 0) {
     this.#stacks = new Stacks(stacks);
+    this.#positions = new Positions(this.#stacks);
     for (let pathPos = 0; pathPos < this.#stacks.getStackSize(stackPos); pathPos++) {
       this.addPosition(stackPos, pathPos, rulePos);
     }
   }
 
-  getRule = ({ stackPos, pathPos, rulePos, }: Omit<RulePosition, 'previous'>): Rule => {
-    const rule = this.#stacks.getRule(stackPos, pathPos, rulePos);
-    if (rule === undefined) {
-      throw new Error('Out of bounds rule');
-    }
-    return rule;
-  };
+  getRule = (position: Omit<RulePosition, 'previous'>) => this.#stacks.getRule(position);
 
   addPosition = (stackPos: number, pathPos: number, rulePos: number, previous?: RulePosition) => {
     this.#positions.add({
@@ -78,7 +96,7 @@ export class RulePointer {
 
   *[Symbol.iterator](): IterableIterator<{ rule: Rule; position: RulePosition; }> {
     for (const position of this.#positions) {
-      const rule = this.getRule(position);
+      const { rule, } = this.getRule(position);
       if (isRuleRef(rule)) {
         this.delete(position);
         this.addReferenceRule(rule, position);
@@ -105,7 +123,7 @@ export class RulePointer {
   };
 
   increment = (position: RulePosition) => {
-    const nextRule = this.getRule({
+    const { rule: nextRule, } = this.getRule({
       ...position,
       rulePos: position.rulePos + 1,
     });
