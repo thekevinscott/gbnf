@@ -2,7 +2,7 @@ import { isWordChar, } from "./is-word-char.js";
 import { parseChar, } from "./parse-char.js";
 import { parseName, } from "./parse-name.js";
 import { parseSpace, } from "./parse-space.js";
-import { RuleType, Rule, SymbolIds, } from "../types.js";
+import { RuleType, Rule, SymbolIds, RuleChar, } from "../types.js";
 
 export class RulesBuilder {
   private pos = 0;
@@ -113,7 +113,7 @@ export class RulesBuilder {
           const [value, incPos,] = parseChar(src, this.pos);
           // console.log('char', value, incPos);
           // if (Array.isArray(charValue)) {
-          outElements.push({ type: RuleType.CHAR, value, });
+          outElements.push({ type: RuleType.CHAR, value: [value,], });
           this.pos += incPos; // Adjusting pos by the length of parsed characters
           // } else {
           //   outElements.push({ type: RuleType.CHAR, value: charValue, });
@@ -138,7 +138,11 @@ export class RulesBuilder {
           const [startcharValue, incPos,] = parseChar(src, this.pos);
           this.pos += incPos;
           // console.log('push it!', type, startcharValue, String.fromCharCode(startcharValue));
-          outElements.push({ type, value: startcharValue, });
+          if (type === RuleType.CHAR) {
+            outElements.push({ type, value: [startcharValue,], });
+          } else {
+            outElements.push({ type, value: startcharValue, });
+          }
 
           if (src[this.pos] === '-' && src[this.pos + 1] !== ']') {
             this.pos += 1;

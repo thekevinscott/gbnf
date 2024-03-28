@@ -1,12 +1,24 @@
-import { Rule, RuleType, RuleWithRangeValues, RuleWithNumericValue, isRuleChar, isRuleCharRngUpper, isRuleRange, isRuleCharAlt, } from "../types.js";
+import { Rule, RuleType, RuleWithRangeValues, RuleWithNumericValue, isRuleChar, isRuleCharRngUpper, isRuleRange, isRuleCharAlt, isRuleAlt, isRuleEnd, RuleCharOrAltChar, } from "../types.js";
 
 
+const getNumericValue = (rule: RuleCharOrAltChar): number => {
+  const value = rule.value;
+  if (Array.isArray(value)) {
+    if (value.length > 1) {
+      throw new Error(`For building ranges, only a single value is supported. This is: ${JSON.stringify(value)}`);
+    }
+    return value[0];
+  }
+  return value;
+};
 
 // Function to build a regex rule
-const buildRangeRule = (prevRule: RuleWithNumericValue, currentRule: RuleWithNumericValue): RuleWithRangeValues => ({
-  type: RuleType.RANGE,
-  value: [[prevRule.value, currentRule.value,],],
-});
+const buildRangeRule = (prevRule: RuleCharOrAltChar, currentRule: RuleWithNumericValue): RuleWithRangeValues => {
+  return {
+    type: RuleType.RANGE,
+    value: [[getNumericValue(prevRule), currentRule.value,],],
+  };
+};
 
 export const buildRuleStack = (linearRules: Rule[]): Rule[][] => {
   let paths: Rule[] = [];
@@ -16,7 +28,7 @@ export const buildRuleStack = (linearRules: Rule[]): Rule[][] => {
   let idx = 0;
   while (idx < linearRules.length) {
     const ruleDef = linearRules[idx];
-    if ([RuleType.ALT,].includes(ruleDef.type)) {
+    if (isRuleAlt(ruleDef)) {
       if (paths.length) {
         paths.push({ type: RuleType.END, });
         stack.push(paths);
@@ -62,7 +74,7 @@ export const buildRuleStack = (linearRules: Rule[]): Rule[][] => {
         throw new Error(`Unexpected end of sequence, lingering prev value: ${prevValue}`);
       }
 
-    } else if (ruleDef.type === RuleType.CHAR_RNG_UPPER) {
+    } else if (isRuleCharRngUpper(ruleDef)) {
       const prevRule = paths.pop();
       if (!isRuleChar(prevRule) && !isRuleCharAlt(prevRule)) {
         console.log(idx, linearRules, paths);
@@ -73,18 +85,9 @@ export const buildRuleStack = (linearRules: Rule[]): Rule[][] => {
       paths.push(ruleDef);
     }
 
-    // if (idx === linearRules.length - 1) {
-    //   // we are done!
-    //   if (paths[paths.length - 1].type !== RuleType.END) {
-    //     paths.push({ type: RuleType.END, });
-    //   }
-
-    //   stack.push(paths);
-    // }
-
     idx += 1;
   }
-  if (paths[paths.length - 1].type !== RuleType.END) {
+  if (!isRuleEnd(paths[paths.length - 1])) {
     paths.push({ type: RuleType.END, });
   }
 
