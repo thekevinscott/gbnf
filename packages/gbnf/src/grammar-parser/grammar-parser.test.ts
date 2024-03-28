@@ -33,8 +33,8 @@ describe('GrammarParser', () => {
       ]],
       // expression and a char rule
       ['root ::= foo|"bar"\\nfoo::="foo" ', [
-        { type: RuleType.CHAR, value: 'f'.charCodeAt(0), },
         { type: RuleType.CHAR, value: 'b'.charCodeAt(0), },
+        { type: RuleType.CHAR, value: 'f'.charCodeAt(0), },
       ]],
       // two expressions
       ['root ::= foo|bar\\nfoo::="foo"\\nbar::="bar" ', [
@@ -222,8 +222,8 @@ describe('GrammarParser', () => {
 
       // expression and a char rule
       ['root ::= foo | "bar"\\nfoo ::= "foo"', '', [
-        { type: RuleType.CHAR, value: 'f'.charCodeAt(0), },
         { type: RuleType.CHAR, value: 'b'.charCodeAt(0), },
+        { type: RuleType.CHAR, value: 'f'.charCodeAt(0), },
       ]],
       ['root ::= foo | "bar"\\nfoo ::= "foo"', 'f', [
         { type: RuleType.CHAR, value: 'o'.charCodeAt(0), },
@@ -648,7 +648,7 @@ describe('GrammarParser', () => {
         { type: RuleType.RANGE, value: [['a'.charCodeAt(0), 'z'.charCodeAt(0)], ['A'.charCodeAt(0), 'Z'.charCodeAt(0)]], },
         { type: RuleType.END, },
       ]],
-      [`root ::= [a-zA-Z]+`, 'abczABC', 'Z', [
+      [`root ::= [a-zA-Z]+`, 'acczABC', 'Z', [
         { type: RuleType.RANGE, value: [['a'.charCodeAt(0), 'z'.charCodeAt(0)], ['A'.charCodeAt(0), 'Z'.charCodeAt(0)]], },
         { type: RuleType.END, },
       ]],
