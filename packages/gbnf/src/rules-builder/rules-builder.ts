@@ -2,7 +2,7 @@ import { isWordChar, } from "./is-word-char.js";
 import { parseChar, } from "./parse-char.js";
 import { parseName, } from "./parse-name.js";
 import { parseSpace, } from "./parse-space.js";
-import { RuleType, Rule, SymbolIds, RuleChar, } from "../types.js";
+import { RuleType, Rule, SymbolIds, } from "../types.js";
 
 export class RulesBuilder {
   private pos = 0;
