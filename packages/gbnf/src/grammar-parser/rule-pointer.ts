@@ -1,23 +1,60 @@
 import { Rule, RulePosition, RuleRef, isRuleEnd, isRuleRange, isRuleRef, isRuleWithNumericValue, } from "../types.js";
 
+class Stacks {
+  #rules = new Map<number, Rule>();
+  #stacks: number[][][];
+
+  constructor(stacks: Rule[][][]) {
+    const keys = new Map<string, number>();
+    this.#stacks = stacks.map(stack => {
+      return stack.map(path => {
+        return path.map(rule => {
+          const key = getKey(rule);
+          let id = keys.get(key);
+          if (id === undefined) {
+            id = keys.size;
+            keys.set(key, id);
+          }
+          this.#rules.set(id, rule);
+          return id;
+        });
+      });
+    });
+  }
+
+  getStackSize(stackIdx: number): number {
+    return this.#stacks[stackIdx].length;
+  }
+
+  getPathSize(stackPos: number, pathPos: number): number {
+    return this.#stacks[stackPos][pathPos].length;
+  }
+
+  getRule(stackPos: number, pathPos: number, rulePos: number): Rule {
+    const id = this.#stacks[stackPos][pathPos][rulePos];
+    if (id === undefined) {
+      throw new Error('Out of bounds rule');
+    }
+    return this.#rules.get(id);
+  }
+}
+
 export class RulePointer {
-  #stacks: Rule[][][];
+  #stacks: Stacks;
   // during iteration, if we encounter reference rules, we make a note of it
   // and add to our list for the next iteration cycle
   #nextRuleAndPositions: { rule: Rule; position: RulePosition; }[] = [];
 
   #positions = new Set<RulePosition>();
   constructor(stacks: Rule[][][], stackPos: number, rulePos: number = 0) {
-    this.#stacks = stacks;
-    const stack = stacks[stackPos];
-
-    for (let pathPos = 0; pathPos < stack.length; pathPos++) {
+    this.#stacks = new Stacks(stacks);
+    for (let pathPos = 0; pathPos < this.#stacks.getStackSize(stackPos); pathPos++) {
       this.addPosition(stackPos, pathPos, rulePos);
     }
   }
 
   getRule = ({ stackPos, pathPos, rulePos, }: Omit<RulePosition, 'previous'>): Rule => {
-    const rule = this.#stacks[stackPos][pathPos][rulePos];
+    const rule = this.#stacks.getRule(stackPos, pathPos, rulePos);
     if (rule === undefined) {
       throw new Error('Out of bounds rule');
     }
@@ -34,8 +71,7 @@ export class RulePointer {
   };
 
   addReferenceRule = (rule: RuleRef, position: RulePosition) => {
-    const referenceRule = this.#stacks[rule.value];
-    for (let pathPos = 0; pathPos < referenceRule.length; pathPos++) {
+    for (let pathPos = 0; pathPos < this.#stacks.getStackSize(rule.value); pathPos++) {
       this.addPosition(rule.value, pathPos, 0, position);
     }
   };
@@ -82,7 +118,7 @@ export class RulePointer {
   };
 
   hasNextRule = ({ rulePos, stackPos, pathPos, }: RulePosition): boolean => {
-    return rulePos + 1 < this.#stacks[stackPos][pathPos].length;
+    return rulePos + 1 < this.#stacks.getPathSize(stackPos, pathPos);
   };
 
   delete = (position: RulePosition) => {
