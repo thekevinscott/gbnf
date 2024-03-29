@@ -73,14 +73,15 @@ export class RulePointer {
     this.#stacks = new Stacks(stacks);
     this.#positions = new Positions(this.#stacks);
     for (let pathPos = 0; pathPos < this.#stacks.getStackSize(stackPos); pathPos++) {
-      this.addPosition(stackPos, pathPos, rulePos);
+      this.addPosition(0, stackPos, pathPos, rulePos);
     }
   }
 
   getRule = (position: Omit<RulePosition, 'previous'>) => this.#stacks.getRule(position);
 
-  addPosition = (stackPos: number, pathPos: number, rulePos: number, previous?: RulePosition[]) => {
+  addPosition = (depth: number, stackPos: number, pathPos: number, rulePos: number, previous?: RulePosition[]) => {
     this.#positions.add({
+      depth,
       stackPos,
       pathPos,
       rulePos,
@@ -94,7 +95,7 @@ export class RulePointer {
         ...position,
         rulePos: position.rulePos + 1,
       },];
-      this.addPosition(rule.value, pathPos, 0, nextPosition);
+      this.addPosition(position.depth + 1, rule.value, pathPos, 0, nextPosition);
     }
   };
 
@@ -108,7 +109,7 @@ export class RulePointer {
         if (position.previous) {
           this.delete(position);
           for (const { stackPos, pathPos, rulePos, previous, } of position.previous) {
-            this.addPosition(stackPos, pathPos, rulePos, previous);
+            this.addPosition(position.depth, stackPos, pathPos, rulePos, previous);
           }
         } else {
           yield { rule, position, };

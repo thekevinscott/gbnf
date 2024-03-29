@@ -52,6 +52,7 @@ export interface RulePosition {
   pathPos: number;
   rulePos: number;
   previous?: RulePosition[];
+  depth: number;
 }
 
 /** Type Guards */
