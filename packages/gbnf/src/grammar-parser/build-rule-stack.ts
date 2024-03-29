@@ -21,7 +21,6 @@ const buildRangeRule = (prevRule: RuleCharOrAltChar, currentRule: RuleWithNumeri
 };
 
 export const buildRuleStack = (linearRules: Rule[]): Rule[][] => {
-  console.log(linearRules);
   let paths: Rule[] = [];
 
   const stack: Rule[][] = [];
@@ -77,7 +76,6 @@ export const buildRuleStack = (linearRules: Rule[]): Rule[][] => {
           throw new Error(`Unexpected end of sequence, lingering prev value: ${prevValue}`);
         }
       } else if (isRuleChar(previousRule)) {
-        console.log(linearRules, previousRule, ruleDef);
         let currentCharAlt = linearRules[idx];
         while (idx < linearRules.length && isRuleCharAlt(currentCharAlt)) {
           previousRule.value.push(currentCharAlt.value);
@@ -93,7 +91,6 @@ export const buildRuleStack = (linearRules: Rule[]): Rule[][] => {
     } else if (isRuleCharRngUpper(ruleDef)) {
       const prevRule = paths.pop();
       if (!isRuleChar(prevRule) && !isRuleCharAlt(prevRule)) {
-        console.log(idx, linearRules, paths);
         throw new Error(`Unexpected previous rule: ${JSON.stringify(prevRule)}, expected CHAR or CHAR_ALT`);
       }
       paths.push(buildRangeRule(prevRule, ruleDef));
