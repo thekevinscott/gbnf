@@ -316,4 +316,31 @@ describe('buildRuleStack', () => {
       });
     });
   });
+
+  test.each([
+    [
+      'root  ::= (ws )+\\nws    ::= [ \\\\t\\\\n]*',
+      [
+        { type: RuleType.CHAR, value: [32] },
+        { type: RuleType.CHAR_ALT, value: 92 },
+        { type: RuleType.CHAR_ALT, value: 110 },
+        { type: RuleType.RULE_REF, value: 4 },
+        { type: RuleType.ALT },
+        { type: RuleType.END },
+      ],
+      [
+        [
+          { type: RuleType.CHAR, value: [32, 92, 110], },
+          { type: RuleType.RULE_REF, value: 4 },
+          { type: RuleType.END }
+        ],
+        [
+          { type: RuleType.END }
+
+        ],
+      ]
+    ],
+  ] as [string, RuleDef[], RuleDef[][]][])('it builds rule stack for situation `%s`', (key, input, expected) => {
+    expect(buildRuleStack(input)).toEqual(expected);
+  });
 });
