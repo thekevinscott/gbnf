@@ -5,6 +5,7 @@ import 'colors';
 import { GraphRootNode, } from "./graph-root-node.js";
 import { GraphPointer, } from "./graph-pointer.js";
 import { GraphNode, } from "./graph-node.js";
+import { getRuleKey, } from "./get-rule-key.js";
 
 const customInspectSymbol = Symbol.for('nodejs.util.inspect.custom');
 
@@ -54,10 +55,16 @@ export class Graph {
     return `\n${graphView.join('\n')}`;
   }
 
-  rules(): Rule[] {
+  get rules(): Rule[] {
+    const seen = new Set<string>();
     const rules: Rule[] = [];
-    for (const pointer of this.pointers) {
-      rules.push(pointer.rule);
+
+    for (const { rule, } of this.pointers) {
+      const key = getRuleKey(rule);
+      if (!seen.has(key)) {
+        seen.add(key);
+        rules.push(rule);
+      }
     }
     return rules;
   }
