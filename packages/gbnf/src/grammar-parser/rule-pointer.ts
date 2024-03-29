@@ -79,7 +79,7 @@ export class RulePointer {
 
   getRule = (position: Omit<RulePosition, 'previous'>) => this.#stacks.getRule(position);
 
-  addPosition = (stackPos: number, pathPos: number, rulePos: number, previous?: RulePosition) => {
+  addPosition = (stackPos: number, pathPos: number, rulePos: number, previous?: RulePosition[]) => {
     this.#positions.add({
       stackPos,
       pathPos,
@@ -90,10 +90,10 @@ export class RulePointer {
 
   addReferenceRule = (rule: RuleRef, position: RulePosition) => {
     for (let pathPos = 0; pathPos < this.#stacks.getStackSize(rule.value); pathPos++) {
-      const nextPosition = {
+      const nextPosition = [{
         ...position,
         rulePos: position.rulePos + 1,
-      };
+      }];
       this.addPosition(rule.value, pathPos, 0, nextPosition);
     }
   };
@@ -107,7 +107,9 @@ export class RulePointer {
       } else if (isRuleEnd(rule)) {
         if (position.previous) {
           this.delete(position);
-          this.addPosition(position.previous.stackPos, position.previous.pathPos, position.previous.rulePos, position.previous.previous);
+          for (const { stackPos, pathPos, rulePos, previous, } of position.previous) {
+            this.addPosition(stackPos, pathPos, rulePos, previous);
+          }
         } else {
           yield { rule, position, };
         }
