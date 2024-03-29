@@ -93,7 +93,7 @@ export class RulePointer {
       const nextPosition = [{
         ...position,
         rulePos: position.rulePos + 1,
-      }];
+      },];
       this.addPosition(rule.value, pathPos, 0, nextPosition);
     }
   };
