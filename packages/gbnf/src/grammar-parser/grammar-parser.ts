@@ -1,6 +1,6 @@
 import { Rule, SymbolIds, isRuleChar, isRuleEnd, isRuleRange, isRuleWithNumericValue, } from "../types.js";
 import { AbstractGrammarParser, } from "./abstract-grammar-parser.js";
-import { Graph, } from "./graph.js";
+import { Graph, } from "./graph/graph.js";
 import { isPointInRange, } from "./is-point-in-range.js";
 import { RulePointer, } from "./rule-pointer.js";
 
