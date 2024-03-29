@@ -33,8 +33,8 @@ describe('GrammarParser', () => {
       ]],
       // expression and a char rule
       ['root ::= foo|"bar"\\nfoo::="foo" ', [
-        { type: RuleType.CHAR, value: ['b'.charCodeAt(0)], },
         { type: RuleType.CHAR, value: ['f'.charCodeAt(0)], },
+        { type: RuleType.CHAR, value: ['b'.charCodeAt(0)], },
       ]],
       // two expressions
       ['root ::= foo|bar\\nfoo::="foo"\\nbar::="bar" ', [
@@ -222,8 +222,8 @@ describe('GrammarParser', () => {
 
       // expression and a char rule
       ['root ::= foo | "bar"\\nfoo ::= "foo"', '', [
-        { type: RuleType.CHAR, value: ['b'.charCodeAt(0)], },
         { type: RuleType.CHAR, value: ['f'.charCodeAt(0)], },
+        { type: RuleType.CHAR, value: ['b'.charCodeAt(0)], },
       ]],
       ['root ::= foo | "bar"\\nfoo ::= "foo"', 'f', [
         { type: RuleType.CHAR, value: ['o'.charCodeAt(0)], },
@@ -390,6 +390,13 @@ describe('GrammarParser', () => {
       [
         'root ::= ("bar" | "foo") "zyx"',
         'bar', [
+          { type: RuleType.CHAR, value: ['z'.charCodeAt(0)], },
+        ]
+      ],
+      // should be able to process a rule, then step _into_ a rule, and then continue with the previous rule
+      [
+        'root ::= "z" ("bar" | "foo") "zzz"',
+        'zbar', [
           { type: RuleType.CHAR, value: ['z'.charCodeAt(0)], },
         ]
       ],

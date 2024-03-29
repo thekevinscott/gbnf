@@ -1,70 +1,46 @@
 import { Rule, SymbolIds, isRuleChar, isRuleEnd, isRuleRange, } from "../types.js";
 import { AbstractGrammarParser, } from "./abstract-grammar-parser.js";
-import { buildRuleStack, } from "./build-rule-stack.js";
-import { hasValidRules, } from "./has-valid-rules.js";
+import { Graph, } from "./graph/index.js";
 import { isPointInRange, } from "./is-point-in-range.js";
-import { RulePointer, } from "./rule-pointer.js";
-
 
 export const getGrammarParser = (ruleDefs: Rule[][], symbolIds: SymbolIds) => {
+  const rootId = symbolIds.get('root');
   class _GrammarParser implements AbstractGrammarParser {
-    ruleDefs = ruleDefs;
-    symbolIds = symbolIds;
-    stacks = ruleDefs.map(buildRuleStack);
-
-    rulePointer: RulePointer;
+    #graph: Graph;
 
     constructor(src: string) {
-      const rootId = this.symbolIds.get('root');
-      this.rulePointer = new RulePointer(this.stacks, rootId);
+      this.#graph = new Graph(ruleDefs, rootId);
       this.add(src);
     }
 
     public add = (src: string) => {
       for (let strPos = 0; strPos < src.length; strPos++) {
-        if (hasValidRules(this.rules) === false) {
-          throw new Error('Invalid input string, cannot be parsed');
+        if (this.#graph.rules.length === 0) {
+          break;
         }
-        for (const { rule, position, } of this.rulePointer) {
-          const char = src[strPos];
+        const char = src[strPos];
+        for (const { pointer, rule, } of this.#graph) {
           if (isRuleChar(rule)) {
             const ruleChar = String.fromCharCode(rule.value[0]);
-            const valid = char === ruleChar;
-            if (!valid) {
-              this.rulePointer.delete(position);
-            } else {
-              this.rulePointer.increment(position);
-            }
+            pointer.valid = char === ruleChar;
           } else if (isRuleRange(rule)) {
             const charCodePoint = src.charCodeAt(strPos);
-            const valid = isPointInRange(charCodePoint, rule.value);
-            if (!valid) {
-              this.rulePointer.delete(position);
-            } else {
-              this.rulePointer.increment(position);
-            }
+            pointer.valid = isPointInRange(charCodePoint, rule.value);
           } else if (isRuleEnd(rule)) {
-            if (this.rulePointer.hasNextRule(position)) {
-              this.rulePointer.increment(position);
-            } else {
-              this.rulePointer.delete(position);
-            }
-
+            // do nothing with this
           } else {
             throw new Error(`Unsupported rule type: ${rule.type}`);
           }
         }
       }
 
-      if (hasValidRules(this.rules) === false) {
+      if (this.#graph.rules.length === 0) {
         throw new Error('Invalid input string, cannot be parsed');
       }
     };
 
     // returns a flat stack of rules
-    get rules(): Rule[] {
-      return this.rulePointer.rules;
-    }
+    get rules(): Rule[] { return this.#graph.rules; }
   }
 
   return _GrammarParser;
