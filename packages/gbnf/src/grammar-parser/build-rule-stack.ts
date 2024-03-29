@@ -1,4 +1,4 @@
-import { Rule, RuleType, RuleWithRangeValues, RuleWithNumericValue, isRuleChar, isRuleCharRngUpper, isRuleRange, isRuleCharAlt, isRuleAlt, isRuleEnd, RuleCharOrAltChar, } from "../types.js";
+import { Rule, RuleType, RuleRange, RuleWithNumericValue, isRuleChar, isRuleCharRngUpper, isRuleRange, isRuleCharAlt, isRuleAlt, isRuleEnd, RuleCharOrAltChar, } from "../types.js";
 
 
 const getNumericValue = (rule: RuleCharOrAltChar): number => {
@@ -13,7 +13,7 @@ const getNumericValue = (rule: RuleCharOrAltChar): number => {
 };
 
 // Function to build a regex rule
-const buildRangeRule = (prevRule: RuleCharOrAltChar, currentRule: RuleWithNumericValue): RuleWithRangeValues => {
+const buildRangeRule = (prevRule: RuleCharOrAltChar, currentRule: RuleWithNumericValue): RuleRange => {
   return {
     type: RuleType.RANGE,
     value: [[getNumericValue(prevRule), currentRule.value,],],

@@ -15,7 +15,7 @@ export enum RuleType {
 
 export type Range = [number, number];
 
-export interface RuleWithRangeValues {
+export interface RuleRange {
   type: RuleType.RANGE,
   value: Range[];
 }
@@ -35,13 +35,13 @@ export interface RuleRef {
   type: RuleType.RULE_REF;
   value: number;
 }
-interface RuleEnd {
+export interface RuleEnd {
   type: RuleType.END;
 }
 interface RuleWithoutValue {
   type: RuleType.ALT | RuleType.END;
 }
-export type Rule = RuleChar | RuleWithNumericValue | RuleWithoutValue | RuleWithRangeValues;
+export type Rule = RuleChar | RuleWithNumericValue | RuleWithoutValue | RuleRange;
 export type RuleCharOrAltChar = RuleChar | RuleAltChar;
 
 export type SymbolIds = Map<string, number>;
@@ -65,4 +65,5 @@ export const isRuleEnd = (rule?: Rule): rule is RuleEnd => rule.type === RuleTyp
 export const isRuleChar = (rule?: Rule): rule is RuleChar => rule.type === RuleType.CHAR;
 export const isRuleCharAlt = (rule?: Rule): rule is RuleAltChar => rule.type === RuleType.CHAR_ALT;
 export const isRuleCharRngUpper = (rule?: Rule): rule is { type: RuleType.CHAR_RNG_UPPER, value: number } => rule.type === RuleType.CHAR_RNG_UPPER;
-export const isRuleRange = (rule?: Rule): rule is { type: RuleType.RANGE, value: Range[] } => rule.type === RuleType.RANGE;
+export const isRuleRange = (rule?: Rule): rule is RuleRange => rule.type === RuleType.RANGE;
+export const isRange = (range?: unknown): range is Range => Array.isArray(range) && range.length === 2 && range.every(n => typeof n === 'number');
