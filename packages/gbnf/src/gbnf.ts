@@ -9,6 +9,7 @@ export const GBNF = (grammar: string) => {
   if (symbolIds.get('root') === undefined) {
     throw new Error("Grammar does not contain a 'root' symbol");
   }
+  const rootId = symbolIds.get('root');
 
-  return getGrammarParser(rules, symbolIds);
+  return getGrammarParser(rules, rootId);
 };

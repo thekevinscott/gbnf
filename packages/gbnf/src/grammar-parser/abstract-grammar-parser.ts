@@ -1,12 +1,6 @@
-import { RuleDef, } from "../types.js";
+import { GraphRule, } from "./graph/types.js";
 
 export abstract class AbstractGrammarParser {
-  // symbolIds: SymbolIds;
-  // stacks: Rule[][][];
-  // ruleDefs: Rule[][];
-  // constructor(_src: string = '') { }
-
   public abstract add(src: string): void;
-
-  abstract get rules(): RuleDef[];
+  abstract get rules(): GraphRule[];
 }

@@ -1,5 +1,5 @@
 import { GBNF, } from './gbnf.js';
-import { RuleType, } from './types.js';
+import { InternalRuleType, } from './rules-builder/types.js';
 module.exports = GBNF;
 // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-module.exports.RuleType = RuleType;
+module.exports.RuleType = InternalRuleType;

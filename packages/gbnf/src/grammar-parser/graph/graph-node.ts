@@ -1,19 +1,19 @@
-import { PrintOpts, isRuleDefChar, isRuleDefRange, isRuleDefRef as isRuleDefRef, type RuleDef, } from "../../types.js";
-import { Color, } from "./color.js";
+import { Color, } from "./colorize.js";
 import type { GraphPointer, } from "./graph-pointer.js";
 import type { Graph, } from "./graph.js";
 import { Pointers, } from "./pointers.js";
+import { isRuleChar, isRuleRange, isRuleRef, type PrintOpts, type GraphRule, } from "./types.js";
 
 export class GraphNode {
   id = Math.random();
-  rule: RuleDef;
+  rule: GraphRule;
   _next = new Map<number, GraphNode>();
   _pointers = new Set<GraphPointer>();
   stackId: number;
   pathId: number;
   stepId: number;
   graph: Graph;
-  constructor(graph: Graph, stack: RuleDef[][], stackId: number, pathId: number, stepId: number) {
+  constructor(graph: Graph, stack: GraphRule[][], stackId: number, pathId: number, stepId: number) {
     this.graph = graph;
     this.stackId = stackId;
     this.pathId = pathId;
@@ -39,7 +39,7 @@ export class GraphNode {
     this._pointers.delete(pointer);
   }
 
-  print = (pointers: Pointers, { showPosition = false, col, }: PrintOpts): string => {
+  print = (pointers: Pointers, { showPosition = false, colorize: col, }: PrintOpts): string => {
     // [customInspectSymbol](depth: number, inspectOptions: InspectOptions, inspect: CustomInspectFunction) {
     const rule = this.rule;
 
@@ -51,19 +51,19 @@ export class GraphNode {
         col('}', Color.BLUE),
       );
     }
-    if (isRuleDefChar(rule)) {
+    if (isRuleChar(rule)) {
       parts.push(
         col('[', Color.GRAY),
         col(rule.value.map(v => getChar(v)).join(''), Color.YELLOW),
         col(']', Color.GRAY),
       );
-    } else if (isRuleDefRange(rule)) {
+    } else if (isRuleRange(rule)) {
       parts.push(
         col('[', Color.GRAY),
         ...rule.value.map(range => range.map(v => col(String.fromCharCode(v), Color.YELLOW)).join(col('-', Color.GRAY))),
         col(']', Color.GRAY),
       );
-    } else if (isRuleDefRef(rule)) {
+    } else if (isRuleRef(rule)) {
       parts.push(col('Ref(', Color.GRAY) + col(`${rule.value}`, Color.GREEN) + col(')', Color.GRAY));
     } else {
       parts.push(col(rule.type, Color.YELLOW));
@@ -73,7 +73,7 @@ export class GraphNode {
       const pointerParts: string[] = [];
       if (pointer.node === this) {
         pointerParts.push(
-          pointer.print({ col, showPosition, }),
+          pointer.print({ colorize: col, showPosition, }),
         );
       }
       if (pointerParts.length) {
@@ -84,16 +84,12 @@ export class GraphNode {
     }
     return [
       parts.join(''),
-      ...Array.from(this._next.values()).map(node => node.print(pointers, { col, showPosition, })),
+      ...Array.from(this._next.values()).map(node => node.print(pointers, { colorize: col, showPosition, })),
     ].join(col('-> ', Color.GRAY));
   };
 
-  * rules(): IterableIterator<RuleDef> {
-    if (isRuleDefRef(this.rule)) {
-      yield this.rule;
-    } else {
-      yield this.rule;
-    }
+  * rules(): IterableIterator<GraphRule> {
+    yield this.rule;
   }
 
   * nextNodes(): IterableIterator<GraphNode> {
@@ -104,7 +100,7 @@ export class GraphNode {
   }
   * nextNodesUnrollRuleDef(): IterableIterator<GraphNode> {
     for (const node of this._next.values()) {
-      if (isRuleDefRef(node.rule)) {
+      if (isRuleRef(node.rule)) {
         for (const nextNode of this.graph.getRootNode(node.rule.value).next) {
           yield nextNode;
         }

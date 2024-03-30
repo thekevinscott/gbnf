@@ -1,13 +1,12 @@
 // import { CustomInspectFunction, InspectOptions } from "util";
-import { RuleDef, isRuleDefRef as isRuleDefRef, } from "../../types.js";
-import { buildRuleStack, } from "../build-rule-stack.js";
 import { GraphRootNode, } from "./graph-root-node.js";
 import { GraphPointer, } from "./graph-pointer.js";
 import { GraphNode, } from "./graph-node.js";
 import { getRuleKey, } from "./get-rule-key.js";
-import { col, } from "./color.js";
-import { RuleWrapper, } from "./rule.js";
+import { colorize, } from "./colorize.js";
 import { Pointers, } from "./pointers.js";
+import { GraphRule, Rule, isRuleChar, isRuleEnd, isRuleRange, isRuleRef, } from "./types.js";
+import { isPointInRange, } from "../is-point-in-range.js";
 
 const customInspectSymbol = Symbol.for('nodejs.util.inspect.custom');
 
@@ -16,8 +15,7 @@ export class Graph {
 
   pointers = new Pointers(this);
 
-  constructor(ruleDefs: RuleDef[][], rootId: number) {
-    const stackedRules: RuleDef[][][] = ruleDefs.map(buildRuleStack);
+  constructor(stackedRules: GraphRule[][][], rootId: number) {
     for (let stackId = 0; stackId < stackedRules.length; stackId++) {
       const stack = stackedRules[stackId];
       this.roots.set(stackId, new GraphRootNode(this, stack, stackId));
@@ -25,7 +23,6 @@ export class Graph {
 
     const rootNode = this.roots.get(rootId);
 
-    // returns a list of nodes, _not_ root nodes
     for (const { node, parent, } of this.fetchNodesForRootNode(this, rootNode)) {
       this.pointers.add(new GraphPointer(this, node, parent));
     }
@@ -35,6 +32,27 @@ export class Graph {
     return this.roots.get(stackId);
   }
 
+  setValid(pointers: GraphPointer[], valid: boolean) {
+    for (const pointer of pointers) {
+      pointer.valid = valid;
+    }
+  }
+
+  parse(codePoint: number) {
+    for (const { rule, pointers, } of this.iterateOverPointers()) {
+      if (isRuleChar(rule)) {
+        this.setValid(pointers, rule.value.reduce((
+          isValid,
+          possibleCodePoint,
+        ) => isValid || codePoint === possibleCodePoint, false));
+      } else if (isRuleRange(rule)) {
+        this.setValid(pointers, isPointInRange(codePoint, rule.value));
+      } else if (!isRuleEnd(rule)) {
+        throw new Error(`Unsupported rule type: ${rule.type}`);
+      }
+    }
+  }
+
   // generator that yields either the node, or if a reference rule, the referenced node
   * fetchNodesForRootNode(
     graph: Graph,
@@ -42,7 +60,7 @@ export class Graph {
     parent?: GraphPointer,
   ): IterableIterator<{ node: GraphNode; parent?: GraphPointer; }> {
     for (const node of rootNode.nodes.values()) {
-      if (isRuleDefRef(node.rule)) {
+      if (isRuleRef(node.rule)) {
         yield* this.fetchNodesForRootNode(graph, graph.getRootNode(node.rule.value), new GraphPointer(this, node, parent));
       } else {
         yield { node, parent, };
@@ -61,16 +79,19 @@ export class Graph {
     const roots = Array.from(this.roots.values());
     const graphView = roots.reduce<string[]>((acc, rootNode) => acc.concat(rootNode.print(this.pointers, {
       showPosition: true,
-      col: colors ? col : str => `${str}`,
+      colorize: colors ? colorize : str => `${str}`,
     })), []);
     return `\n${graphView.join('\n')}`;
   };
 
-  get rules(): RuleDef[] {
+  get rules(): Rule[] {
     const seen = new Set<string>();
-    const rules: RuleDef[] = [];
+    const rules: Rule[] = [];
 
     for (const { rule, } of this.pointers) {
+      if (isRuleRef(rule)) {
+        throw new Error('Encountered a reference rule when building rules array, this should not happen');
+      }
       const key = getRuleKey(rule);
       if (!seen.has(key)) {
         seen.add(key);
@@ -80,8 +101,8 @@ export class Graph {
     return rules;
   }
 
-  *[Symbol.iterator](): IterableIterator<RuleWrapper> {
-    const seenRules = new Map<string, { rule: RuleDef; pointers: GraphPointer[]; }>();
+  * iterateOverPointers(): IterableIterator<{ rule: GraphRule; pointers: GraphPointer[]; }> {
+    const seenRules = new Map<string, { rule: GraphRule; pointers: GraphPointer[]; }>();
     const seen = new Set<GraphNode>();
     for (const pointer of this.pointers) {
       const rule = pointer.rule;
@@ -89,10 +110,10 @@ export class Graph {
       if (!seenRules.has(ruleKey)) {
         seenRules.set(ruleKey, { rule, pointers: [pointer,], });
         if (seen.has(pointer.node)) {
-          throw new Error('stop');
+          throw new Error('encountered a node twice in the graph, this should not happen');
         }
         seen.add(pointer.node);
-        if (isRuleDefRef(rule)) {
+        if (isRuleRef(rule)) {
           throw new Error('Encountered a reference rule in the graph, this should not happen');
         }
       } else {
@@ -101,9 +122,9 @@ export class Graph {
     }
 
     for (const { rule, pointers, } of seenRules.values()) {
-      yield new RuleWrapper(rule, pointers);
+      yield { rule, pointers, };
     }
 
     this.pointers.increment();
-  };
+  }
 }

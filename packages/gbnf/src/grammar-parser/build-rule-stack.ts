@@ -1,29 +1,47 @@
-import { RuleDef, RuleType, RuleRange, RuleWithNumericValue, isRuleDefChar, isRuleDefCharRngUpper, isRuleDefRange, isRuleDefCharAlt, isRuleDefAlt, isRuleDefEnd, RuleCharOrAltChar, } from "../types.js";
+import {
+  InternalRuleType,
+  isRuleDefAlt,
+  isRuleDefChar,
+  isRuleDefCharAlt,
+  isRuleDefCharRngUpper,
+  isRuleDefEnd,
+  isRuleDefRef,
+  type InternalRuleDef,
+  type InternalRuleDefWithNumericValue,
+} from "../rules-builder/types.js";
+import {
+  GraphRule,
+  RuleChar,
+  RuleType,
+  isRuleChar,
+  isRuleEnd,
+  isRuleRange,
+  type RuleRange,
+} from "./graph/types.js";
 
-
-const getNumericValue = (rule: RuleCharOrAltChar): number => {
+const getNumericValue = (rule: RuleChar): number => {
   const value = rule.value;
-  if (Array.isArray(value)) {
-    if (value.length > 1) {
-      throw new Error(`For building ranges, only a single value is supported. This is: ${JSON.stringify(value)}`);
-    }
-    return value[0];
+  if (!Array.isArray(value)) {
+    throw new Error(`Expected value to be an array, but got: ${JSON.stringify(value)}`);
   }
-  return value;
+  if (value.length !== 1) {
+    throw new Error(`For building ranges, a single value is expected. We received: ${JSON.stringify(value)}`);
+  }
+  return value[0];
 };
 
 // Function to build a regex rule
-const buildRangeRule = (prevRule: RuleCharOrAltChar, currentRule: RuleWithNumericValue): RuleRange => {
+const buildRangeRule = (prevRule: RuleChar, currentRule: InternalRuleDefWithNumericValue): RuleRange => {
   return {
     type: RuleType.RANGE,
     value: [[getNumericValue(prevRule), currentRule.value,],],
   };
 };
 
-export const buildRuleStack = (linearRules: RuleDef[]): RuleDef[][] => {
-  let paths: RuleDef[] = [];
+export const buildRuleStack = (linearRules: InternalRuleDef[]): GraphRule[][] => {
+  let paths: GraphRule[] = [];
 
-  const stack: RuleDef[][] = [];
+  const stack: GraphRule[][] = [];
 
   let idx = 0;
   while (idx < linearRules.length) {
@@ -35,7 +53,7 @@ export const buildRuleStack = (linearRules: RuleDef[]): RuleDef[][] => {
         paths = [];
       }
     } else if (isRuleDefCharAlt(ruleDef)) {
-      const previousRule = linearRules[idx - 1];
+      const previousRule: InternalRuleDef = linearRules[idx - 1];
       if (isRuleDefCharRngUpper(previousRule)) {
         // exhaust this sequence of CHAR_ALT and CHAR_RNG_UPPER rules
 
@@ -48,14 +66,14 @@ export const buildRuleStack = (linearRules: RuleDef[]): RuleDef[][] => {
           }
 
           switch (rule.type) {
-            case RuleType.CHAR:
+            case InternalRuleType.CHAR:
               throw new Error('Should never get here');
-            case RuleType.CHAR_ALT:
+            case InternalRuleType.CHAR_ALT:
               prevValue = rule.value;
               break;
-            case RuleType.CHAR_RNG_UPPER:
+            case InternalRuleType.CHAR_RNG_UPPER:
               const prevRule = paths.pop();
-              if (!isRuleDefRange(prevRule)) {
+              if (!isRuleRange(prevRule)) {
                 throw new Error(`Unexpected previous rule: ${JSON.stringify(prevRule)}`);
               }
               prevRule.value.push([prevValue, rule.value,]);
@@ -89,18 +107,34 @@ export const buildRuleStack = (linearRules: RuleDef[]): RuleDef[][] => {
       }
 
     } else if (isRuleDefCharRngUpper(ruleDef)) {
-      const prevRule = paths.pop();
-      if (!isRuleDefChar(prevRule) && !isRuleDefCharAlt(prevRule)) {
+      const prevRule: GraphRule = paths.pop();
+      if (isRuleChar(prevRule)) {
+        paths.push(buildRangeRule(prevRule, ruleDef));
+      } else {
         throw new Error(`Unexpected previous rule: ${JSON.stringify(prevRule)}, expected CHAR or CHAR_ALT`);
       }
-      paths.push(buildRangeRule(prevRule, ruleDef));
+    } else if (isRuleDefChar(ruleDef)) {
+      paths.push({
+        type: RuleType.CHAR,
+        value: ruleDef.value,
+      });
+    } else if (isRuleDefEnd(ruleDef)) {
+      // } else if (isRuleDefEnd(ruleDef)) {
+      paths.push({
+        type: RuleType.END,
+      });
+    } else if (isRuleDefRef(ruleDef)) {
+      paths.push({
+        type: RuleType.REF,
+        value: ruleDef.value,
+      });
     } else {
-      paths.push(ruleDef);
+      throw new Error(`Unsupported rule type: ${ruleDef.type}`);
     }
 
     idx += 1;
   }
-  if (!isRuleDefEnd(paths[paths.length - 1])) {
+  if (!isRuleEnd(paths[paths.length - 1])) {
     paths.push({ type: RuleType.END, });
   }
 
