@@ -1,5 +1,5 @@
-import type { PrintOpts, RuleDef, } from "../../types.js";
-import { Color, } from "./color.js";
+import type { PrintOpts, GraphRule, } from "./types.js";
+import { Color, } from "./colorize.js";
 import { GraphNode, } from "./graph-node.js";
 import type { Graph, } from "./graph.js";
 import { Pointers, } from "./pointers.js";
@@ -7,7 +7,7 @@ export class GraphRootNode {
   stackId: number;
   nodes = new Map<number, GraphNode>();
   graph: Graph;
-  constructor(graph: Graph, stack: RuleDef[][], stackId: number) {
+  constructor(graph: Graph, stack: GraphRule[][], stackId: number) {
     this.graph = graph;
     this.stackId = stackId;
     for (let pathId = 0; pathId < stack.length; pathId++) {
@@ -15,14 +15,14 @@ export class GraphRootNode {
     }
   }
 
-  print = (pointers: Pointers, { showPosition = false, col, }: PrintOpts): string => ([
+  print = (pointers: Pointers, { showPosition = false, colorize: col, }: PrintOpts): string => ([
     [
       col(` (`, Color.BLUE),
       col(this.stackId, Color.GRAY),
       col(`)`, Color.BLUE),
     ].join(''),
     ...Array.from(this.nodes.values()).map(node => {
-      return '  ' + node.print(pointers, { showPosition, col, });
+      return '  ' + node.print(pointers, { showPosition, colorize: col, });
     }),
   ]).join('\n');
 

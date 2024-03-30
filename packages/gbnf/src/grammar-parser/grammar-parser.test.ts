@@ -1,5 +1,5 @@
 import { GBNF } from '../gbnf.js';
-import { RuleType } from '../types.js';
+import { RuleType } from './graph/types.js';
 
 describe('GrammarParser', () => {
   describe("initialization", () => {

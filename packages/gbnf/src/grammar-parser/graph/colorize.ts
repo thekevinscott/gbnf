@@ -6,6 +6,8 @@ export enum Color {
   GRAY = '\x1b[90m',
   YELLOW = '\x1b[33m',
 }
-export const col = (str: string | number, color: Color): string => {
+export const colorize = (str: string | number, color: Color): string => {
   return `${color}${str}`;
 };
+
+export type Colorize = typeof colorize;
