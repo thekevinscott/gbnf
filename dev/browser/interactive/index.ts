@@ -9,6 +9,7 @@ const grammars = import.meta.glob('./grammars/*.gbnf', {
 const form = document.getElementById('form');
 const grammarEditor = document.getElementById('grammar');
 const inputEditor = document.getElementById('input');
+const output = document.getElementById('output');
 const select = document.getElementById('grammar-selector') as HTMLSelectElement;
 Object.entries(grammars).forEach(([path, grammarContents]: [string, string]) => {
   const option = document.createElement('option');
@@ -41,15 +42,24 @@ const getGrammarParser = (grammarContents: string) => {
   }
 };
 
-const parseGBNF = (grammarContents: string, inputContents: string) => {
-  console.log(grammarContents);
-  const GrammarParser = getGrammarParser(grammarContents.split('\\').join('\\\\'));
-  const parser = new GrammarParser(inputContents);
-  console.log(`Parsed "${inputContents}" successfully`)
-  console.log(parser.rules);
+const log = (...messages) => {
+  console.log(...messages);
+  output.innerText += `${messages.map(msg => {
+    if (typeof msg === 'object') {
+      return JSON.stringify(msg, null, 2);
+    }
+    return msg;
+  }).join(' ')}\n`;
 }
 
-(grammarEditor as any).value = 'root  ::= (expr "=" term "\\n")+\nexpr  ::= term ([-+*/] term)*\nterm  ::= [0-9]+';
+const parseGBNF = (grammarContents: string, inputContents: string) => {
+  log('grammar', grammarContents);
+  const GrammarParser = getGrammarParser(grammarContents.split('\\').join('\\\\'));
+  const parser = new GrammarParser(inputContents);
+  log(`Parsed "${inputContents}" successfully`)
+  log(parser.rules);
+}
+
 (inputEditor as any).value = '1=1';
 
 parseGBNF((grammarEditor as any).value, (inputEditor as any).value);
