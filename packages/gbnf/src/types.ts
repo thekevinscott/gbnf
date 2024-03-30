@@ -1,4 +1,4 @@
-import { col } from "./grammar-parser/graph/color.js";
+import { col, } from "./grammar-parser/graph/color.js";
 
 export enum RuleType {
   CHAR = 'CHAR',

@@ -1,8 +1,7 @@
-import { RuleDef, RuleType, SymbolIds, isRuleDef, isRuleDefChar, isRuleDefEnd, isRuleDefRange, } from "../types.js";
+import { RuleDef, SymbolIds, isRuleDefChar, isRuleDefEnd, isRuleDefRange, } from "../types.js";
 import { AbstractGrammarParser, } from "./abstract-grammar-parser.js";
 import { InputParseError, } from "./errors.js";
 import { Graph, } from "./graph/index.js";
-import { isRuleChar, isRuleEnd, isRuleRange } from "./graph/rule.js";
 import { isPointInRange, } from "./is-point-in-range.js";
 
 export const getGrammarParser = (ruleDefs: RuleDef[][], symbolIds: SymbolIds) => {

@@ -20,7 +20,7 @@ export class GraphPointer {
     return this.#node;
   }
   set node(node: GraphNode) {
-    throw new Error('do not do this, node should be immutable')
+    throw new Error('do not do this, node should be immutable');
     // // remove the old node's pointer reference
     // this.node.deletePointer(this);
 
