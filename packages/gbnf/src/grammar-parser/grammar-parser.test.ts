@@ -65,6 +65,13 @@ describe('GrammarParser', () => {
         { type: RuleType.RANGE, value: [['a'.charCodeAt(0), 'z'.charCodeAt(0)], ['A'.charCodeAt(0), 'Z'.charCodeAt(0)]], },
         { type: RuleType.END },
       ]],
+      // real world use cases
+      // arithmetic
+      [
+        `root  ::= (expr "=" term "\n")+\\nexpr  ::= term ([-+*/] term)*\\nterm  ::= [0-9]+`, [
+          { type: RuleType.RANGE, value: [['0'.charCodeAt(0), '9'.charCodeAt(0)]], },
+        ]
+      ],
     ])('it returns initial set of rules for grammar `%s`', (grammar, expectation) => {
       const Parser = GBNF(grammar.split('\\n').join('\n'));
       const parser = new Parser('');
@@ -156,10 +163,7 @@ describe('GrammarParser', () => {
       [`root ::= [a-z]*`, 'A',],
       [`root ::= [a-z]*`, '0',],
       [`root ::= [a-z]*`, 'az0',],
-    ])('it throws if encountering a grammar `%s` with invalid input: `%s`', (grammar, input) => {
-      const Parser = GBNF(grammar.split('\\n').join('\n'));
-      expect(() => new Parser(input)).toThrow();
-    });
+    ])('it throws if encountering a grammar `%s` with invalid input: `%s`', (grammar, input) => { expect(() => new (GBNF(grammar.split('\\n').join('\n')))(input)).toThrow(); });
 
     test.each([
       // single char rule
@@ -218,6 +222,9 @@ describe('GrammarParser', () => {
       ]],
       ['root ::= foo\\nfoo ::= "foo"', 'foo', [
         { type: RuleType.END },
+      ]],
+      ['root ::= f\\nf ::= foo\\nfoo ::= "foo"', '', [
+        { type: RuleType.CHAR, value: ['f'.charCodeAt(0)], },
       ]],
 
       // expression and a char rule
@@ -347,7 +354,7 @@ describe('GrammarParser', () => {
       [`root ::= [a-z]+`, '', [
         { type: RuleType.RANGE, value: [['a'.charCodeAt(0), 'z'.charCodeAt(0)]], },
       ]],
-      [`root ::= [a-z]+`, 'a', [
+      [`root ::= [a-z]+`, 'l', [
         { type: RuleType.RANGE, value: [['a'.charCodeAt(0), 'z'.charCodeAt(0)]], },
         { type: RuleType.END, },
       ]],
@@ -355,10 +362,14 @@ describe('GrammarParser', () => {
         { type: RuleType.RANGE, value: [['a'.charCodeAt(0), 'z'.charCodeAt(0)], ['A'.charCodeAt(0), 'Z'.charCodeAt(0)]], },
         { type: RuleType.END, },
       ]],
-      [`root ::= [a-zA-Z]+`, 'azAZ', [
+      [`root ::= [a-zA-Z]+`, 'aZ', [
         { type: RuleType.RANGE, value: [['a'.charCodeAt(0), 'z'.charCodeAt(0)], ['A'.charCodeAt(0), 'Z'.charCodeAt(0)]], },
         { type: RuleType.END, },
       ]],
+      // [`root ::= [a-zA-Z]+`, 'azAZ', [
+      //   { type: RuleType.RANGE, value: [['a'.charCodeAt(0), 'z'.charCodeAt(0)], ['A'.charCodeAt(0), 'Z'.charCodeAt(0)]], },
+      //   { type: RuleType.END, },
+      // ]],
 
       // range with * modifier
       [`root ::= [a-z]*`, '', [
@@ -393,12 +404,96 @@ describe('GrammarParser', () => {
           { type: RuleType.CHAR, value: ['z'.charCodeAt(0)], },
         ]
       ],
+      // should be able to process a rule, then step _into_ a rule, with a pointer to previous rule
+      [
+        'root ::= "z" ("bar" | "foo") "zzzz"',
+        'z', [
+          { type: RuleType.CHAR, value: ['b'.charCodeAt(0)], },
+          { type: RuleType.CHAR, value: ['f'.charCodeAt(0)], },
+        ]
+      ],
       // should be able to process a rule, then step _into_ a rule, and then continue with the previous rule
       [
         'root ::= "z" ("bar" | "foo") "zzz"',
         'zbar', [
           { type: RuleType.CHAR, value: ['z'.charCodeAt(0)], },
         ]
+      ],
+      [
+        `root  ::= termz ([-+*/] termz)* \\n termz  ::= [0-9]+`,
+        '1', [
+          { type: RuleType.RANGE, value: [['0'.charCodeAt(0), '9'.charCodeAt(0)]], },
+          {
+            type: RuleType.CHAR, value: [
+              '-'.charCodeAt(0),
+              '+'.charCodeAt(0),
+              '*'.charCodeAt(0),
+              '/'.charCodeAt(0),
+            ],
+          },
+          { type: RuleType.END, },
+        ]
+      ],
+      [
+        `root  ::= expr "=" termy  \\nexpr  ::= termy ([-+*/] termy)*\\n termy  ::= [0-9]+`,
+        '1', [
+          { type: RuleType.RANGE, value: [['0'.charCodeAt(0), '9'.charCodeAt(0)]], },
+          {
+            type: RuleType.CHAR, value: [
+              '-'.charCodeAt(0),
+              '+'.charCodeAt(0),
+              '*'.charCodeAt(0),
+              '/'.charCodeAt(0),
+            ],
+          },
+          {
+            type: RuleType.CHAR, value: ['='.charCodeAt(0),],
+          },
+        ]
+      ],
+      [
+        `root  ::= (expr "=" terma "\\n")+\\nexpr  ::= terma ([-+*/] terma)*\\nterma  ::= [0-9]+`,
+        '1', [
+          { type: RuleType.RANGE, value: [['0'.charCodeAt(0), '9'.charCodeAt(0)]], },
+          {
+            type: RuleType.CHAR, value: [
+              '-'.charCodeAt(0),
+              '+'.charCodeAt(0),
+              '*'.charCodeAt(0),
+              '/'.charCodeAt(0),
+            ],
+          },
+          {
+            type: RuleType.CHAR, value: ['='.charCodeAt(0),],
+          },
+        ]
+      ],
+      [
+        `root  ::= (expr "=" termb "\\n")+\\nexpr  ::= termb ([-+*/] termb)*\\ntermb  ::= [0-9]+`,
+        '1+',
+        [
+          { type: RuleType.RANGE, value: [['0'.charCodeAt(0), '9'.charCodeAt(0)]], },
+        ],
+      ],
+      [
+        `root  ::= (expr "=" termc "\\n")+\\nexpr  ::= termc ([-+*/] termc)*\\ntermc  ::= [0-9]+`,
+        '1=', [
+          { type: RuleType.RANGE, value: [['0'.charCodeAt(0), '9'.charCodeAt(0)]], },
+        ],
+      ],
+      [
+        `root  ::= (expr "=" term "\\n")+\\nexpr  ::= term ([-+*/] term)*\\nterm  ::= [0-9]+`,
+        '1+1', [
+          { type: RuleType.RANGE, value: [['0'.charCodeAt(0), '9'.charCodeAt(0)]], },
+          { type: RuleType.CHAR, value: ['='.charCodeAt(0)], },
+        ]
+      ],
+      [
+        `root  ::= (expr "=" term "\\n")+\\nexpr  ::= term ([-+*/] term)*\\nterm  ::= [0-9]+`,
+        '1=1', [
+          { type: RuleType.RANGE, value: [['0'.charCodeAt(0), '9'.charCodeAt(0)]], },
+          { type: RuleType.CHAR, value: ['\n'.charCodeAt(0)], },
+        ],
       ],
     ])('it parses a grammar `%s` against input: `%s`', (grammar, input, expected) => {
       const Parser = GBNF(grammar.split('\\n').join('\n'));

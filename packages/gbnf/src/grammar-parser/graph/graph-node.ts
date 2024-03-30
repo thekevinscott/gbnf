@@ -1,16 +1,19 @@
-import { isRuleChar, isRuleRange, isRuleRef, type Rule, } from "../../types.js";
+import { PrintOpts, isRuleDefChar, isRuleDefRange, isRuleDefRef as isRuleDefRef, type RuleDef, } from "../../types.js";
+import { Color, } from "./color.js";
 import type { GraphPointer, } from "./graph-pointer.js";
 import type { Graph, } from "./graph.js";
+import { Pointers, } from "./pointers.js";
 
 export class GraphNode {
-  rule: Rule;
+  id = Math.random();
+  rule: RuleDef;
   _next = new Map<number, GraphNode>();
   _pointers = new Set<GraphPointer>();
   stackId: number;
   pathId: number;
   stepId: number;
   graph: Graph;
-  constructor(graph: Graph, stack: Rule[][], stackId: number, pathId: number, stepId: number) {
+  constructor(graph: Graph, stack: RuleDef[][], stackId: number, pathId: number, stepId: number) {
     this.graph = graph;
     this.stackId = stackId;
     this.pathId = pathId;
@@ -36,54 +39,89 @@ export class GraphNode {
     this._pointers.delete(pointer);
   }
 
-  print = (pointers: Set<GraphPointer>, showPosition = false): string => {
+  print = (pointers: Pointers, { showPosition = false, col, }: PrintOpts): string => {
     // [customInspectSymbol](depth: number, inspectOptions: InspectOptions, inspect: CustomInspectFunction) {
     const rule = this.rule;
 
     const parts: (string | number)[] = [];
     if (showPosition) {
-      parts.push('{'.blue, `${[this.stepId,].join('-')}`.cyan + `}`.blue);
+      parts.push(
+        col('{', Color.BLUE),
+        col(`${[this.stepId,].join('-')}`, Color.GRAY),
+        col('}', Color.BLUE),
+      );
     }
-    // const parts: (string | number)[] = showPosition ? [`${[this.pathId, this.stepId,].join('-')}`.underline + `|`.gray,] : [];
-    if (isRuleChar(rule)) {
-      parts.push('['.gray + rule.value.map(v => String.fromCharCode(v)).join('').yellow + ']'.gray);
-    } else if (isRuleRange(rule)) {
-      parts.push('['.gray + rule.value.map(range => range.map(v => String.fromCharCode(v).yellow).join('-').gray).join('') + ']'.gray);
-    } else if (isRuleRef(rule)) {
-      parts.push('REF('.gray + `${rule.value}`.green + ')'.gray);
+    if (isRuleDefChar(rule)) {
+      parts.push(
+        col('[', Color.GRAY),
+        col(rule.value.map(v => getChar(v)).join(''), Color.YELLOW),
+        col(']', Color.GRAY),
+      );
+    } else if (isRuleDefRange(rule)) {
+      parts.push(
+        col('[', Color.GRAY),
+        ...rule.value.map(range => range.map(v => col(String.fromCharCode(v), Color.YELLOW)).join(col('-', Color.GRAY))),
+        col(']', Color.GRAY),
+      );
+    } else if (isRuleDefRef(rule)) {
+      parts.push(col('Ref(', Color.GRAY) + col(`${rule.value}`, Color.GREEN) + col(')', Color.GRAY));
     } else {
-      parts.push(rule.type.yellow);
+      parts.push(col(rule.type, Color.YELLOW));
     }
 
     for (const pointer of pointers) {
+      const pointerParts: string[] = [];
       if (pointer.node === this) {
-        parts.push('*'.red);
-        if (!!pointer.parent) {
-          parts.push('p'.red);
-        }
+        pointerParts.push(
+          pointer.print({ col, showPosition, }),
+        );
+      }
+      if (pointerParts.length) {
+        parts.push(col('[', Color.GRAY));
+        parts.push(...pointerParts);
+        parts.push(col(']', Color.GRAY));
       }
     }
-    return [parts.join(''), ...Array.from(this._next.values()).map(node => node.print(pointers, showPosition)),].join('->'.gray);
+    return [
+      parts.join(''),
+      ...Array.from(this._next.values()).map(node => node.print(pointers, { col, showPosition, })),
+    ].join(col('-> ', Color.GRAY));
   };
 
-  * rules(): IterableIterator<Rule> {
-    if (isRuleRef(this.rule)) {
+  * rules(): IterableIterator<RuleDef> {
+    if (isRuleDefRef(this.rule)) {
       yield this.rule;
     } else {
       yield this.rule;
     }
   }
 
-  * nextNodes(): IterableIterator<{ node: GraphNode; parent?: GraphNode; }> {
+  * nextNodes(): IterableIterator<GraphNode> {
     for (const node of this._next.values()) {
-      if (isRuleRef(node.rule)) {
+      yield node;
+    }
+
+  }
+  * nextNodesUnrollRuleDef(): IterableIterator<GraphNode> {
+    for (const node of this._next.values()) {
+      if (isRuleDefRef(node.rule)) {
         for (const nextNode of this.graph.getRootNode(node.rule.value).next) {
-          yield { node: nextNode, parent: node, };
+          yield nextNode;
         }
       } else {
-        yield { node, };
+        yield node;
       }
     }
 
   }
 }
+
+const getChar = (charCode: number) => {
+  const char = String.fromCharCode(charCode);
+  switch (char) {
+    case '\n':
+      return '\\n';
+    default:
+      return char;
+  }
+};

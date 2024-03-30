@@ -4,6 +4,16 @@
   <title>Interactive: GBNF Dev</title>
   <link rel="stylesheet" href="../global.css" />
   <style>
+    form {
+      max-height: 100%;
+      display: flex;
+      flex-direction: column;;
+    }
+
+    button {
+      flex: 1;
+      display: block;
+    }
   </style>
 </head>
 <body>
@@ -12,6 +22,7 @@
       <option value=""> - </option>
     </select>
     <wc-monaco-editor id="grammar"></wc-monaco-editor>
+    <wc-monaco-editor id="input"></wc-monaco-editor>
 
     <button id="submit" type="submit">Parse</button>
   </form>

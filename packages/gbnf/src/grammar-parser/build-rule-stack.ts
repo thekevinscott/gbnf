@@ -1,4 +1,4 @@
-import { Rule, RuleType, RuleRange, RuleWithNumericValue, isRuleChar, isRuleCharRngUpper, isRuleRange, isRuleCharAlt, isRuleAlt, isRuleEnd, RuleCharOrAltChar, } from "../types.js";
+import { RuleDef, RuleType, RuleRange, RuleWithNumericValue, isRuleDefChar, isRuleDefCharRngUpper, isRuleDefRange, isRuleDefCharAlt, isRuleDefAlt, isRuleDefEnd, RuleCharOrAltChar, } from "../types.js";
 
 
 const getNumericValue = (rule: RuleCharOrAltChar): number => {
@@ -20,30 +20,30 @@ const buildRangeRule = (prevRule: RuleCharOrAltChar, currentRule: RuleWithNumeri
   };
 };
 
-export const buildRuleStack = (linearRules: Rule[]): Rule[][] => {
-  let paths: Rule[] = [];
+export const buildRuleStack = (linearRules: RuleDef[]): RuleDef[][] => {
+  let paths: RuleDef[] = [];
 
-  const stack: Rule[][] = [];
+  const stack: RuleDef[][] = [];
 
   let idx = 0;
   while (idx < linearRules.length) {
     const ruleDef = linearRules[idx];
-    if (isRuleAlt(ruleDef)) {
+    if (isRuleDefAlt(ruleDef)) {
       if (paths.length) {
         paths.push({ type: RuleType.END, });
         stack.push(paths);
         paths = [];
       }
-    } else if (isRuleCharAlt(ruleDef)) {
+    } else if (isRuleDefCharAlt(ruleDef)) {
       const previousRule = linearRules[idx - 1];
-      if (isRuleCharRngUpper(previousRule)) {
+      if (isRuleDefCharRngUpper(previousRule)) {
         // exhaust this sequence of CHAR_ALT and CHAR_RNG_UPPER rules
 
         let prevValue: number = ruleDef.value;
         idx += 1;
-        while (idx < linearRules.length && (isRuleCharRngUpper(linearRules[idx]) || isRuleChar(linearRules[idx]))) {
+        while (idx < linearRules.length && (isRuleDefCharRngUpper(linearRules[idx]) || isRuleDefChar(linearRules[idx]))) {
           const rule = linearRules[idx];
-          if (prevValue !== undefined && !isRuleCharRngUpper(rule)) {
+          if (prevValue !== undefined && !isRuleDefCharRngUpper(rule)) {
             throw new Error(`Unexpected sequence, expected a CHAR_RNG_UPPER rule but got ${rule.type}`);
           }
 
@@ -55,7 +55,7 @@ export const buildRuleStack = (linearRules: Rule[]): Rule[][] => {
               break;
             case RuleType.CHAR_RNG_UPPER:
               const prevRule = paths.pop();
-              if (!isRuleRange(prevRule)) {
+              if (!isRuleDefRange(prevRule)) {
                 throw new Error(`Unexpected previous rule: ${JSON.stringify(prevRule)}`);
               }
               prevRule.value.push([prevValue, rule.value,]);
@@ -75,9 +75,9 @@ export const buildRuleStack = (linearRules: Rule[]): Rule[][] => {
         if (prevValue !== undefined) {
           throw new Error(`Unexpected end of sequence, lingering prev value: ${prevValue}`);
         }
-      } else if (isRuleChar(previousRule)) {
+      } else if (isRuleDefChar(previousRule)) {
         let currentCharAlt = linearRules[idx];
-        while (idx < linearRules.length && isRuleCharAlt(currentCharAlt)) {
+        while (idx < linearRules.length && isRuleDefCharAlt(currentCharAlt)) {
           previousRule.value.push(currentCharAlt.value);
           idx += 1;
           currentCharAlt = linearRules[idx];
@@ -88,9 +88,9 @@ export const buildRuleStack = (linearRules: Rule[]): Rule[][] => {
         throw new Error(`Unexpected previous rule: ${JSON.stringify(previousRule)}, expected CHAR or CHAR_ALT`);
       }
 
-    } else if (isRuleCharRngUpper(ruleDef)) {
+    } else if (isRuleDefCharRngUpper(ruleDef)) {
       const prevRule = paths.pop();
-      if (!isRuleChar(prevRule) && !isRuleCharAlt(prevRule)) {
+      if (!isRuleDefChar(prevRule) && !isRuleDefCharAlt(prevRule)) {
         throw new Error(`Unexpected previous rule: ${JSON.stringify(prevRule)}, expected CHAR or CHAR_ALT`);
       }
       paths.push(buildRangeRule(prevRule, ruleDef));
@@ -100,7 +100,7 @@ export const buildRuleStack = (linearRules: Rule[]): Rule[][] => {
 
     idx += 1;
   }
-  if (!isRuleEnd(paths[paths.length - 1])) {
+  if (!isRuleDefEnd(paths[paths.length - 1])) {
     paths.push({ type: RuleType.END, });
   }
 

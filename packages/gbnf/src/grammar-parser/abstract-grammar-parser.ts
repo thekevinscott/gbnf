@@ -1,4 +1,4 @@
-import { Rule, } from "../types.js";
+import { RuleDef, } from "../types.js";
 
 export abstract class AbstractGrammarParser {
   // symbolIds: SymbolIds;
@@ -8,5 +8,5 @@ export abstract class AbstractGrammarParser {
 
   public abstract add(src: string): void;
 
-  abstract get rules(): Rule[];
+  abstract get rules(): RuleDef[];
 }
