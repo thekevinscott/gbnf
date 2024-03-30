@@ -1,7 +1,7 @@
 import { GraphPointer, } from "./graph-pointer.js";
 import type { Graph, } from "./graph.js";
 
-export class Pointers {
+export class GraphPointersStore {
   #keys = new Set<string>();
   #pointers = new Set<GraphPointer>();
   #graph: Graph;
@@ -10,19 +10,19 @@ export class Pointers {
     this.#graph = graph;
   }
 
-  add(pointer: GraphPointer) {
-    const key = getKey(pointer);
+  add = (pointer: GraphPointer) => {
+    const key = getPointerKey(pointer);
     if (!this.#keys.has(key)) {
       this.#keys.add(key);
       this.#pointers.add(pointer);
     }
-  }
+  };
 
-  delete(pointer: GraphPointer) {
+  delete = (pointer: GraphPointer) => {
     this.#pointers.delete(pointer);
-    const key = getKey(pointer);
+    const key = getPointerKey(pointer);
     this.#keys.delete(key);
-  }
+  };
 
   *[Symbol.iterator](): IterableIterator<GraphPointer> {
     for (const pointer of this.#pointers) {
@@ -43,10 +43,16 @@ export class Pointers {
   };
 }
 
-const getKey = ({ node: { id, stackId, pathId, stepId, }, parent, }: GraphPointer): string => {
-  return JSON.stringify({
+const getPointerKey = ({
+  node: {
     id,
-    stackId, pathId, stepId,
-    parent: parent ? getKey(parent) : null,
-  });
-};
+    stackId,
+    pathId,
+    stepId,
+  },
+  parent,
+}: GraphPointer): string => JSON.stringify({
+  id,
+  stackId, pathId, stepId,
+  parent: parent ? getPointerKey(parent) : null,
+});

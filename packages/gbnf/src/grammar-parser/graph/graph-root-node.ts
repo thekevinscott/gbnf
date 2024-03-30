@@ -2,7 +2,7 @@ import type { PrintOpts, GraphRule, } from "./types.js";
 import { Color, } from "./colorize.js";
 import { GraphNode, } from "./graph-node.js";
 import type { Graph, } from "./graph.js";
-import { Pointers, } from "./pointers.js";
+import { GraphPointersStore, } from "./graph-pointers-store.js";
 export class GraphRootNode {
   stackId: number;
   nodes = new Map<number, GraphNode>();
@@ -15,7 +15,7 @@ export class GraphRootNode {
     }
   }
 
-  print = (pointers: Pointers, { showPosition = false, colorize: col, }: PrintOpts): string => ([
+  print = (pointers: GraphPointersStore, { showPosition = false, colorize: col, }: PrintOpts): string => ([
     [
       col(` (`, Color.BLUE),
       col(this.stackId, Color.GRAY),
