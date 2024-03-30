@@ -1,5 +1,5 @@
 import '@vanillawc/wc-monaco-editor';
-import GBNF from '../../../packages/gbnf/backup/index.js';
+import GBNF from '../../../packages/gbnf/src/index.js';
 const grammars = import.meta.glob('./grammars/*.gbnf', {
   eager: true,
   query: '?raw',
@@ -7,7 +7,8 @@ const grammars = import.meta.glob('./grammars/*.gbnf', {
 });
 
 const form = document.getElementById('form');
-const grammar = document.getElementById('grammar');
+const grammarEditor = document.getElementById('grammar');
+const inputEditor = document.getElementById('input');
 const select = document.getElementById('grammar-selector') as HTMLSelectElement;
 Object.entries(grammars).forEach(([path, grammarContents]: [string, string]) => {
   const option = document.createElement('option');
@@ -16,7 +17,7 @@ Object.entries(grammars).forEach(([path, grammarContents]: [string, string]) => 
   option.innerText = file;
   if (file === 'simple') {
     option.selected = true;
-    grammar.setAttribute('value', grammarContents);
+    grammarEditor.setAttribute('value', grammarContents);
   }
   // console.log(option)
   select.appendChild(option);
@@ -24,23 +25,31 @@ Object.entries(grammars).forEach(([path, grammarContents]: [string, string]) => 
 
 
 select.onchange = () => {
-  grammar.setAttribute('value', select.value);
+  grammarEditor.setAttribute('value', select.value);
 };
 
 form.onsubmit = async (e) => {
   e.preventDefault();
-  parseGBNF((grammar as any).value);
+  parseGBNF((grammarEditor as any).value, (inputEditor as any).value);
 };
 
-const parseGBNF = (grammarContents: string) => {
-  let gbnf;
-  console.log('ok')
+const getGrammarParser = (grammarContents: string) => {
   try {
-    gbnf = GBNF(grammarContents)
-    gbnf.parse();
+    return GBNF(grammarContents)
   } catch (err) {
-    console.error(err)
+    throw new Error(`Failed to create grammar parser from grammar: ${grammarContents}`);
   }
+};
+
+const parseGBNF = (grammarContents: string, inputContents: string) => {
+  console.log(grammarContents);
+  const GrammarParser = getGrammarParser(grammarContents.split('\\').join('\\\\'));
+  const parser = new GrammarParser(inputContents);
+  console.log(`Parsed "${inputContents}" successfully`)
+  console.log(parser.rules);
 }
 
-parseGBNF((grammar as any).value);
+(grammarEditor as any).value = 'root  ::= (expr "=" term "\\n")+\nexpr  ::= term ([-+*/] term)*\nterm  ::= [0-9]+';
+(inputEditor as any).value = '1=1';
+
+parseGBNF((grammarEditor as any).value, (inputEditor as any).value);
