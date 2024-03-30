@@ -2,9 +2,9 @@
 import { GraphRootNode, } from "./graph-root-node.js";
 import { GraphPointer, } from "./graph-pointer.js";
 import { GraphNode, } from "./graph-node.js";
-import { getRuleKey, } from "./get-rule-key.js";
+import { getSerializedRuleKey, } from "./get-serialized-rule-key.js";
 import { colorize, } from "./colorize.js";
-import { Pointers, } from "./pointers.js";
+import { GraphPointersStore, } from "./graph-pointers-store.js";
 import { GraphRule, Rule, isRuleChar, isRuleEnd, isRuleRange, isRuleRef, } from "./types.js";
 import { isPointInRange, } from "../is-point-in-range.js";
 
@@ -13,7 +13,7 @@ const customInspectSymbol = Symbol.for('nodejs.util.inspect.custom');
 export class Graph {
   roots = new Map<number, GraphRootNode>();
 
-  pointers = new Pointers(this);
+  pointers = new GraphPointersStore(this);
 
   constructor(stackedRules: GraphRule[][][], rootId: number) {
     for (let stackId = 0; stackId < stackedRules.length; stackId++) {
@@ -92,7 +92,7 @@ export class Graph {
       if (isRuleRef(rule)) {
         throw new Error('Encountered a reference rule when building rules array, this should not happen');
       }
-      const key = getRuleKey(rule);
+      const key = getSerializedRuleKey(rule);
       if (!seen.has(key)) {
         seen.add(key);
         rules.push(rule);
@@ -106,7 +106,7 @@ export class Graph {
     const seen = new Set<GraphNode>();
     for (const pointer of this.pointers) {
       const rule = pointer.rule;
-      const ruleKey = getRuleKey(rule);
+      const ruleKey = getSerializedRuleKey(rule);
       if (!seenRules.has(ruleKey)) {
         seenRules.set(ruleKey, { rule, pointers: [pointer,], });
         if (seen.has(pointer.node)) {

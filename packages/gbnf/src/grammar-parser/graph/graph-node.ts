@@ -1,11 +1,19 @@
 import { Color, } from "./colorize.js";
 import type { GraphPointer, } from "./graph-pointer.js";
 import type { Graph, } from "./graph.js";
-import { Pointers, } from "./pointers.js";
+import { GraphPointersStore, } from "./graph-pointers-store.js";
 import { isRuleChar, isRuleRange, isRuleRef, type PrintOpts, type GraphRule, } from "./types.js";
 
+const rules = new Map<GraphRule, number>();
+const getUniqueId = (rule: GraphRule) => {
+  let id = rules.get(rule);
+  if (id === undefined) {
+    id = rules.size;
+    rules.set(rule, id);
+    return id;
+  }
+};
 export class GraphNode {
-  id = Math.random();
   rule: GraphRule;
   _next = new Map<number, GraphNode>();
   _pointers = new Set<GraphPointer>();
@@ -25,6 +33,10 @@ export class GraphNode {
     }
   }
 
+  get id() {
+    return getUniqueId(this.rule);
+  }
+
   set pointer(pointer: GraphPointer) {
     if (this._pointers.has(pointer)) {
       throw new Error('This node already has a reference to this pointer');
@@ -39,7 +51,7 @@ export class GraphNode {
     this._pointers.delete(pointer);
   }
 
-  print = (pointers: Pointers, { showPosition = false, colorize: col, }: PrintOpts): string => {
+  print = (pointers: GraphPointersStore, { showPosition = false, colorize: col, }: PrintOpts): string => {
     // [customInspectSymbol](depth: number, inspectOptions: InspectOptions, inspect: CustomInspectFunction) {
     const rule = this.rule;
 
