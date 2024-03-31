@@ -15,7 +15,8 @@ export class GraphPointer {
     this.parent = parent;
   }
 
-  *[Symbol.iterator](): IterableIterator<GraphPointer> {
+  // method for fetching the next pointer. 
+  *fetchNext(): IterableIterator<GraphPointer> {
     if (this.#valid === false) {
       return;
     }
@@ -25,7 +26,7 @@ export class GraphPointer {
         for (const next of node.rule.getReferencedRules()) {
           if (isRuleEnd(next.rule)) {
             if (this.parent) {
-              yield* this.parent;
+              yield* this.parent.fetchNext();
             } else {
               yield new GraphPointer(next);
             }
@@ -35,7 +36,7 @@ export class GraphPointer {
         }
       } else if (isRuleEnd(node.rule)) {
         if (this.parent) {
-          for (const { node: next, parent, } of this.parent) {
+          for (const { node: next, parent, } of this.parent.fetchNext()) {
             yield new GraphPointer(next, parent);
           }
         } else {
