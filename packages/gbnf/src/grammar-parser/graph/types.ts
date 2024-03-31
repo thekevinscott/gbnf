@@ -1,7 +1,7 @@
 import type { Colorize, } from "./colorize.js";
-import { GraphNode } from "./graph-node.js";
+import { GraphNode, } from "./graph-node.js";
 import type { GraphPointersStore, } from "./graph-pointers-store.js";
-import { Graph } from "./graph.js";
+import { Graph, } from "./graph.js";
 
 export interface PrintOpts { pointers?: GraphPointersStore; colorize: Colorize; showPosition: boolean };
 
