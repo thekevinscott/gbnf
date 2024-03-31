@@ -12,8 +12,6 @@ export const getGrammarParser = (ruleDefs: InternalRuleDef[][], rootId: number) 
 
     constructor(src: string) {
       this.#graph = new Graph(stackedRules, rootId);
-      // console.log(this.#graph)
-      // console.log('------------------')
       this.add(src);
     }
 
@@ -24,7 +22,6 @@ export const getGrammarParser = (ruleDefs: InternalRuleDef[][], rootId: number) 
           throw new InputParseError(src, strPos);
         }
       }
-
     };
 
     // returns a flat stack of rules

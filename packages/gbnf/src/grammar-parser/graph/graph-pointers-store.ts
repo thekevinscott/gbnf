@@ -29,7 +29,7 @@ export class GraphPointersStore {
     this.#pointers = new Set<GraphPointer>();
     this.#keys = new Set<string>();
     for (const pointer of remainingPointers) {
-      for (const nextPointer of pointer.nextPointers()) {
+      for (const nextPointer of pointer) {
         this.#pointers.add(nextPointer);
       }
     }
