@@ -80,16 +80,6 @@ export class GraphNode {
       ...this.next.print({ pointers, colorize: col, showPosition, }),
     ].join(col('-> ', Color.GRAY));
   };
-
-  * rules(): IterableIterator<GraphRule> {
-    yield this.rule;
-  }
-
-  * nextNodes(): IterableIterator<GraphNode> {
-    if (this.next) {
-      yield this.next;
-    }
-  }
 }
 
 const getChar = (charCode: number) => {
