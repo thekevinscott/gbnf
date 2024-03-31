@@ -19,34 +19,35 @@ export class GraphPointer {
     return this.#node;
   }
 
-  * nextNodes(): IterableIterator<{ node: GraphNode; parent?: GraphPointer; }> {
+  * nextPointers(): IterableIterator<GraphPointer> {
     if (this.#valid === false) {
       return;
     }
-    for (const node of this.node.nextNodes()) {
+    const node = this.node.next;
+    if (node) {
       if (isRuleRef(node.rule)) {
         for (const { node: next, } of this.graph.fetchNodesForRootNode(this.graph, this.graph.getRootNode(node.rule.value), this)) {
 
           if (isRuleEnd(next.rule)) {
             if (this.parent) {
-              yield* this.parent.nextNodes();
+              yield* this.parent.nextPointers();
             } else {
-              yield { node: next, };
+              yield new GraphPointer(this.graph, next);
             }
           } else {
-            yield { node: next, parent: new GraphPointer(this.graph, node, this.parent), };
+            yield new GraphPointer(this.graph, next, new GraphPointer(this.graph, node, this.parent));
           }
         }
       } else if (isRuleEnd(node.rule)) {
         if (this.parent) {
-          for (const { node: next, parent, } of this.parent.nextNodes()) {
-            yield { node: next, parent, };
+          for (const { node: next, parent, } of this.parent.nextPointers()) {
+            yield new GraphPointer(this.graph, next, parent);
           }
         } else {
-          yield { node, };
+          yield new GraphPointer(this.graph, node);
         }
       } else {
-        yield { node, parent: this.parent, };
+        yield new GraphPointer(this.graph, node, this.parent);
       }
     }
   }
