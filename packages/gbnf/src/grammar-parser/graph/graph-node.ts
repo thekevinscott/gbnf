@@ -1,5 +1,4 @@
 import { Color, } from "./colorize.js";
-import type { GraphPointer, } from "./graph-pointer.js";
 import type { Graph, } from "./graph.js";
 import { GraphPointersStore, } from "./graph-pointers-store.js";
 import { isRuleChar, isRuleRange, isRuleRef, type PrintOpts, type GraphRule, } from "./types.js";
