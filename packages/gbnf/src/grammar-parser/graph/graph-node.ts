@@ -94,18 +94,6 @@ export class GraphNode {
     }
 
   }
-  * nextNodesUnrollRuleDef(): IterableIterator<GraphNode> {
-    for (const node of this._next.values()) {
-      if (isRuleRef(node.rule)) {
-        for (const nextNode of this.graph.getRootNode(node.rule.value).next) {
-          yield nextNode;
-        }
-      } else {
-        yield node;
-      }
-    }
-
-  }
 }
 
 const getChar = (charCode: number) => {
