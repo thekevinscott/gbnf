@@ -19,7 +19,7 @@ export class Graph {
       const stack = stackedRules[stackId];
       const nodes = new Map<number, GraphNode>();
       for (let pathId = 0; pathId < stack.length; pathId++) {
-        nodes.set(pathId, new GraphNode(this, stack, stackId, pathId, 0));
+        nodes.set(pathId, new GraphNode(stack, { stackId, pathId, stepId: 0, }));
       }
       this.roots.set(stackId, nodes);
     }

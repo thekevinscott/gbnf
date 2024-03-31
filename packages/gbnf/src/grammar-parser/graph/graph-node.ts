@@ -1,5 +1,4 @@
 import { Color, } from "./colorize.js";
-import type { Graph, } from "./graph.js";
 import { isRuleChar, isRuleRange, isRuleRef, type PrintOpts, type GraphRule, } from "./types.js";
 
 const rules = new Map<GraphRule, number>();
@@ -11,22 +10,22 @@ const getUniqueId = (rule: GraphRule) => {
     return id;
   }
 };
-export class GraphNode {
-  rule: GraphRule;
-  _next = new Map<number, GraphNode>();
+
+interface GraphNodeMeta {
   stackId: number;
   pathId: number;
   stepId: number;
-  graph: Graph;
-  constructor(graph: Graph, stack: GraphRule[][], stackId: number, pathId: number, stepId: number) {
-    this.graph = graph;
-    this.stackId = stackId;
-    this.pathId = pathId;
-    this.stepId = stepId;
-    this.rule = stack[pathId][stepId];
+}
+export class GraphNode {
+  rule: GraphRule;
+  _next = new Map<number, GraphNode>();
+  meta: GraphNodeMeta;
+  constructor(stack: GraphRule[][], meta: GraphNodeMeta) {
+    this.meta = meta;
+    this.rule = stack[meta.pathId][meta.stepId];
 
-    if (stack[pathId][stepId + 1]) {
-      this._next.set(pathId, new GraphNode(graph, stack, stackId, pathId, stepId + 1));
+    if (stack[meta.pathId][meta.stepId + 1]) {
+      this._next.set(meta.pathId, new GraphNode(stack, { ...meta, stepId: meta.stepId + 1, }));
     }
   }
 
@@ -42,7 +41,7 @@ export class GraphNode {
     if (showPosition) {
       parts.push(
         col('{', Color.BLUE),
-        col(`${[this.stepId,].join('-')}`, Color.GRAY),
+        col(`${[this.meta.stepId,].join('-')}`, Color.GRAY),
         col('}', Color.BLUE),
       );
     }

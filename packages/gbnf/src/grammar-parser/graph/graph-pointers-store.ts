@@ -45,9 +45,11 @@ export class GraphPointersStore {
 const getPointerKey = ({
   node: {
     id,
-    stackId,
-    pathId,
-    stepId,
+    meta: {
+      stackId,
+      pathId,
+      stepId,
+    },
   },
   parent,
 }: GraphPointer): string => JSON.stringify({
