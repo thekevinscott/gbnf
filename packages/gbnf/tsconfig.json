@@ -4,11 +4,7 @@
     "outDir": "./dist",
     "rootDir": "./src"
   },
-  "include": [
-    "./src/**/*.ts",
-    "src/umd.cjs",
-    "test/additional-strings.test.ts"
-  ],
+  "include": ["./src/**/*.ts", "./src/umd.cjs"],
   "exclude": [
     "node_modules",
     ".vscode-test",
