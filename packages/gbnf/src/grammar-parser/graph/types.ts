@@ -1,5 +1,7 @@
 import type { Colorize, } from "./colorize.js";
+import { GraphNode, } from "./graph-node.js";
 import type { GraphPointersStore, } from "./graph-pointers-store.js";
+import { Graph, } from "./graph.js";
 
 export interface PrintOpts { pointers?: GraphPointersStore; colorize: Colorize; showPosition: boolean };
 
@@ -22,7 +24,22 @@ export interface RuleChar {
 }
 export class RuleRef {
   type = RuleType.REF;
+  #graph?: Graph;
   constructor(public value: number) { }
+
+  set graph(graph: Graph) {
+    this.#graph = graph;
+  }
+
+  * getReferencedRules(): IterableIterator<GraphNode> {
+    if (!this.#graph) {
+      throw new Error('Graph not set on RuleRef');
+    }
+
+    for (const { node, } of this.#graph.fetchNodesForRootNode(this.#graph, this.#graph.getRootNode(this.value))) {
+      yield node;
+    }
+  }
 }
 export interface RuleEnd {
   type: RuleType.END;

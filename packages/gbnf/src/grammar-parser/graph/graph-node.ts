@@ -21,8 +21,11 @@ export class GraphNode {
   next?: GraphNode;
   meta: GraphNodeMeta;
   constructor(rule: GraphRule, meta: GraphNodeMeta, next?: GraphNode) {
-    this.meta = meta;
     this.rule = rule;
+    if (meta === undefined) {
+      throw new Error('Meta is undefined');
+    }
+    this.meta = meta;
     this.next = next;
   }
 
