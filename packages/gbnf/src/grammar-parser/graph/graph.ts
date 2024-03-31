@@ -12,7 +12,7 @@ const customInspectSymbol = Symbol.for('nodejs.util.inspect.custom');
 export class Graph {
   roots = new Map<number, Map<number, GraphNode>>();
 
-  pointers = new GraphPointersStore(this);
+  pointers = new GraphPointersStore();
 
   constructor(stackedRules: GraphRule[][][], rootId: number) {
     for (let stackId = 0; stackId < stackedRules.length; stackId++) {
@@ -20,11 +20,13 @@ export class Graph {
       const nodes = new Map<number, GraphNode>();
       for (let pathId = 0; pathId < stack.length; pathId++) {
         const path = stack[pathId];
-        // for (let pathId = stack.length - 1; pathId >= 0; pathId--) {
         let node: GraphNode;
         for (let stepId = path.length - 1; stepId >= 0; stepId--) {
           const next: GraphNode = node;
           const rule = stack[pathId][stepId];
+          if (isRuleRef(rule)) {
+            rule.graph = this;
+          }
           node = new GraphNode(rule, { stackId, pathId, stepId, }, next);
         }
         nodes.set(pathId, node);
@@ -36,7 +38,8 @@ export class Graph {
     const rootNode = this.roots.get(rootId);
 
     for (const { node, parent, } of this.fetchNodesForRootNode(this, rootNode)) {
-      this.pointers.add(new GraphPointer(this, node, parent));
+      const pointer = new GraphPointer(node, parent);
+      this.pointers.add(pointer);
     }
   }
 
@@ -73,7 +76,7 @@ export class Graph {
   ): IterableIterator<{ node: GraphNode; parent?: GraphPointer; }> {
     for (const node of rootNodes.values()) {
       if (isRuleRef(node.rule)) {
-        yield* this.fetchNodesForRootNode(graph, graph.getRootNode(node.rule.value), new GraphPointer(this, node, parent));
+        yield* this.fetchNodesForRootNode(graph, graph.getRootNode(node.rule.value), new GraphPointer(node, parent));
       } else {
         yield { node, parent, };
       }

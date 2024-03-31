@@ -1,14 +1,8 @@
 import { GraphPointer, } from "./graph-pointer.js";
-import type { Graph, } from "./graph.js";
 
 export class GraphPointersStore {
   #keys = new Set<string>();
   #pointers = new Set<GraphPointer>();
-  #graph: Graph;
-
-  constructor(graph: Graph) {
-    this.#graph = graph;
-  }
 
   add = (pointer: GraphPointer) => {
     const key = getPointerKey(pointer);

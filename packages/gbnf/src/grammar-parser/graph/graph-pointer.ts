@@ -1,22 +1,18 @@
 import { Color, Colorize, } from "./colorize.js";
 import { GraphNode, } from "./graph-node.js";
-import type { Graph, } from "./graph.js";
 import { isRuleEnd, isRuleRef, type PrintOpts, } from "./types.js";
 
 export class GraphPointer {
-  #node: GraphNode;
-  graph: Graph;
+  node: GraphNode;
   parent?: GraphPointer;
   #valid?: boolean;
 
-  constructor(graph: Graph, node: GraphNode, parent?: GraphPointer) {
-    this.graph = graph;
-    this.#node = node;
+  constructor(node: GraphNode, parent?: GraphPointer) {
+    if (node === undefined) {
+      throw new Error('Node is undefined');
+    }
+    this.node = node;
     this.parent = parent;
-  }
-
-  get node() {
-    return this.#node;
   }
 
   * nextPointers(): IterableIterator<GraphPointer> {
@@ -26,28 +22,27 @@ export class GraphPointer {
     const node = this.node.next;
     if (node) {
       if (isRuleRef(node.rule)) {
-        for (const { node: next, } of this.graph.fetchNodesForRootNode(this.graph, this.graph.getRootNode(node.rule.value), this)) {
-
+        for (const next of node.rule.getReferencedRules()) {
           if (isRuleEnd(next.rule)) {
             if (this.parent) {
               yield* this.parent.nextPointers();
             } else {
-              yield new GraphPointer(this.graph, next);
+              yield new GraphPointer(next);
             }
           } else {
-            yield new GraphPointer(this.graph, next, new GraphPointer(this.graph, node, this.parent));
+            yield new GraphPointer(next, new GraphPointer(node, this.parent));
           }
         }
       } else if (isRuleEnd(node.rule)) {
         if (this.parent) {
           for (const { node: next, parent, } of this.parent.nextPointers()) {
-            yield new GraphPointer(this.graph, next, parent);
+            yield new GraphPointer(next, parent);
           }
         } else {
-          yield new GraphPointer(this.graph, node);
+          yield new GraphPointer(node);
         }
       } else {
-        yield new GraphPointer(this.graph, node, this.parent);
+        yield new GraphPointer(node, this.parent);
       }
     }
   }
