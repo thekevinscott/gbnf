@@ -287,10 +287,10 @@ describe('initial string', () => {
       { type: RuleType.RANGE, value: [['a'.charCodeAt(0), 'z'.charCodeAt(0)], ['A'.charCodeAt(0), 'Z'.charCodeAt(0)]], },
       { type: RuleType.END, },
     ]],
-    // [`root ::= [a-zA-Z]+`, 'azAZ', [
-    //   { type: RuleType.RANGE, value: [['a'.charCodeAt(0), 'z'.charCodeAt(0)], ['A'.charCodeAt(0), 'Z'.charCodeAt(0)]], },
-    //   { type: RuleType.END, },
-    // ]],
+    [`root ::= [a-zA-Z]+`, 'azAZ', [
+      { type: RuleType.RANGE, value: [['a'.charCodeAt(0), 'z'.charCodeAt(0)], ['A'.charCodeAt(0), 'Z'.charCodeAt(0)]], },
+      { type: RuleType.END, },
+    ]],
 
     // range with * modifier
     [`root ::= [a-z]*`, '', [
