@@ -66,7 +66,7 @@ describe("initialization", () => {
     // real world use cases
     // arithmetic
     [
-      `root  ::= (expr "=" term "\n")+\\nexpr  ::= term ([-+*/] term)*\\nterm  ::= [0-9]+`, [
+      `root  ::= (expr "=" term "\\n")+\\nexpr  ::= term ([-+*/] term)*\\nterm  ::= [0-9]+`, [
         { type: RuleType.RANGE, value: [['0'.charCodeAt(0), '9'.charCodeAt(0)]], },
       ]
     ],
