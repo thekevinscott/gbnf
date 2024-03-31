@@ -1,5 +1,4 @@
 // import { CustomInspectFunction, InspectOptions } from "util";
-import { GraphRootNode, } from "./graph-root-node.js";
 import { GraphPointer, } from "./graph-pointer.js";
 import { GraphNode, } from "./graph-node.js";
 import { getSerializedRuleKey, } from "./get-serialized-rule-key.js";
@@ -11,14 +10,18 @@ import { isPointInRange, } from "../is-point-in-range.js";
 const customInspectSymbol = Symbol.for('nodejs.util.inspect.custom');
 
 export class Graph {
-  roots = new Map<number, GraphRootNode>();
+  roots = new Map<number, Map<number, GraphNode>>();
 
   pointers = new GraphPointersStore(this);
 
   constructor(stackedRules: GraphRule[][][], rootId: number) {
     for (let stackId = 0; stackId < stackedRules.length; stackId++) {
       const stack = stackedRules[stackId];
-      this.roots.set(stackId, new GraphRootNode(this, stack, stackId));
+      const nodes = new Map<number, GraphNode>();
+      for (let pathId = 0; pathId < stack.length; pathId++) {
+        nodes.set(pathId, new GraphNode(this, stack, stackId, pathId, 0));
+      }
+      this.roots.set(stackId, nodes);
     }
 
     const rootNode = this.roots.get(rootId);
@@ -56,10 +59,10 @@ export class Graph {
   // generator that yields either the node, or if a reference rule, the referenced node
   * fetchNodesForRootNode(
     graph: Graph,
-    rootNode: GraphRootNode,
+    rootNodes: Map<number, GraphNode>,
     parent?: GraphPointer,
   ): IterableIterator<{ node: GraphNode; parent?: GraphPointer; }> {
-    for (const node of rootNode.nodes.values()) {
+    for (const node of rootNodes.values()) {
       if (isRuleRef(node.rule)) {
         yield* this.fetchNodesForRootNode(graph, graph.getRootNode(node.rule.value), new GraphPointer(this, node, parent));
       } else {
@@ -76,11 +79,11 @@ export class Graph {
   }
 
   print = (colors = false) => {
-    const roots = Array.from(this.roots.values());
-    const graphView = roots.reduce<string[]>((acc, rootNode) => acc.concat(rootNode.print(this.pointers, {
+    const nodes: GraphNode[][] = Array.from(this.roots.values()).map(nodes => Array.from(nodes.values()));
+    const graphView = nodes.reduce<string[]>((acc, rootNode) => acc.concat(rootNode.map(node => node.print(this.pointers, {
       showPosition: true,
       colorize: colors ? colorize : str => `${str}`,
-    })), []);
+    }))), []);
     return `\n${graphView.join('\n')}`;
   };
 
