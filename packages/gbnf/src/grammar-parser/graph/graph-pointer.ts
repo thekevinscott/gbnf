@@ -11,8 +11,6 @@ export class GraphPointer {
   constructor(graph: Graph, node: GraphNode, parent?: GraphPointer) {
     this.graph = graph;
     this.#node = node;
-    node.pointer = this;
-
     this.parent = parent;
   }
 
