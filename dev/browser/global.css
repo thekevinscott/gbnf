@@ -62,3 +62,9 @@ button[type="submit"] {
 wc-monaco-editor {
   max-height: 50%;
 }
+
+label {
+  color: rgba(0, 0, 0, 0.6);
+  text-transform: uppercase;
+  font-weight: bold;
+}

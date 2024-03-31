@@ -1,3 +1,5 @@
+import { GrammarParseError, } from "../grammar-parser/errors.js";
+
 export const parseChar = (src: string, pos: number): [number, number] => {
   if (src.slice(pos, pos + 1) === '\\') {
     switch (src[pos + 2]) {
@@ -14,12 +16,12 @@ export const parseChar = (src: string, pos: number): [number, number] => {
       case '\\':
         return [src.charCodeAt(pos + 2), 3,];
       default:
-        throw new Error(`Unknown escape at ${src.slice(pos)}`);
+        throw new GrammarParseError(src, pos, `Unknown escape at ${src[pos]}`);
     }
   }
 
   if (!src[pos]) {
-    throw new Error("Unexpected end of input");
+    throw new GrammarParseError(src, pos, "Unexpected end of grammar input, failed to complete parse");
   }
   return [src.charCodeAt(pos), 1,];
 };
