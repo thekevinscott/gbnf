@@ -64,7 +64,7 @@ export class GraphNode {
     }
 
     if (pointers) {
-      for (const pointer of pointers) {
+      for (const pointer of pointers.pointers) {
         const pointerParts: string[] = [];
         if (pointer.node === this) {
           pointerParts.push(
