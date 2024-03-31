@@ -18,15 +18,12 @@ interface GraphNodeMeta {
 }
 export class GraphNode {
   rule: GraphRule;
-  _next = new Map<number, GraphNode>();
+  next?: GraphNode;
   meta: GraphNodeMeta;
-  constructor(stack: GraphRule[][], meta: GraphNodeMeta) {
+  constructor(rule: GraphRule, meta: GraphNodeMeta, next?: GraphNode) {
     this.meta = meta;
-    this.rule = stack[meta.pathId][meta.stepId];
-
-    if (stack[meta.pathId][meta.stepId + 1]) {
-      this._next.set(meta.pathId, new GraphNode(stack, { ...meta, stepId: meta.stepId + 1, }));
-    }
+    this.rule = rule;
+    this.next = next;
   }
 
   get id() {
@@ -80,7 +77,7 @@ export class GraphNode {
     }
     return [
       parts.join(''),
-      ...Array.from(this._next.values()).map(node => node.print({ pointers, colorize: col, showPosition, })),
+      ...this.next.print({ pointers, colorize: col, showPosition, }),
     ].join(col('-> ', Color.GRAY));
   };
 
@@ -89,10 +86,9 @@ export class GraphNode {
   }
 
   * nextNodes(): IterableIterator<GraphNode> {
-    for (const node of this._next.values()) {
-      yield node;
+    if (this.next) {
+      yield this.next;
     }
-
   }
 }
 
