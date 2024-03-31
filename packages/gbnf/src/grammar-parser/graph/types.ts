@@ -20,9 +20,9 @@ export interface RuleChar {
   type: RuleType.CHAR;
   value: number[];
 }
-export interface RuleRef {
-  type: RuleType.REF;
-  value: number;
+export class RuleRef {
+  type = RuleType.REF;
+  constructor(public value: number) { }
 }
 export interface RuleEnd {
   type: RuleType.END;
