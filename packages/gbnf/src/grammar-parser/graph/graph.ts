@@ -104,7 +104,7 @@ export class Graph {
     const seen = new Set<string>();
     const rules: Rule[] = [];
 
-    for (const { rule, } of this.pointers) {
+    for (const { rule, } of this.pointers.pointers) {
       if (isRuleRef(rule)) {
         throw new Error('Encountered a reference rule when building rules array, this should not happen');
       }
@@ -120,7 +120,7 @@ export class Graph {
   * iterateOverPointers(): IterableIterator<{ rule: GraphRule; pointers: GraphPointer[]; }> {
     const seenRules = new Map<string, { rule: GraphRule; pointers: GraphPointer[]; }>();
     const seen = new Set<GraphNode>();
-    for (const pointer of this.pointers) {
+    for (const pointer of this.pointers.pointers) {
       const rule = pointer.rule;
       const ruleKey = getSerializedRuleKey(rule);
       if (!seenRules.has(ruleKey)) {
@@ -141,6 +141,13 @@ export class Graph {
       yield { rule, pointers, };
     }
 
-    this.pointers.increment();
+    const remainingPointers = this.pointers.pointers;
+    this.pointers.pointers = new Set<GraphPointer>();
+    this.pointers.keys = new Set<string>();
+    for (const pointer of remainingPointers) {
+      for (const nextPointer of pointer.fetchNext()) {
+        this.pointers.add(nextPointer);
+      }
+    }
   }
 }
