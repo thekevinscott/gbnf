@@ -4,7 +4,7 @@ import { GraphNode, } from "./graph-node.js";
 import { getSerializedRuleKey, } from "./get-serialized-rule-key.js";
 import { colorize, } from "./colorize.js";
 import { GraphPointersStore, } from "./graph-pointers-store.js";
-import { GraphRule, Rule, isRuleChar, isRuleEnd, isRuleRange, isRuleRef, } from "./types.js";
+import { GraphRule, Rule, RuleRef, isRuleChar, isRuleEnd, isRuleRange, isRuleRef, } from "./types.js";
 import { isPointInRange, } from "../is-point-in-range.js";
 
 const customInspectSymbol = Symbol.for('nodejs.util.inspect.custom');
@@ -15,6 +15,7 @@ export class Graph {
   pointers = new GraphPointersStore();
 
   constructor(stackedRules: GraphRule[][][], rootId: number) {
+    const ruleRefs: RuleRef[] = [];
     for (let stackId = 0; stackId < stackedRules.length; stackId++) {
       const stack = stackedRules[stackId];
       const nodes = new Map<number, GraphNode>();
@@ -25,7 +26,7 @@ export class Graph {
           const next: GraphNode = node;
           const rule = stack[pathId][stepId];
           if (isRuleRef(rule)) {
-            rule.graph = this;
+            ruleRefs.push(rule);
           }
           node = new GraphNode(rule, { stackId, pathId, stepId, }, next);
         }
@@ -33,6 +34,10 @@ export class Graph {
       }
 
       this.roots.set(stackId, nodes);
+    }
+
+    for (const ruleRef of ruleRefs) {
+      ruleRef.graph = this;
     }
 
     const rootNode = this.roots.get(rootId);
