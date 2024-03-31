@@ -38,7 +38,6 @@ export class GraphPointersStore {
       for (const { node, parent, } of pointer.nextNodes()) {
         this.#pointers.add(new GraphPointer(this.#graph, node, parent));
       }
-      pointer.node.deletePointer(pointer);
     }
   };
 }

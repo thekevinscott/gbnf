@@ -1,5 +1,4 @@
 import { Color, } from "./colorize.js";
-import type { GraphPointer, } from "./graph-pointer.js";
 import type { Graph, } from "./graph.js";
 import { GraphPointersStore, } from "./graph-pointers-store.js";
 import { isRuleChar, isRuleRange, isRuleRef, type PrintOpts, type GraphRule, } from "./types.js";
@@ -16,7 +15,6 @@ const getUniqueId = (rule: GraphRule) => {
 export class GraphNode {
   rule: GraphRule;
   _next = new Map<number, GraphNode>();
-  _pointers = new Set<GraphPointer>();
   stackId: number;
   pathId: number;
   stepId: number;
@@ -35,20 +33,6 @@ export class GraphNode {
 
   get id() {
     return getUniqueId(this.rule);
-  }
-
-  set pointer(pointer: GraphPointer) {
-    if (this._pointers.has(pointer)) {
-      throw new Error('This node already has a reference to this pointer');
-    }
-    this._pointers.add(pointer);
-  }
-
-  deletePointer(pointer: GraphPointer) {
-    if (!this._pointers.has(pointer)) {
-      throw new Error('This node does not have a reference to this pointer');
-    }
-    this._pointers.delete(pointer);
   }
 
   print = (pointers: GraphPointersStore, { showPosition = false, colorize: col, }: PrintOpts): string => {
