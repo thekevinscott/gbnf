@@ -64,17 +64,19 @@ export class GraphNode {
       parts.push(col(rule.type, Color.YELLOW));
     }
 
-    for (const pointer of pointers) {
-      const pointerParts: string[] = [];
-      if (pointer.node === this) {
-        pointerParts.push(
-          pointer.print({ pointers, colorize: col, showPosition, }),
-        );
-      }
-      if (pointerParts.length) {
-        parts.push(col('[', Color.GRAY));
-        parts.push(...pointerParts);
-        parts.push(col(']', Color.GRAY));
+    if (pointers) {
+      for (const pointer of pointers) {
+        const pointerParts: string[] = [];
+        if (pointer.node === this) {
+          pointerParts.push(
+            pointer.print({ colorize: col, }),
+          );
+        }
+        if (pointerParts.length) {
+          parts.push(col('[', Color.GRAY));
+          parts.push(...pointerParts);
+          parts.push(col(']', Color.GRAY));
+        }
       }
     }
     return [

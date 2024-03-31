@@ -57,7 +57,7 @@ export class GraphPointer {
     }
   }
 
-  print = ({ colorize: col, }: PrintOpts): string => col(`*${getParentStackId(this, col)}`, Color.RED);
+  print = ({ colorize: col, }: Omit<PrintOpts, 'pointers' | 'showPosition'>): string => col(`*${getParentStackId(this, col)}`, Color.RED);
 }
 
 
