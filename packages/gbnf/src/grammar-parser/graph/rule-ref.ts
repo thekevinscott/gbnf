@@ -1,23 +1,20 @@
 import type { GraphNode, } from "./graph-node.js";
-import type { Graph, } from "./graph.js";
 import { RuleType, } from "./types.js";
 
 export class RuleRef {
   type = RuleType.REF;
-  #graph?: Graph;
+  #nodes?: Set<GraphNode>;
   constructor(public value: number) { }
 
-  set graph(graph: Graph) {
-    this.#graph = graph;
+  set nodes(nodes: Set<GraphNode>) {
+    this.#nodes = nodes;
   }
 
-  * getReferencedRules(): IterableIterator<GraphNode> {
-    if (!this.#graph) {
-      throw new Error('Graph not set on RuleRef');
+  get nodes() {
+    if (!this.#nodes) {
+      throw new Error('Nodes are not set');
     }
 
-    for (const { node, } of this.#graph.fetchNodesForRootNode(this.#graph, this.#graph.getRootNode(this.value))) {
-      yield node;
-    }
+    return this.#nodes;
   }
 }
