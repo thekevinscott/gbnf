@@ -15,7 +15,7 @@ export default defineConfig({
   },
   // plugins: [dts({ rollupTypes: true, }),],
   test: {
-    include: ['**/*.test.ts',],
+    include: ['**/*.test.ts', './test/**/*.test.ts',],
     globals: true,
     // ts
     typecheck: {

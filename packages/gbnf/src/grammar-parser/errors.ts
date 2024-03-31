@@ -1,3 +1,16 @@
+export class GrammarParseError extends Error {
+  constructor(grammar: string, pos: number, reason: string) {
+    super([
+      `Failed to parse grammar: ${reason}`,
+      '',
+      `${limit(grammar)}`,
+      ' '.repeat(pos) + '^',
+      '',
+    ].join('\n'));
+    this.name = 'GrammarParseError';
+  }
+}
+
 export class InputParseError extends Error {
   src: string;
   strPos: number;
@@ -7,8 +20,6 @@ export class InputParseError extends Error {
       '',
       `${limit(src)}`,
       ' '.repeat(strPos) + '^',
-      // '',
-      // `Failed at position ${strPos}, character: ${src[strPos]}`,
       '',
     ].join('\n'));
     this.src = src;
@@ -17,6 +28,11 @@ export class InputParseError extends Error {
   }
 }
 
-const limit = (str: string, limit: number = 30) => {
-  return str.length > limit ? `${str.substring(0, limit - 3)}...` : str;
+const replaceEscapeSequences = (src: string) => {
+  return src;
+  // return src.replace(/\n/g, '\\n').replace(/\t/g, '\\t');
+};
+
+const limit = (str: string, limit: number = 30 * 100) => {
+  return str.length > limit ? `${replaceEscapeSequences(str).substring(0, limit - 3)}...` : replaceEscapeSequences(str);
 };

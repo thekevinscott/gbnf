@@ -1,4 +1,5 @@
-import { parseName } from './parse-name.js';
+import { GrammarParseError } from '../grammar-parser/errors.js';
+import { PARSE_NAME_ERROR, parseName } from './parse-name.js';
 
 describe('parseName', () => {
   it('should return correct position when encountering a valid name', () => {
@@ -17,6 +18,6 @@ describe('parseName', () => {
     const src = '123';
     expect(() => {
       parseName(src, 0);
-    }).toThrowError('Expecting name at 123');
+    }).toThrow(new GrammarParseError(src, 0, PARSE_NAME_ERROR));
   });
 });

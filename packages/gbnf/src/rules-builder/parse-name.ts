@@ -1,13 +1,16 @@
+import { GrammarParseError, } from "../grammar-parser/errors.js";
 import { isWordChar, } from "./is-word-char.js";
 
-export const parseName = (src: string, pos: number): string => {
+export const PARSE_NAME_ERROR = 'Failed to find a valid name';
+
+export const parseName = (grammar: string, pos: number): string => {
   let name = '';
-  while (pos < src.length && isWordChar(src[pos])) {
-    name += src[pos];
+  while (pos < grammar.length && isWordChar(grammar[pos])) {
+    name += grammar[pos];
     pos++;
   }
   if (!name) {
-    throw new Error(`Expecting name at ${src}`);
+    throw new GrammarParseError(grammar, pos, PARSE_NAME_ERROR);
   }
   return name;
 };
