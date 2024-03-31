@@ -37,7 +37,11 @@ export class Graph {
     }
 
     for (const ruleRef of ruleRefs) {
-      ruleRef.graph = this;
+      const referencedNodes = new Set<GraphNode>();
+      for (const { node, } of this.fetchNodesForRootNode(this, this.getRootNode(ruleRef.value))) {
+        referencedNodes.add(node);
+      }
+      ruleRef.nodes = referencedNodes;
     }
 
     const rootNode = this.roots.get(rootId);

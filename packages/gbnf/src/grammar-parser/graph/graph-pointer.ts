@@ -23,7 +23,7 @@ export class GraphPointer {
     const node = this.node.next;
     if (node) {
       if (isRuleRef(node.rule)) {
-        for (const next of node.rule.getReferencedRules()) {
+        for (const next of node.rule.nodes) {
           if (isRuleEnd(next.rule)) {
             if (this.parent) {
               yield* this.parent.fetchNext();
