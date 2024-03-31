@@ -1,5 +1,4 @@
 // import { CustomInspectFunction, InspectOptions } from "util";
-import { GraphRootNode, } from "./graph-root-node.js";
 import { GraphPointer, } from "./graph-pointer.js";
 import { GraphNode, } from "./graph-node.js";
 import { getSerializedRuleKey, } from "./get-serialized-rule-key.js";
@@ -80,11 +79,11 @@ export class Graph {
   }
 
   print = (colors = false) => {
-    const roots = Array.from(this.roots.values());
-    const graphView = roots.reduce<string[]>((acc, rootNode) => acc.concat(rootNode.print(this.pointers, {
+    const nodes: GraphNode[][] = Array.from(this.roots.values()).map(nodes => Array.from(nodes.values()));
+    const graphView = nodes.reduce<string[]>((acc, rootNode) => acc.concat(rootNode.map(node => node.print(this.pointers, {
       showPosition: true,
       colorize: colors ? colorize : str => `${str}`,
-    })), []);
+    }))), []);
     return `\n${graphView.join('\n')}`;
   };
 
