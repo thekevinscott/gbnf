@@ -7,6 +7,7 @@ export class GraphPointer {
   #node: GraphNode;
   graph: Graph;
   parent?: GraphPointer;
+  #valid?: boolean;
 
   constructor(graph: Graph, node: GraphNode, parent?: GraphPointer) {
     this.graph = graph;
@@ -19,6 +20,9 @@ export class GraphPointer {
   }
 
   * nextNodes(): IterableIterator<{ node: GraphNode; parent?: GraphPointer; }> {
+    if (this.#valid === false) {
+      return;
+    }
     for (const node of this.node.nextNodes()) {
       if (isRuleRef(node.rule)) {
         for (const { node: next, } of this.graph.fetchNodesForRootNode(this.graph, this.graph.getRootNode(node.rule.value), this)) {
@@ -52,9 +56,7 @@ export class GraphPointer {
   }
 
   set valid(valid: boolean) {
-    if (!valid) {
-      this.graph.pointers.delete(this);
-    }
+    this.#valid = valid;
   }
 
   print = ({ colorize: col, }: Omit<PrintOpts, 'pointers' | 'showPosition'>): string => col(`*${getParentStackId(this, col)}`, Color.RED);
