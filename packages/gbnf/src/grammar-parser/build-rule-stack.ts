@@ -12,6 +12,7 @@ import {
 import {
   GraphRule,
   RuleChar,
+  RuleRef,
   RuleType,
   isRuleChar,
   isRuleEnd,
@@ -124,10 +125,7 @@ export const buildRuleStack = (linearRules: InternalRuleDef[]): GraphRule[][] =>
         type: RuleType.END,
       });
     } else if (isRuleDefRef(ruleDef)) {
-      paths.push({
-        type: RuleType.REF,
-        value: ruleDef.value,
-      });
+      paths.push(new RuleRef(ruleDef.value));
     } else {
       throw new Error(`Unsupported rule type: ${ruleDef.type}`);
     }
