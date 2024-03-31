@@ -1,6 +1,7 @@
-import { Colorize, } from "./colorize.js";
+import type { Colorize, } from "./colorize.js";
+import type { GraphPointersStore, } from "./graph-pointers-store.js";
 
-export interface PrintOpts { colorize: Colorize; showPosition: boolean };
+export interface PrintOpts { pointers: GraphPointersStore; colorize: Colorize; showPosition: boolean };
 
 export enum RuleType {
   CHAR = 'CHAR',

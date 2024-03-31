@@ -1,6 +1,5 @@
 import { Color, } from "./colorize.js";
 import type { Graph, } from "./graph.js";
-import { GraphPointersStore, } from "./graph-pointers-store.js";
 import { isRuleChar, isRuleRange, isRuleRef, type PrintOpts, type GraphRule, } from "./types.js";
 
 const rules = new Map<GraphRule, number>();
@@ -35,7 +34,7 @@ export class GraphNode {
     return getUniqueId(this.rule);
   }
 
-  print = (pointers: GraphPointersStore, { showPosition = false, colorize: col, }: PrintOpts): string => {
+  print = ({ pointers, showPosition = false, colorize: col, }: PrintOpts): string => {
     // [customInspectSymbol](depth: number, inspectOptions: InspectOptions, inspect: CustomInspectFunction) {
     const rule = this.rule;
 
@@ -69,7 +68,7 @@ export class GraphNode {
       const pointerParts: string[] = [];
       if (pointer.node === this) {
         pointerParts.push(
-          pointer.print({ colorize: col, showPosition, }),
+          pointer.print({ pointers, colorize: col, showPosition, }),
         );
       }
       if (pointerParts.length) {
@@ -80,7 +79,7 @@ export class GraphNode {
     }
     return [
       parts.join(''),
-      ...Array.from(this._next.values()).map(node => node.print(pointers, { colorize: col, showPosition, })),
+      ...Array.from(this._next.values()).map(node => node.print({ pointers, colorize: col, showPosition, })),
     ].join(col('-> ', Color.GRAY));
   };
 

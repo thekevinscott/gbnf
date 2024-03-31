@@ -80,7 +80,8 @@ export class Graph {
 
   print = (colors = false) => {
     const nodes: GraphNode[][] = Array.from(this.roots.values()).map(nodes => Array.from(nodes.values()));
-    const graphView = nodes.reduce<string[]>((acc, rootNode) => acc.concat(rootNode.map(node => node.print(this.pointers, {
+    const graphView = nodes.reduce<string[]>((acc, rootNode) => acc.concat(rootNode.map(node => node.print({
+      pointers: this.pointers,
       showPosition: true,
       colorize: colors ? colorize : str => `${str}`,
     }))), []);
