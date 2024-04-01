@@ -38,7 +38,7 @@ const getPointerKey = ({
     },
   },
   parent,
-}: VisibleGraphPointer): string => JSON.stringify({
+}: GraphPointer): string => JSON.stringify({
   id,
   stackId, pathId, stepId,
   parent: parent ? getPointerKey(parent) : null,
