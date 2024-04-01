@@ -1,6 +1,6 @@
 import type { Colorize, } from "./colorize.js";
 import type { GenericSet, } from "./generic-set.js";
-import { GraphPointerKey, VisibleGraphPointer } from "./graph-pointer.js";
+import { GraphPointerKey, VisibleGraphPointer, } from "./graph-pointer.js";
 import { RuleRef, } from "./rule-ref.js";
 export { RuleRef, } from "./rule-ref.js";
 
