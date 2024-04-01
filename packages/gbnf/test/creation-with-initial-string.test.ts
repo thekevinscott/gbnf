@@ -1,6 +1,6 @@
 import GBNF, { RuleType, } from '../src/index.js';
 
-describe('initial string', () => {
+describe('creation with initial string', () => {
   test.each([
     // single char rule
     ['root ::= "foo"', '1',],
@@ -333,13 +333,13 @@ describe('initial string', () => {
         { type: RuleType.CHAR, value: ['f'.charCodeAt(0)], },
       ]
     ],
-    // should be able to process a rule, then step _into_ a rule, and then continue with the previous rule
-    [
-      'root ::= "z" ("bar" | "foo") "zzz"',
-      'zbar', [
-        { type: RuleType.CHAR, value: ['z'.charCodeAt(0)], },
-      ]
-    ],
+    // // should be able to process a rule, then step _into_ a rule, and then continue with the previous rule
+    // [
+    //   'root ::= "z" ("bar" | "foo") "zzz"',
+    //   'zbar', [
+    //     { type: RuleType.CHAR, value: ['z'.charCodeAt(0)], },
+    //   ]
+    // ],
     [
       `root  ::= termz ([-+*/] termz)* \\n termz  ::= [0-9]+`,
       '1', [

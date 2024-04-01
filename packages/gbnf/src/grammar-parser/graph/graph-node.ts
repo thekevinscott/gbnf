@@ -1,5 +1,5 @@
 import { Color, } from "./colorize.js";
-import { isRuleChar, isRuleRange, isRuleRef, type PrintOpts, type GraphRule, } from "./types.js";
+import { isRuleChar, isRuleRange, isRuleRef, type PrintOpts, type GraphRule, RuleRef, } from "./types.js";
 
 const rules = new Map<GraphRule, number>();
 const getUniqueId = (rule: GraphRule) => {
@@ -16,11 +16,12 @@ interface GraphNodeMeta {
   pathId: number;
   stepId: number;
 }
-export class GraphNode {
-  rule: GraphRule;
+export type GraphNodeRuleRef = GraphNode<RuleRef>;
+export class GraphNode<R extends GraphRule = GraphRule> {
+  rule: R;
   next?: GraphNode;
   meta: GraphNodeMeta;
-  constructor(rule: GraphRule, meta: GraphNodeMeta, next?: GraphNode) {
+  constructor(rule: R, meta: GraphNodeMeta, next?: GraphNode) {
     this.rule = rule;
     if (meta === undefined) {
       throw new Error('Meta is undefined');
@@ -41,7 +42,7 @@ export class GraphNode {
     if (showPosition) {
       parts.push(
         col('{', Color.BLUE),
-        col(`${[this.meta.stepId,].join('-')}`, Color.GRAY),
+        col(`${[this.meta.stackId, this.meta.pathId, this.meta.stepId,].join('-')}`, Color.GRAY),
         col('}', Color.BLUE),
       );
     }
@@ -80,8 +81,8 @@ export class GraphNode {
     }
     return [
       parts.join(''),
-      ...this.next.print({ pointers, colorize: col, showPosition, }),
-    ].join(col('-> ', Color.GRAY));
+      this.next?.print({ pointers, colorize: col, showPosition, }),
+    ].filter(Boolean).join(col('-> ', Color.GRAY));
   };
 }
 

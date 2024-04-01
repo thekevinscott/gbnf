@@ -1,5 +1,5 @@
 // import { CustomInspectFunction, InspectOptions } from "util";
-import { GraphPointer, } from "./graph-pointer.js";
+import { GraphPointer, VisibleGraphPointer, } from "./graph-pointer.js";
 import { GraphNode, } from "./graph-node.js";
 import { getSerializedRuleKey, } from "./get-serialized-rule-key.js";
 import { colorize, } from "./colorize.js";
@@ -77,7 +77,7 @@ export class Graph {
     }
 
     const remainingPointers = this.pointers.pointers;
-    this.pointers.pointers = new Set<GraphPointer>();
+    this.pointers.pointers = new Set<VisibleGraphPointer>();
     this.pointers.keys = new Set<string>();
     for (const pointer of remainingPointers) {
       for (const nextPointer of pointer.fetchNext()) {
