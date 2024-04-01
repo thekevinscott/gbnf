@@ -562,6 +562,78 @@ root  ::= (expr "=" term "\n")+
         ]
       }
     ] as [string, string, { symbolIds: [string[]], rules: InternalRuleDef[][] }])),
+    [
+      'simple arithmetic',
+      `
+        root  ::= (expr "=" term "\n")+
+        expr  ::= term ([-+*/] term)*
+        term  ::= [0-9]+
+      `,
+      {
+        "symbolIds": [
+          ["root", 0],
+          ["root_1", 1],
+          ["expr", 2],
+          ["term", 3],
+          ["root_4", 4],
+          ["expr_5", 5],
+          ["expr_6", 6],
+          ["term_7", 7],
+        ],
+        "rules": [
+          [
+            { "type": InternalRuleType.RULE_REF, "value": 4 },
+            { "type": InternalRuleType.END },
+          ],
+          [
+            { "type": InternalRuleType.RULE_REF, "value": 2 },
+            { "type": InternalRuleType.CHAR, "value": [61] },
+            { "type": InternalRuleType.RULE_REF, "value": 3 },
+            { "type": InternalRuleType.CHAR, "value": [10] },
+            { "type": InternalRuleType.END },
+          ],
+          [
+            { "type": InternalRuleType.RULE_REF, "value": 3 },
+            { "type": InternalRuleType.RULE_REF, "value": 6 },
+            { "type": InternalRuleType.END },
+          ],
+          [
+            { "type": InternalRuleType.RULE_REF, "value": 7 },
+            { "type": InternalRuleType.END },
+          ],
+          [
+            { "type": InternalRuleType.RULE_REF, "value": 1 },
+            { "type": InternalRuleType.RULE_REF, "value": 4 },
+            { "type": InternalRuleType.ALT, },
+            { "type": InternalRuleType.RULE_REF, "value": 1 },
+            { "type": InternalRuleType.END },
+          ],
+          [
+            { "type": InternalRuleType.CHAR, "value": [45] },
+            { "type": InternalRuleType.CHAR_ALT, "value": 43 },
+            { "type": InternalRuleType.CHAR_ALT, "value": 42 },
+            { "type": InternalRuleType.CHAR_ALT, "value": 47 },
+            { "type": InternalRuleType.RULE_REF, "value": 3 },
+            { "type": InternalRuleType.END },
+          ],
+          [
+            { "type": InternalRuleType.RULE_REF, "value": 5 },
+            { "type": InternalRuleType.RULE_REF, "value": 6 },
+            { "type": InternalRuleType.ALT, },
+            { "type": InternalRuleType.END },
+          ],
+          [
+            { "type": InternalRuleType.CHAR, "value": [48] },
+            { "type": InternalRuleType.CHAR_RNG_UPPER, "value": 57 },
+            { "type": InternalRuleType.RULE_REF, "value": 7 },
+            { "type": InternalRuleType.ALT, },
+            { "type": InternalRuleType.CHAR, "value": [48] },
+            { "type": InternalRuleType.CHAR_RNG_UPPER, "value": 57 },
+            { "type": InternalRuleType.END },
+          ],
+        ]
+      }
+    ],
   ])('parses grammar %s', (_key, grammar, { symbolIds, rules }) => {
     const parsedGrammar = new RulesBuilder(grammar);
     expect(Array.from(parsedGrammar.symbolIds.entries())).toEqual(symbolIds);

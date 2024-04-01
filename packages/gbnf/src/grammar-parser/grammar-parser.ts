@@ -6,6 +6,7 @@ import { Graph, } from "./graph/index.js";
 import type { GraphRule, } from "./graph/types.js";
 
 export const getGrammarParser = (ruleDefs: InternalRuleDef[][], rootId: number) => {
+  console.log(ruleDefs);
   const stackedRules: GraphRule[][][] = ruleDefs.map(buildRuleStack);
   class _GrammarParser implements AbstractGrammarParser {
     #graph: Graph;
