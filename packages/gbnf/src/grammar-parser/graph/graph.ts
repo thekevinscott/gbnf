@@ -39,7 +39,7 @@ export class Graph {
 
     for (const ruleRef of ruleRefs) {
       const referencedNodes = new Set<GraphNode>();
-      for (const { node, } of this.fetchNodesForRootNode(this, this.getRootNode(ruleRef.value))) {
+      for (const { node, } of this.fetchNodesForRootNode(this.getRootNode(ruleRef.value))) {
         referencedNodes.add(node);
       }
       ruleRef.nodes = referencedNodes;
@@ -47,7 +47,7 @@ export class Graph {
 
     const rootNode = this.roots.get(rootId);
 
-    for (const { node, parent, } of this.fetchNodesForRootNode(this, rootNode)) {
+    for (const { node, parent, } of this.fetchNodesForRootNode(rootNode)) {
       const pointer = new GraphPointer(node, parent);
       this.addPointer(pointer);
     }
@@ -100,13 +100,12 @@ export class Graph {
 
   // generator that yields either the node, or if a reference rule, the referenced node
   * fetchNodesForRootNode(
-    graph: Graph,
     rootNodes: Map<number, GraphNode>,
     parent?: GraphPointer,
   ): IterableIterator<{ node: GraphNode; parent?: GraphPointer; }> {
     for (const node of rootNodes.values()) {
       if (isRuleRef(node.rule)) {
-        yield* this.fetchNodesForRootNode(graph, graph.getRootNode(node.rule.value), new GraphPointer(node, parent));
+        yield* this.fetchNodesForRootNode(this.getRootNode(node.rule.value), new GraphPointer(node, parent));
       } else {
         yield { node, parent, };
       }
