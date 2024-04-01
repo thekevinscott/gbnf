@@ -45,7 +45,6 @@ export class GraphPointer<R extends GraphRule = GraphRule> {
     }
   }
 
-  // method for fetching the next pointer. 
   *fetchNext(): IterableIterator<VisibleGraphPointer> {
     if (this.#valid === false) {
       return;
@@ -56,14 +55,6 @@ export class GraphPointer<R extends GraphRule = GraphRule> {
      * 3. If the current node is a char or range, we go to the next node. If none exists, throw an error.
      */
 
-    // if (isRuleRef(this.node.rule)) {
-    //   for (const referencedNode of this.node.rule.nodes) {
-    //     yield new GraphPointer(referencedNode, this);
-    //   }
-    // }
-
-    // if (!isRuleEnd(this.node.rule) && !isRuleRef(this.node.rule)) {
-    // if (isRuleChar(this.node.rule) || isRuleRange(this.node.rule)) {
     if (isRuleEnd(this.node.rule)) {
       if (this.parent) {
         yield* this.parent.fetchNext();
@@ -72,60 +63,6 @@ export class GraphPointer<R extends GraphRule = GraphRule> {
       const nextPointer = new GraphPointer(this.node.next, this.parent);
       yield* nextPointer.resolve();
     }
-    //   if (isRuleChar(this.node.next.rule) || isRuleRange(this.node.next.rule)) {
-    //     // 
-    //     const nextPointer = new GraphPointer(this.node.next, this.parent);
-    //     yield* nextPointer.resolve();
-    //   } else if (isRuleRef(this.node.next.rule)) {
-    //     for (const next of this.node.next.rule.nodes) {
-    //       const nextPointer = new GraphPointer(next, this);
-    //       yield* nextPointer.fetchNext();
-    //       // yield nextPointer;
-    //     }
-    //     // for (const next of this.node.next.rule.nodes) {
-    //     //   if (isRuleEnd(next.rule)) {
-    //     //     if (this.parent) {
-    //     //       // yield* this.parent.fetchNext();
-    //     //     } else {
-    //     //       yield new GraphPointer(next);
-    //     //     }
-    //     //   } else {
-    //     //     // yield new GraphPointer(next, new GraphPointer(this.node, this.parent));
-    //     //   }
-    //     // }
-    //   } else if (isRuleEnd(this.node.next.rule)) {
-    //     if (this.parent) {
-    //       yield* this.parent.fetchNext();
-    //     }
-    //   }
-    // // }
-
-    // const node = this.node.next;
-    // if (node) {
-    //   if (isRuleRef(node.rule)) {
-    //     for (const next of node.rule.nodes) {
-    //       if (isRuleEnd(next.rule)) {
-    //         if (this.parent) {
-    //           yield* this.parent.fetchNext();
-    //         } else {
-    //           yield new GraphPointer(next);
-    //         }
-    //       } else {
-    //         yield new GraphPointer(next, new GraphPointer(node, this.parent));
-    //       }
-    //     }
-    //   } else if (isRuleEnd(node.rule)) {
-    //     if (this.parent) {
-    //       for (const { node: next, parent, } of this.parent.fetchNext()) {
-    //         yield new GraphPointer(next, parent);
-    //       }
-    //     } else {
-    //       yield new GraphPointer(node);
-    //     }
-    //   } else {
-    //     yield new GraphPointer(node, this.parent);
-    //   }
-    // }
   }
 
   get rule() {
