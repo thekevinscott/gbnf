@@ -39,7 +39,7 @@ export class Graph {
 
     for (const ruleRef of ruleRefs) {
       const referencedNodes = new Set<GraphNode>();
-      for (const { node, } of this.fetchNodesForRootNode(this.getRootNode(ruleRef.value))) {
+      for (const { node, } of this.fetchNodesForRootNode(this.roots.get(ruleRef.value))) {
         referencedNodes.add(node);
       }
       ruleRef.nodes = referencedNodes;
@@ -51,10 +51,6 @@ export class Graph {
       const pointer = new GraphPointer(node, parent);
       this.addPointer(pointer);
     }
-  }
-
-  getRootNode(stackId: number) {
-    return this.roots.get(stackId);
   }
 
   setValid(pointers: GraphPointer[], valid: boolean) {
@@ -105,7 +101,7 @@ export class Graph {
   ): IterableIterator<{ node: GraphNode; parent?: GraphPointer; }> {
     for (const node of rootNodes.values()) {
       if (isRuleRef(node.rule)) {
-        yield* this.fetchNodesForRootNode(this.getRootNode(node.rule.value), new GraphPointer(node, parent));
+        yield* this.fetchNodesForRootNode(this.roots.get(node.rule.value), new GraphPointer(node, parent));
       } else {
         yield { node, parent, };
       }
