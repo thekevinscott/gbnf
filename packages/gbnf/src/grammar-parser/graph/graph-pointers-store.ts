@@ -1,4 +1,4 @@
-import { GraphPointer, VisibleGraphPointer, } from "./graph-pointer.js";
+import { GraphPointer, VisibleGraphPointer, getPointerKey, } from "./graph-pointer.js";
 import { isRuleEnd, isRuleRef, } from "./types.js";
 
 export class GraphPointersStore {
@@ -27,19 +27,3 @@ export class GraphPointersStore {
     this.keys.delete(key);
   };
 }
-
-const getPointerKey = ({
-  node: {
-    id,
-    meta: {
-      stackId,
-      pathId,
-      stepId,
-    },
-  },
-  parent,
-}: GraphPointer): string => JSON.stringify({
-  id,
-  stackId, pathId, stepId,
-  parent: parent ? getPointerKey(parent) : null,
-});
