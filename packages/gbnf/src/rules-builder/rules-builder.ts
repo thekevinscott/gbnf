@@ -11,9 +11,9 @@ export class RulesBuilder {
   rules: InternalRuleDef[][];
   src: string;
   start: number = performance.now();
-  limit: number;
+  #timeLimit: number;
   constructor(src: string, limit = 1000) {
-    this.limit = limit;
+    this.#timeLimit = limit;
     this.symbolIds = new Map();
     this.rules = [];
     this.src = src;
@@ -93,8 +93,8 @@ export class RulesBuilder {
   };
 
   checkDuration() {
-    if (performance.now() - this.start > this.limit) {
-      throw new GrammarParseError(this.src, this.pos, `duration of ${this.limit} exceeded:`);
+    if (performance.now() - this.start > this.#timeLimit) {
+      throw new GrammarParseError(this.src, this.pos, `duration of ${this.#timeLimit} exceeded:`);
     }
   }
 

@@ -33,8 +33,9 @@ import GBNF, { RuleType } from '../../../packages/gbnf/src/index.js';
   // [`root ::= [a-z]+`, 'az0',],
   // console.log('range with +, "az"')
   const GrammarParser = GBNF(`
-  root  ::= (ws )+
-ws    ::= [ \\t\\n]*
+    root  ::= (expr "=" term "\n")+
+    expr  ::= term ([-+*/] term)*
+    term  ::= [0-9]+
   `);
   const parser = new GrammarParser('');
   // console.log('rules before anything:::::', JSON.stringify(parser.rules));
