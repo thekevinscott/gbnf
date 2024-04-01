@@ -1,24 +1,27 @@
-import { VisibleGraphPointer, getPointerKey, } from "./graph-pointer.js";
+export class GenericSet<T, K> {
+  #keys = new Set<K>();
+  #set = new Set<T>();
 
-export class GraphPointersStore {
-  #keys = new Set<string>();
-  #pointers = new Set<VisibleGraphPointer>();
+  getKey: (el: T) => K;
+  constructor(getKey: (el: T) => K) {
+    this.getKey = getKey;
+  }
 
-  add = (pointer: VisibleGraphPointer) => {
-    const key = getPointerKey(pointer);
+  add = (el: T) => {
+    const key = this.getKey(el);
     if (!this.#keys.has(key)) {
       this.#keys.add(key);
-      this.#pointers.add(pointer);
+      this.#set.add(el);
     }
   };
 
-  delete = (pointer: VisibleGraphPointer) => {
-    this.#pointers.delete(pointer);
-    const key = getPointerKey(pointer);
+  delete = (el: T) => {
+    this.#set.delete(el);
+    const key = this.getKey(el);
     this.#keys.delete(key);
   };
 
-  *[Symbol.iterator](): IterableIterator<VisibleGraphPointer> {
-    yield* this.#pointers;
+  *[Symbol.iterator](): IterableIterator<T> {
+    yield* this.#set;
   }
 }
