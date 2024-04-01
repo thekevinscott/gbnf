@@ -88,3 +88,19 @@ const getParentStackId = (pointer: GraphPointer, col: Colorize): string => {
   }
   return stackIds.map(id => col(id, Color.RED)).join(col('<-', Color.GRAY));
 };
+
+export const getPointerKey = ({
+  node: {
+    id,
+    meta: {
+      stackId,
+      pathId,
+      stepId,
+    },
+  },
+  parent,
+}: GraphPointer): string => JSON.stringify({
+  id,
+  stackId, pathId, stepId,
+  parent: parent ? getPointerKey(parent) : null,
+});
