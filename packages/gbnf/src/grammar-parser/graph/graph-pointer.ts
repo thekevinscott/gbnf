@@ -104,3 +104,5 @@ export const getPointerKey = ({
   stackId, pathId, stepId,
   parent: parent ? getPointerKey(parent) : null,
 });
+
+export type GraphPointerKey = string;

@@ -1,15 +1,15 @@
 // import { CustomInspectFunction, InspectOptions } from "util";
-import { GraphPointer, } from "./graph-pointer.js";
+import { GraphPointer, GraphPointerKey, VisibleGraphPointer, getPointerKey, } from "./graph-pointer.js";
 import { GraphNode, } from "./graph-node.js";
 import { getSerializedRuleKey, } from "./get-serialized-rule-key.js";
 import { colorize, } from "./colorize.js";
-import { GraphPointersStore, } from "./graph-pointers-store.js";
+import { GenericSet, } from "./generic-set.js";
 import { GraphRule, Rule, RuleRef, isRuleChar, isRuleEnd, isRuleRange, isRuleRef, } from "./types.js";
 import { isPointInRange, } from "../is-point-in-range.js";
 
 const customInspectSymbol = Symbol.for('nodejs.util.inspect.custom');
 
-const getPointersSet = () => new GraphPointersStore();
+const getPointersSet = () => new GenericSet<VisibleGraphPointer, GraphPointerKey>(getPointerKey);
 export class Graph {
   roots = new Map<number, Map<number, GraphNode>>();
 
