@@ -28,3 +28,5 @@ export class GenericSet<T, K> {
     yield* this.#set;
   }
 }
+
+// export const GenericSet = Set;

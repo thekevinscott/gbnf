@@ -1,5 +1,5 @@
 import '@vanillawc/wc-monaco-editor';
-import { fetchLlamaCPP, fetchTestCases } from './api.js';
+import { fetchTestCases } from './api.js';
 
 const grammars = import.meta.glob('./grammars/*.gbnf', {
   eager: true,
@@ -9,14 +9,14 @@ const grammars = import.meta.glob('./grammars/*.gbnf', {
 
 const form = document.getElementById('form');
 const grammarEditor = document.getElementById('grammar');
-const output = document.getElementById('output');
+const output = document.getElementById('output') as HTMLTextAreaElement;
 const select = document.getElementById('grammar-selector') as HTMLSelectElement;
 Object.entries(grammars).forEach(([path, grammarContents]: [string, string]) => {
   const option = document.createElement('option');
   option.value = grammarContents;
   const file = path.split('/').pop().split('.').shift();
   option.innerText = file;
-  if (file === 'simple') {
+  if (file === 'arithmetic') {
     option.selected = true;
     grammarEditor.setAttribute('value', grammarContents);
   }
@@ -31,44 +31,32 @@ select.onchange = () => {
 
 form.onsubmit = async (e) => {
   e.preventDefault();
-
-  generateTestCases((grammarEditor as any).value, 50);
+  generateTestCases((grammarEditor as any).value, 64);
 };
 
 
 const log = (obj: string) => {
-  output.innerText = obj;
-  // output.innerText = JSON.stringify(obj, null, 2);
+  output.value = obj;
 };
 
 const generateTestCases = async (grammar: string, n: number) => {
-  const output = {
-    grammar,
-    testCases: [],
-  }
   // log(output);
   const prompt = `
-  Write me a mathematically valid expression. Ensure that you output something.
-
-  Make the output simple and short. Here are some examples:
-  
-  \`\`\`
-  1 + 2 = 3
-  4 / 4 = 2
-  1 + 2 * 3 = 9
-  \`\`\`
+  Write me a valid JSON object. It's contents can be anything.
   `
+  const testCases: string[] = [];
   await fetchTestCases(prompt, grammar, ({ parsedChunk, partial }, i) => {
-    if (output.testCases.length <= i) {
-      output.testCases.push('');
+    if (testCases.length <= i) {
+      testCases.push('');
     }
-    output.testCases[i] = partial.trim();
-    const testCases = new Set(output.testCases);
+    testCases[i] = partial.trim();
+    const parsedTestCases = Array.from(new Set(testCases)).sort((a, b) => {
+      return a.length - b.length;
+    });
     log([
-      `export const grammar = \`${output.grammar.split("\\n").join('\\\\n')}\`;`,
-      `export const testCases = ${JSON.stringify(Array.from(testCases), null, 2)}`
+      `export const grammar = \`\n${grammar}\`;`,
+      `export const testCases = ${JSON.stringify(parsedTestCases, null, 2)}`
     ].join('\n'));
-    // log(output);
   }, n);
 }
 

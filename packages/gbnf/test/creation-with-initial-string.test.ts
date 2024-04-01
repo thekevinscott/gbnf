@@ -333,13 +333,13 @@ describe('creation with initial string', () => {
         { type: RuleType.CHAR, value: ['f'.charCodeAt(0)], },
       ]
     ],
-    // // should be able to process a rule, then step _into_ a rule, and then continue with the previous rule
-    // [
-    //   'root ::= "z" ("bar" | "foo") "zzz"',
-    //   'zbar', [
-    //     { type: RuleType.CHAR, value: ['z'.charCodeAt(0)], },
-    //   ]
-    // ],
+    // should be able to process a rule, then step _into_ a rule, and then continue with the previous rule
+    [
+      'root ::= "z" ("bar" | "foo") "zzz"',
+      'zbar', [
+        { type: RuleType.CHAR, value: ['z'.charCodeAt(0)], },
+      ]
+    ],
     [
       `root  ::= termz ([-+*/] termz)* \\n termz  ::= [0-9]+`,
       '1', [
@@ -403,9 +403,10 @@ describe('creation with initial string', () => {
       ],
     ],
     [
-      `root  ::= (expr "=" term "\\n")+\\nexpr  ::= term ([-+*/] term)*\\nterm  ::= [0-9]+`,
+      `root  ::= (expr "=" termd "\\n")+\\nexpr  ::= termd ([-+*/] termd)*\\ntermd  ::= [0-9]+`,
       '1+1', [
         { type: RuleType.CHAR, value: [['0'.charCodeAt(0), '9'.charCodeAt(0)]], },
+        { type: RuleType.CHAR, value: ['-'.charCodeAt(0), '+'.charCodeAt(0), '*'.charCodeAt(0), '/'.charCodeAt(0)], },
         { type: RuleType.CHAR, value: ['='.charCodeAt(0)], },
       ]
     ],

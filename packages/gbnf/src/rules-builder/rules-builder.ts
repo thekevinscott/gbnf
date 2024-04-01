@@ -116,7 +116,6 @@ export class RulesBuilder {
           outElements.push({ type: InternalRuleType.CHAR, value: [value,], });
           this.pos += incPos; // Adjusting pos by the length of parsed characters
         }
-        // console.log('end quote', src.slice(this.pos))
         this.pos = parseSpace(src, this.pos + 1, is_nested);
       } else if (src[this.pos] === '[') {
         this.pos += 1;
@@ -131,7 +130,6 @@ export class RulesBuilder {
           const type = lastSymStart < outElements.length ? InternalRuleType.CHAR_ALT : startType;
           const [startcharValue, incPos,] = parseChar(src, this.pos);
           this.pos += incPos;
-          // console.log('push it!', type, startcharValue, String.fromCharCode(startcharValue));
           if (type === InternalRuleType.CHAR) {
             outElements.push({ type, value: [startcharValue,], });
           } else {
@@ -157,7 +155,6 @@ export class RulesBuilder {
       } else if (src[this.pos] === '(') {
         this.pos = parseSpace(src, this.pos + 1, true);
         const subRuleId: number = this.generateSymbolId(rule_name);
-        // console.log('src', src.slice(this.pos));
         this.parseAlternates(rule_name, subRuleId, depth + 1);
         lastSymStart = outElements.length;
         outElements.push({ type: InternalRuleType.RULE_REF, value: subRuleId, });

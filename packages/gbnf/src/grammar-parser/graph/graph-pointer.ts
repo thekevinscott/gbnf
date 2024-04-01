@@ -30,6 +30,7 @@ export class GraphPointer<R extends GraphRule = GraphRule> {
       if (resolved) {
         yield* new GraphPointer(this.node.next, this.parent).resolve();
       } else {
+
         for (const node of this.node.rule.nodes) {
           yield* new GraphPointer(node, this).resolve();
         }
@@ -60,7 +61,8 @@ export class GraphPointer<R extends GraphRule = GraphRule> {
         yield* this.parent.fetchNext();
       }
     } else {
-      yield* new GraphPointer(this.node.next, this.parent).resolve();
+      const pointer = new GraphPointer(this.node.next, this.parent);
+      yield* pointer.resolve();
     }
   }
 
@@ -98,10 +100,13 @@ export const getPointerKey = ({
     },
   },
   parent,
-}: GraphPointer): string => JSON.stringify({
-  id,
-  stackId, pathId, stepId,
-  parent: parent ? getPointerKey(parent) : null,
-});
+}: GraphPointer): string => {
+  return `${Math.random()}`;
+  return JSON.stringify({
+    id,
+    stackId, pathId, stepId,
+    parent: parent ? getPointerKey(parent) : null,
+  });
+};
 
 export type GraphPointerKey = string;

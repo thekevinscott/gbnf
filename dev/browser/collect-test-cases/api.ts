@@ -20,12 +20,12 @@ const buildResponse = (response: string[]): LlamaCPPResponse => {
 export const fetchLlamaCPP = async (prompt: string, {
   callback: _callback,
   grammar,
-  n_predict = 64,
+  n_predict,
   temperature,
 }: {
   callback?: ({ partial: string, parsedChunk: LlamaCPPResponse }) => void;
   grammar?: string;
-  n_predict?: number;
+  n_predict: number;
   temperature: number;
 }): Promise<LlamaCPPResponse> => {
   let partial = '';
@@ -78,6 +78,8 @@ export const fetchLlamaCPP = async (prompt: string, {
 //   return response.content;
 // };
 
+// const MAX_TOKENS = 128;
+
 type Callback = (opts: { partial: string; parsedChunk: LlamaCPPResponse; }, i: number) => void;
 export const fetchTestCases = async (prompt: string, grammar: string, callback: Callback, n: number) => {
   // const prompt = await getPromptForGrammar(grammar);
@@ -87,6 +89,7 @@ export const fetchTestCases = async (prompt: string, grammar: string, callback: 
       grammar,
       callback: (obj) => callback(obj, i),
       temperature: Math.random(),
+      n_predict: i + 1,
     });
   }
 }

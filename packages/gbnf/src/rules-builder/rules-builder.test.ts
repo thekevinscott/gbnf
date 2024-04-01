@@ -634,9 +634,244 @@ root  ::= (expr "=" term "\n")+
         ]
       }
     ],
+    [
+      'ranges with chars',
+      `
+        root  ::= [a-z0-9_]*
+      `,
+      {
+        "symbolIds": [
+          ["root", 0],
+          ["root_1", 1],
+        ],
+        "rules": [
+          [
+            { "type": InternalRuleType.RULE_REF, "value": 1 },
+            { "type": InternalRuleType.END },
+          ],
+          [
+            { "type": InternalRuleType.CHAR, "value": [97] },
+            { "type": InternalRuleType.CHAR_RNG_UPPER, "value": 122 },
+            { "type": InternalRuleType.CHAR_ALT, "value": 48 },
+            { "type": InternalRuleType.CHAR_RNG_UPPER, "value": 57 },
+            { "type": InternalRuleType.CHAR_ALT, "value": 95 },
+            { "type": InternalRuleType.RULE_REF, "value": 1 },
+            { "type": InternalRuleType.ALT, },
+            { "type": InternalRuleType.END },
+          ],
+        ]
+      }
+    ],
+    [
+      'nested ranges with chars',
+      `
+        root ::= [a-z] [a-z0-9_]* 
+      `,
+      {
+        "symbolIds": [
+          ["root", 0],
+          ["root_1", 1],
+        ],
+        "rules": [
+          [
+            { "type": InternalRuleType.CHAR, "value": [97] },
+            { "type": InternalRuleType.CHAR_RNG_UPPER, "value": 122 },
+            { "type": InternalRuleType.RULE_REF, "value": 1 },
+            { "type": InternalRuleType.END },
+          ],
+          [
+            { "type": InternalRuleType.CHAR, "value": [97] },
+            { "type": InternalRuleType.CHAR_RNG_UPPER, "value": 122 },
+            { "type": InternalRuleType.CHAR_ALT, "value": 48 },
+            { "type": InternalRuleType.CHAR_RNG_UPPER, "value": 57 },
+            { "type": InternalRuleType.CHAR_ALT, "value": 95 },
+            { "type": InternalRuleType.RULE_REF, "value": 1 },
+            { "type": InternalRuleType.ALT, },
+            { "type": InternalRuleType.END },
+          ],
+        ]
+      }
+    ],
+    [
+      'expression with nested range with chars',
+      `
+        root ::= ident
+        ident ::= [a-z] [a-z0-9_]* ws
+        ws    ::= [ \t\n]*
+      `,
+      {
+        "symbolIds": [
+          ["root", 0],
+          ["ident", 1],
+          ["ident_2", 2],
+          ["ws", 3],
+          ["ws_4", 4],
+        ],
+        "rules": [
+          [
+            { "type": InternalRuleType.RULE_REF, "value": 1 },
+            { "type": InternalRuleType.END },
+          ],
+          [
+            { "type": InternalRuleType.CHAR, "value": [97] },
+            { "type": InternalRuleType.CHAR_RNG_UPPER, "value": 122 },
+            { "type": InternalRuleType.RULE_REF, "value": 2 },
+            { "type": InternalRuleType.RULE_REF, "value": 3 },
+            { "type": InternalRuleType.END },
+          ],
+          [
+            { "type": InternalRuleType.CHAR, "value": [97] },
+            { "type": InternalRuleType.CHAR_RNG_UPPER, "value": 122 },
+            { "type": InternalRuleType.CHAR_ALT, "value": 48 },
+            { "type": InternalRuleType.CHAR_RNG_UPPER, "value": 57 },
+            { "type": InternalRuleType.CHAR_ALT, "value": 95 },
+            { "type": InternalRuleType.RULE_REF, "value": 2 },
+            { "type": InternalRuleType.ALT, },
+            { "type": InternalRuleType.END },
+          ],
+          [
+            { "type": InternalRuleType.RULE_REF, "value": 4 },
+            { "type": InternalRuleType.END },
+          ],
+          [
+            { "type": InternalRuleType.CHAR, "value": [32] },
+            { "type": InternalRuleType.CHAR_ALT, "value": 9 },
+            { "type": InternalRuleType.CHAR_ALT, "value": 10 },
+            { "type": InternalRuleType.RULE_REF, "value": 4 },
+            { "type": InternalRuleType.ALT, },
+            { "type": InternalRuleType.END },
+          ],
+        ]
+      }
+    ],
+    [
+      'arithmetic',
+      `
+        root  ::= (expr "=" ws term "\n")+
+        expr  ::= term ([-+*/] term)*
+        term  ::= ident | num | "(" ws expr ")" ws
+        ident ::= [a-z] [a-z0-9_]* ws
+        num   ::= [0-9]+ ws
+        ws    ::= [ \t\n]*
+      `,
+      {
+        "symbolIds": [
+          ["root", 0],
+          ["root_1", 1],
+          ["expr", 2],
+          ["ws", 3],
+          ["term", 4],
+          ["root_5", 5],
+          ["expr_6", 6],
+          ["expr_7", 7],
+          ["ident", 8],
+          ["num", 9],
+          ["ident_10", 10],
+          ["num_11", 11],
+          ["ws_12", 12],
+        ],
+        "rules": [
+          [
+            { "type": InternalRuleType.RULE_REF, "value": 5 },
+            { "type": InternalRuleType.END },
+          ],
+          [
+            { "type": InternalRuleType.RULE_REF, "value": 2 },
+            { "type": InternalRuleType.CHAR, "value": [61] },
+            { "type": InternalRuleType.RULE_REF, "value": 3 },
+            { "type": InternalRuleType.RULE_REF, "value": 4 },
+            { "type": InternalRuleType.CHAR, "value": [10] },
+            { "type": InternalRuleType.END },
+          ],
+          [
+            { "type": InternalRuleType.RULE_REF, "value": 4 },
+            { "type": InternalRuleType.RULE_REF, "value": 7 },
+            { "type": InternalRuleType.END },
+          ],
+          [
+            { "type": InternalRuleType.RULE_REF, "value": 12 },
+            { "type": InternalRuleType.END },
+          ],
+          [
+            { "type": InternalRuleType.RULE_REF, "value": 8 },
+            { "type": InternalRuleType.ALT, },
+            { "type": InternalRuleType.RULE_REF, "value": 9 },
+            { "type": InternalRuleType.ALT, },
+            { "type": InternalRuleType.CHAR, "value": [40] },
+            { "type": InternalRuleType.RULE_REF, "value": 3 },
+            { "type": InternalRuleType.RULE_REF, "value": 2 },
+            { "type": InternalRuleType.CHAR, "value": [41] },
+            { "type": InternalRuleType.RULE_REF, "value": 3 },
+            { "type": InternalRuleType.END },
+          ],
+          [
+            { "type": InternalRuleType.RULE_REF, "value": 1 },
+            { "type": InternalRuleType.RULE_REF, "value": 5 },
+            { "type": InternalRuleType.ALT, },
+            { "type": InternalRuleType.RULE_REF, "value": 1 },
+            { "type": InternalRuleType.END },
+          ],
+          [
+            { "type": InternalRuleType.CHAR, "value": [45] },
+            { "type": InternalRuleType.CHAR_ALT, "value": 43 },
+            { "type": InternalRuleType.CHAR_ALT, "value": 42 },
+            { "type": InternalRuleType.CHAR_ALT, "value": 47 },
+            { "type": InternalRuleType.RULE_REF, "value": 4 },
+            { "type": InternalRuleType.END },
+          ],
+
+          [
+            { "type": InternalRuleType.RULE_REF, "value": 6 },
+            { "type": InternalRuleType.RULE_REF, "value": 7 },
+            { "type": InternalRuleType.ALT, },
+            { "type": InternalRuleType.END },
+          ],
+          [
+            { "type": InternalRuleType.CHAR, "value": [97] },
+            { "type": InternalRuleType.CHAR_RNG_UPPER, "value": 122 },
+            { "type": InternalRuleType.RULE_REF, "value": 10 },
+            { "type": InternalRuleType.RULE_REF, "value": 3 },
+            { "type": InternalRuleType.END },
+          ],
+          [
+            { "type": InternalRuleType.RULE_REF, "value": 11 },
+            { "type": InternalRuleType.RULE_REF, "value": 3 },
+            { "type": InternalRuleType.END },
+          ],
+          [
+            { "type": InternalRuleType.CHAR, "value": [97] },
+            { "type": InternalRuleType.CHAR_RNG_UPPER, "value": 122 },
+            { "type": InternalRuleType.CHAR_ALT, "value": 48 },
+            { "type": InternalRuleType.CHAR_RNG_UPPER, "value": 57 },
+            { "type": InternalRuleType.CHAR_ALT, "value": 95 },
+            { "type": InternalRuleType.RULE_REF, "value": 10 },
+            { "type": InternalRuleType.ALT, },
+            { "type": InternalRuleType.END },
+          ],
+          [
+            { "type": InternalRuleType.CHAR, "value": [48] },
+            { "type": InternalRuleType.CHAR_RNG_UPPER, "value": 57 },
+            { "type": InternalRuleType.RULE_REF, "value": 11 },
+            { "type": InternalRuleType.ALT, },
+            { "type": InternalRuleType.CHAR, "value": [48] },
+            { "type": InternalRuleType.CHAR_RNG_UPPER, "value": 57 },
+            { "type": InternalRuleType.END },
+          ],
+          [
+            { "type": InternalRuleType.CHAR, "value": [32] },
+            { "type": InternalRuleType.CHAR_ALT, "value": 9 },
+            { "type": InternalRuleType.CHAR_ALT, "value": 10 },
+            { "type": InternalRuleType.RULE_REF, "value": 12 },
+            { "type": InternalRuleType.ALT, },
+            { "type": InternalRuleType.END },
+          ],
+        ]
+      }
+    ]
   ])('parses grammar %s', (_key, grammar, { symbolIds, rules }) => {
     const parsedGrammar = new RulesBuilder(grammar);
-    expect(Array.from(parsedGrammar.symbolIds.entries())).toEqual(symbolIds);
     expect(parsedGrammar.rules).toEqual(rules);
+    expect(Array.from(parsedGrammar.symbolIds.entries())).toEqual(symbolIds);
   });
 });
+
