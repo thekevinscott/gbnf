@@ -48,7 +48,7 @@ export class Graph {
 
     for (const { node, parent, } of this.fetchNodesForRootNode(this, rootNode)) {
       const pointer = new GraphPointer(node, parent);
-      this.pointers.add(pointer);
+      this.addPointer(pointer);
     }
   }
 
@@ -81,8 +81,20 @@ export class Graph {
     this.pointers.keys = new Set<string>();
     for (const pointer of remainingPointers) {
       for (const nextPointer of pointer.fetchNext()) {
-        this.pointers.add(nextPointer);
+        this.addPointer(nextPointer);
       }
+    }
+  }
+
+  addPointer(unresolvedPointer: GraphPointer) {
+    for (const pointer of unresolvedPointer.resolve()) {
+      if (isRuleRef(pointer.node.rule)) {
+        throw new Error('Encountered a reference rule when building pointers to the graph');
+      }
+      if (isRuleEnd(pointer.node.rule) && !!pointer.parent) {
+        throw new Error('Encountered an ending rule with a parent when building pointers to the graph');
+      }
+      this.pointers.add(pointer);
     }
   }
 

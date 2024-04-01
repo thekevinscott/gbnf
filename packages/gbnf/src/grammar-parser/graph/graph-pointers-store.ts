@@ -1,23 +1,14 @@
-import { GraphPointer, VisibleGraphPointer, getPointerKey, } from "./graph-pointer.js";
-import { isRuleEnd, isRuleRef, } from "./types.js";
+import { VisibleGraphPointer, getPointerKey, } from "./graph-pointer.js";
 
 export class GraphPointersStore {
   keys = new Set<string>();
   pointers = new Set<VisibleGraphPointer>();
 
-  add = (unresolvedPointer: GraphPointer) => {
-    for (const pointer of unresolvedPointer.resolve()) {
-      if (isRuleRef(pointer.node.rule)) {
-        throw new Error('Encountered a reference rule when building pointers to the graph');
-      }
-      if (isRuleEnd(pointer.node.rule) && !!pointer.parent) {
-        throw new Error('Encountered an ending rule with a parent when building pointers to the graph');
-      }
-      const key = getPointerKey(pointer);
-      if (!this.keys.has(key)) {
-        this.keys.add(key);
-        this.pointers.add(pointer);
-      }
+  add = (pointer: VisibleGraphPointer) => {
+    const key = getPointerKey(pointer);
+    if (!this.keys.has(key)) {
+      this.keys.add(key);
+      this.pointers.add(pointer);
     }
   };
 
