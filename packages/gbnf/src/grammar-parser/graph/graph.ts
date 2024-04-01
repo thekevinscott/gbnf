@@ -3,7 +3,7 @@ import { GraphPointer, VisibleGraphPointer, getPointerKey, } from "./graph-point
 import { GraphNode, } from "./graph-node.js";
 import { getSerializedRuleKey, } from "./get-serialized-rule-key.js";
 import { colorize, } from "./colorize.js";
-import { GenericSet, } from "./graph-pointers-store.js";
+import { GenericSet, } from "./generic-set.js";
 import { GraphRule, Rule, RuleRef, isRuleChar, isRuleEnd, isRuleRange, isRuleRef, } from "./types.js";
 import { isPointInRange, } from "../is-point-in-range.js";
 

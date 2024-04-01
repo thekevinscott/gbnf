@@ -1,5 +1,5 @@
 import type { Colorize, } from "./colorize.js";
-import type { GenericSet, } from "./graph-pointers-store.js";
+import type { GenericSet, } from "./generic-set.js";
 import { RuleRef, } from "./rule-ref.js";
 export { RuleRef, } from "./rule-ref.js";
 
