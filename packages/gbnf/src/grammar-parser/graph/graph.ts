@@ -1,5 +1,5 @@
 // import { CustomInspectFunction, InspectOptions } from "util";
-import { GraphPointer, VisibleGraphPointer, } from "./graph-pointer.js";
+import { GraphPointer, } from "./graph-pointer.js";
 import { GraphNode, } from "./graph-node.js";
 import { getSerializedRuleKey, } from "./get-serialized-rule-key.js";
 import { colorize, } from "./colorize.js";
