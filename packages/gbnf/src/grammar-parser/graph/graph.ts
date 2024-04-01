@@ -75,6 +75,15 @@ export class Graph {
         throw new Error(`Unsupported rule type: ${rule.type}`);
       }
     }
+
+    const remainingPointers = this.pointers.pointers;
+    this.pointers.pointers = new Set<GraphPointer>();
+    this.pointers.keys = new Set<string>();
+    for (const pointer of remainingPointers) {
+      for (const nextPointer of pointer.fetchNext()) {
+        this.pointers.add(nextPointer);
+      }
+    }
   }
 
   // generator that yields either the node, or if a reference rule, the referenced node
@@ -150,13 +159,5 @@ export class Graph {
       yield { rule, pointers, };
     }
 
-    const remainingPointers = this.pointers.pointers;
-    this.pointers.pointers = new Set<GraphPointer>();
-    this.pointers.keys = new Set<string>();
-    for (const pointer of remainingPointers) {
-      for (const nextPointer of pointer.fetchNext()) {
-        this.pointers.add(nextPointer);
-      }
-    }
   }
 }

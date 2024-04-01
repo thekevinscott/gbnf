@@ -20,6 +20,18 @@ export class GraphPointer {
     if (this.#valid === false) {
       return;
     }
+    /*
+     * 1. If the current node is an end node, and the pointer has a parent, return the parent's `fetchNext`; else return nothing.
+     * 2. If the current node is a rule ref, yield the referenced nodes, _unless_ resolved is true, in which case it returns next.
+     * 3. If the current node is a char or range, we go to the next node. If none exists, throw an error.
+     */
+
+    // if (isRuleRef(this.node.rule)) {
+    //   for (const referencedNode of this.node.rule.nodes) {
+    //     yield new GraphPointer(referencedNode, this);
+    //   }
+    // }
+
     const node = this.node.next;
     if (node) {
       if (isRuleRef(node.rule)) {
