@@ -1,5 +1,5 @@
 // import { CustomInspectFunction, InspectOptions } from "util";
-import { GraphPointer, VisibleGraphPointer, } from "./graph-pointer.js";
+import { GraphPointer, } from "./graph-pointer.js";
 import { GraphNode, } from "./graph-node.js";
 import { getSerializedRuleKey, } from "./get-serialized-rule-key.js";
 import { colorize, } from "./colorize.js";
@@ -9,10 +9,11 @@ import { isPointInRange, } from "../is-point-in-range.js";
 
 const customInspectSymbol = Symbol.for('nodejs.util.inspect.custom');
 
+const getPointersSet = () => new GraphPointersStore();
 export class Graph {
   roots = new Map<number, Map<number, GraphNode>>();
 
-  pointers = new GraphPointersStore();
+  pointers = getPointersSet();
 
   constructor(stackedRules: GraphRule[][][], rootId: number) {
     const ruleRefs: RuleRef[] = [];
@@ -77,8 +78,7 @@ export class Graph {
     }
 
     const remainingPointers = this.pointers.pointers;
-    this.pointers.pointers = new Set<VisibleGraphPointer>();
-    this.pointers.keys = new Set<string>();
+    this.pointers = getPointersSet();
     for (const pointer of remainingPointers) {
       for (const nextPointer of pointer.fetchNext()) {
         this.addPointer(nextPointer);
