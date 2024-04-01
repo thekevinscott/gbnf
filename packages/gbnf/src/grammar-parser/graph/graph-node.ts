@@ -65,7 +65,7 @@ export class GraphNode<R extends GraphRule = GraphRule> {
     }
 
     if (pointers) {
-      for (const pointer of pointers.pointers) {
+      for (const pointer of pointers) {
         const pointerParts: string[] = [];
         if (pointer.node === this) {
           pointerParts.push(
