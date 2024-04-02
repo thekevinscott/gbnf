@@ -1,5 +1,5 @@
 // import { CustomInspectFunction, InspectOptions } from "util";
-import { GraphPointer, GraphPointerKey, VisibleGraphPointer, getPointerKey, } from "./graph-pointer.js";
+import { GraphPointer, VisibleGraphPointer, } from "./graph-pointer.js";
 import { GraphNode, } from "./graph-node.js";
 import { getSerializedRuleKey, } from "./get-serialized-rule-key.js";
 import { colorize, } from "./colorize.js";
@@ -9,7 +9,7 @@ import { isPointInRange, } from "../is-point-in-range.js";
 
 const customInspectSymbol = Symbol.for('nodejs.util.inspect.custom');
 
-const getPointersSet = () => new GenericSet<VisibleGraphPointer, GraphPointerKey>(getPointerKey);
+const getPointersSet = () => new Set<VisibleGraphPointer>();
 export class Graph {
   roots = new Map<number, Map<number, GraphNode>>();
 
@@ -39,8 +39,10 @@ export class Graph {
 
     for (const ruleRef of ruleRefs) {
       const referencedNodes = new Set<GraphNode>();
-      for (const { node, } of this.fetchNodesForRootNode(this.roots.get(ruleRef.value))) {
+      for (const node of this.roots.get(ruleRef.value).values()) {
+        // for (const { node, } of this.fetchNodesForRootNode(this.roots.get(ruleRef.value))) {
         referencedNodes.add(node);
+        // }
       }
       ruleRef.nodes = referencedNodes;
     }
@@ -57,6 +59,11 @@ export class Graph {
     for (const pointer of pointers) {
       pointer.valid = valid;
     }
+  }
+
+  #log = false;
+  set log(f: boolean) {
+    this.#log = f;
   }
 
   parse(codePoint: number) {
@@ -101,6 +108,8 @@ export class Graph {
   }
 
   // generator that yields either the node, or if a reference rule, the referenced node
+  // we need these function, as distinct from leveraging the logic in GraphPointer,
+  // because that needs a rule ref with already defined nodes; this function is used to _set_ those nodes
   * fetchNodesForRootNode(
     rootNodes: Map<number, GraphNode>,
     parent?: GraphPointer,

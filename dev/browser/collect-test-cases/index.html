@@ -23,7 +23,10 @@
       font-size: 1.0rem;
     }
     #grammar-container {
-      max-height: 40%;
+      max-height: 30%;
+      height: 30%;
+      display: flex;
+      flex-direction: column;
     }
 
     #actions {
@@ -32,7 +35,7 @@
       max-height: 80px;
       gap: 20px;
     }
-    pre {
+    textarea {
       padding: 20px;
       border-radius: 5px;
       background: #EEE;
@@ -53,11 +56,10 @@
       <button id="submit" type="submit">Generate Output</button>
     </div>
     <label>Grammar</label>
-    sup!
     <div id="grammar-container">
       <wc-monaco-editor id="grammar"></wc-monaco-editor>
     </div>
-    <pre id="output"></pre>
+    <textarea readonly id="output"></textarea>
   </form>
   <hr />
   <script type="module" src="./index.ts"></script>

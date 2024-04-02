@@ -3,7 +3,7 @@ import { AbstractGrammarParser, } from "./abstract-grammar-parser.js";
 import { buildRuleStack, } from "./build-rule-stack.js";
 import { InputParseError, } from "./errors.js";
 import { Graph, } from "./graph/index.js";
-import type { GraphRule, ReturnRuleValue, } from "./graph/types.js";
+import type { GraphRule, Rule, } from "./graph/types.js";
 
 export const getGrammarParser = (ruleDefs: InternalRuleDef[][], rootId: number) => {
   const stackedRules: GraphRule[][][] = ruleDefs.map(buildRuleStack);
@@ -25,7 +25,7 @@ export const getGrammarParser = (ruleDefs: InternalRuleDef[][], rootId: number) 
     };
 
     // returns a flat stack of rules
-    get rules(): ReturnRuleValue[] { return this.#graph.rules(); }
+    get rules(): Rule[] { return this.#graph.rules(); }
   }
 
   return _GrammarParser;

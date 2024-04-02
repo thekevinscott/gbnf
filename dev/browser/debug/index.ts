@@ -54,3 +54,4 @@ import GBNF, { RuleType } from '../../../packages/gbnf/src/index.js';
   //   console.error('Expected an ending rule type')
   // }
 })();
+
