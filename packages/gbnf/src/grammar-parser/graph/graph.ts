@@ -131,7 +131,7 @@ export class Graph {
     return `\n${graphView.join('\n')}`;
   };
 
-  rules<StopToken>(stopToken: StopToken = null): Rule[] {
+  rules(): Rule[] {
     const rules = new GenericSet<Rule, string>(getSerializedRuleKey);
 
     for (const { rule, } of this.pointers) {

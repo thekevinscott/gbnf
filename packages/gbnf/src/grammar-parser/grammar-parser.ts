@@ -27,7 +27,7 @@ export const getGrammarParser = (ruleDefs: InternalRuleDef[][], rootId: number) 
     };
 
     // returns a flat stack of rules
-    get rules(): ReturnRuleValue<StopToken>[] { return this.#graph.rules(this.stopToken); }
+    get rules(): ReturnRuleValue[] { return this.#graph.rules(); }
   }
 
   return _GrammarParser;

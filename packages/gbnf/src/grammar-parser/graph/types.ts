@@ -24,7 +24,7 @@ export interface RuleEnd {
 export type GraphRule = RuleChar | RuleRef | RuleEnd;
 // RuleRefs should never be exposed to the end user.
 export type Rule = RuleChar | RuleEnd;
-export type ReturnRuleValue<StopToken> = Rule;
+export type ReturnRuleValue = Rule;
 
 /** Type Guards */
 export const isGraphRule = (rule?: unknown): rule is GraphRule => !!rule && typeof rule === 'object' && 'type' in rule && isRuleType(rule.type);
