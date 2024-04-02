@@ -10,7 +10,7 @@ const escape = (str: string) => str.replace(/\n/g, '\\n').replace(/\t/g, '\\t');
 const unescape = (str: string) => str.replace(/\\n/g, '\n').replace(/\\t/g, '\t');
 
 describe('Grammars', () => {
-  test.only.each([
+  test.each([
     ...Object.entries(grammars).filter(([_, p]) => p.testCases).reduce<[string, string, string][]>((acc, [key, { grammar, testCases }]) => {
       return acc.concat(testCases.map(testCase => ([key, escape(testCase), escape(grammar)])));
     }, []),
