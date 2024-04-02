@@ -234,29 +234,29 @@ describe('additional strings', () => {
 
     // range with + modifier
     [`root ::= [a-z]+`, '', 'a', [
-      { type: RuleType.RANGE, value: [['a'.charCodeAt(0), 'z'.charCodeAt(0)]], },
+      { type: RuleType.CHAR, value: [['a'.charCodeAt(0), 'z'.charCodeAt(0)]], },
       { type: RuleType.END, },
     ]],
     [`root ::= [a-zA-Z]+`, '', 'Z', [
-      { type: RuleType.RANGE, value: [['a'.charCodeAt(0), 'z'.charCodeAt(0)], ['A'.charCodeAt(0), 'Z'.charCodeAt(0)]], },
+      { type: RuleType.CHAR, value: [['a'.charCodeAt(0), 'z'.charCodeAt(0)], ['A'.charCodeAt(0), 'Z'.charCodeAt(0)]], },
       { type: RuleType.END, },
     ]],
     [`root ::= [a-zA-Z]+`, 'azA', 'Z', [
-      { type: RuleType.RANGE, value: [['a'.charCodeAt(0), 'z'.charCodeAt(0)], ['A'.charCodeAt(0), 'Z'.charCodeAt(0)]], },
+      { type: RuleType.CHAR, value: [['a'.charCodeAt(0), 'z'.charCodeAt(0)], ['A'.charCodeAt(0), 'Z'.charCodeAt(0)]], },
       { type: RuleType.END, },
     ]],
 
     // range with * modifier
     [`root ::= [a-z]*`, '', 'a', [
-      { type: RuleType.RANGE, value: [['a'.charCodeAt(0), 'z'.charCodeAt(0)]], },
+      { type: RuleType.CHAR, value: [['a'.charCodeAt(0), 'z'.charCodeAt(0)]], },
       { type: RuleType.END, },
     ]],
     [`root ::= [a-zA-Z]+`, '', 'Z', [
-      { type: RuleType.RANGE, value: [['a'.charCodeAt(0), 'z'.charCodeAt(0)], ['A'.charCodeAt(0), 'Z'.charCodeAt(0)]], },
+      { type: RuleType.CHAR, value: [['a'.charCodeAt(0), 'z'.charCodeAt(0)], ['A'.charCodeAt(0), 'Z'.charCodeAt(0)]], },
       { type: RuleType.END, },
     ]],
     [`root ::= [a-zA-Z]+`, 'acczABC', 'Z', [
-      { type: RuleType.RANGE, value: [['a'.charCodeAt(0), 'z'.charCodeAt(0)], ['A'.charCodeAt(0), 'Z'.charCodeAt(0)]], },
+      { type: RuleType.CHAR, value: [['a'.charCodeAt(0), 'z'.charCodeAt(0)], ['A'.charCodeAt(0), 'Z'.charCodeAt(0)]], },
       { type: RuleType.END, },
     ]],
     [

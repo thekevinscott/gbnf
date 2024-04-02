@@ -22,6 +22,8 @@ export class GenericSet<T, K> {
     this.#set.delete(ref);
   };
 
+  has = (el: T) => this.#set.has(el);
+
   *[Symbol.iterator](): IterableIterator<T> {
     yield* this.#set;
   }

@@ -1,5 +1,5 @@
 import { Color, } from "./colorize.js";
-import { isRuleChar, isRuleRange, isRuleRef, type PrintOpts, type GraphRule, RuleRef, } from "./types.js";
+import { isRuleChar, isRuleRef, type PrintOpts, type GraphRule, RuleRef, isRange, } from "./types.js";
 
 const rules = new Map<GraphRule, number>();
 const getUniqueId = (rule: GraphRule) => {
@@ -49,13 +49,12 @@ export class GraphNode<R extends GraphRule = GraphRule> {
     if (isRuleChar(rule)) {
       parts.push(
         col('[', Color.GRAY),
-        col(rule.value.map(v => getChar(v)).join(''), Color.YELLOW),
-        col(']', Color.GRAY),
-      );
-    } else if (isRuleRange(rule)) {
-      parts.push(
-        col('[', Color.GRAY),
-        ...rule.value.map(range => range.map(v => col(String.fromCharCode(v), Color.YELLOW)).join(col('-', Color.GRAY))),
+        col(rule.value.map(v => {
+          if (isRange(v)) {
+            return v.map(val => col(String.fromCharCode(val), Color.YELLOW));
+          }
+          return getChar(v);
+        }).join(''), Color.YELLOW),
         col(']', Color.GRAY),
       );
     } else if (isRuleRef(rule)) {

@@ -4,7 +4,7 @@ import { GraphNode, } from "./graph-node.js";
 import { getSerializedRuleKey, } from "./get-serialized-rule-key.js";
 import { colorize, } from "./colorize.js";
 import { GenericSet, } from "./generic-set.js";
-import { GraphRule, Rule, RuleRef, isRuleChar, isRuleEnd, isRuleRange, isRuleRef, } from "./types.js";
+import { GraphRule, Rule, RuleRef, isRange, isRuleChar, isRuleEnd, isRuleRef, } from "./types.js";
 import { isPointInRange, } from "../is-point-in-range.js";
 
 const customInspectSymbol = Symbol.for('nodejs.util.inspect.custom');
@@ -65,9 +65,15 @@ export class Graph {
         this.setValid(pointers, rule.value.reduce((
           isValid,
           possibleCodePoint,
-        ) => isValid || codePoint === possibleCodePoint, false));
-      } else if (isRuleRange(rule)) {
-        this.setValid(pointers, isPointInRange(codePoint, rule.value));
+        ) => {
+          if (isValid) {
+            return true;
+          }
+          if (isRange(possibleCodePoint)) {
+            return isPointInRange(codePoint, possibleCodePoint);
+          }
+          return codePoint === possibleCodePoint;
+        }, false));
       } else if (!isRuleEnd(rule)) {
         throw new Error(`Unsupported rule type: ${rule.type}`);
       }
@@ -125,26 +131,18 @@ export class Graph {
     return `\n${graphView.join('\n')}`;
   };
 
-  get rules(): Rule[] {
-    const seen = new Set<string>();
-    const rules: Rule[] = [];
+  rules(): Rule[] {
+    const rules = new GenericSet<Rule, string>(getSerializedRuleKey);
 
     for (const { rule, } of this.pointers) {
-      if (isRuleRef(rule)) {
-        throw new Error('Encountered a reference rule when building rules array, this should not happen');
-      }
-      const key = getSerializedRuleKey(rule);
-      if (!seen.has(key)) {
-        seen.add(key);
-        rules.push(rule);
-      }
+      rules.add(rule);
     }
-    return rules;
+    return Array.from(rules);
   }
 
   * iterateOverPointers(): IterableIterator<{ rule: GraphRule; pointers: GraphPointer[]; }> {
     const seenRules = new Map<string, { rule: GraphRule; pointers: GraphPointer[]; }>();
-    const seen = new Set<GraphNode>();
+    const seen = new GenericSet<GraphNode, string>(pointer => getSerializedRuleKey(pointer.rule));
     for (const pointer of this.pointers) {
       const rule = pointer.rule;
       const ruleKey = getSerializedRuleKey(rule);
