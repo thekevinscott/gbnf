@@ -130,7 +130,7 @@ export class RulesBuilder {
           const type = lastSymStart < outElements.length ? InternalRuleType.CHAR_ALT : startType;
           const [startcharValue, incPos,] = parseChar(src, this.pos);
           this.pos += incPos;
-          if (type === InternalRuleType.CHAR) {
+          if (type === InternalRuleType.CHAR || type === InternalRuleType.CHAR_NOT) {
             outElements.push({ type, value: [startcharValue,], });
           } else {
             outElements.push({ type, value: startcharValue, });

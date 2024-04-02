@@ -1,11 +1,12 @@
 import { Color, Colorize, } from "./colorize.js";
 import { GraphNode, } from "./graph-node.js";
-import { GraphRule, Rule, RuleChar, RuleEnd, RuleRef, isRuleChar, isRuleEnd, isRuleRef, type PrintOpts, } from "./types.js";
+import { GraphRule, Rule, RuleChar, RuleCharExclude, RuleEnd, RuleRef, isRuleChar, isRuleCharExcluded, isRuleEnd, isRuleRef, type PrintOpts, } from "./types.js";
 
 export type VisibleGraphPointer = GraphPointer<Rule>;
 const isGraphPointerRuleRef = (pointer: GraphPointer): pointer is GraphPointer<RuleRef> => isRuleRef(pointer.rule);
 const isGraphPointerRuleEnd = (pointer: GraphPointer): pointer is GraphPointer<RuleEnd> => isRuleEnd(pointer.rule);
 const isGraphPointerRuleChar = (pointer: GraphPointer): pointer is GraphPointer<RuleChar> => isRuleChar(pointer.rule);
+const isGraphPointerRuleCharExclude = (pointer: GraphPointer): pointer is GraphPointer<RuleCharExclude> => isRuleCharExcluded(pointer.rule);
 
 export class GraphPointer<R extends GraphRule = GraphRule> {
   node: GraphNode<R>;
@@ -41,7 +42,7 @@ export class GraphPointer<R extends GraphRule = GraphRule> {
       } else {
         yield* this.parent.resolve(true);
       }
-    } else if (isGraphPointerRuleChar(this)) {
+    } else if (isGraphPointerRuleChar(this) || isGraphPointerRuleCharExclude(this)) {
       yield this;
     } else {
       throw new Error(`Unknown rule type: ${this.node.rule.type}`);

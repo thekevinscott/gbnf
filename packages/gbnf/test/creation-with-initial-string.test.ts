@@ -30,6 +30,13 @@ describe('creation with initial string', () => {
     ['root ::= "foo" | "bar" | "baz"', 'fooo',],
     ['root ::= "foo" | "bar" | "baz"', 'bazrr',],
 
+    // char not
+    ['root ::= [^a]', 'a'],
+    ['root ::= [^abc]', 'b'],
+    ['root ::= [^a-z]', 'z'],
+    ['root ::= [^a-zA-Z]', 'X'],
+    ['root ::= [^a-zA-Z0-9]', '8'],
+
     // expressions
     ['root ::= foo\\nfoo ::="foo"', '1',],
     ['root ::= foo\\nfoo ::="foo"', 'b',],
@@ -84,6 +91,15 @@ describe('creation with initial string', () => {
     [`root ::= [a-z]*`, 'A',],
     [`root ::= [a-z]*`, '0',],
     [`root ::= [a-z]*`, 'az0',],
+
+    // sticking to llama.cpp's implementation, for a char_not rule _and_ a char rule
+    // side by side, _either_ is valid.
+    // that means that input explicitly forbidden by char_not can be allowed by the char
+    // rule.
+    // it seems weird. but it's the way it is.
+    // so below, anything in b-z is allowed, because of the second rule. Anything _not_ a-z is
+    // also allowed, because of the first rule. So really the only character disallowed is 'a'.
+    [`root ::= ( [^abcdefgh] | [b-z])* `, 'a',],
   ])('it throws if encountering a grammar `%s` with invalid input: `%s`', (grammar, input) => { expect(() => new (GBNF(grammar.split('\\n').join('\n')))(input)).toThrow(); });
 
   test.each([
@@ -129,6 +145,54 @@ describe('creation with initial string', () => {
     ['root ::= "foo" | "bar" | "baz"', 'ba', [
       { type: RuleType.CHAR, value: ['r'.charCodeAt(0)], },
       { type: RuleType.CHAR, value: ['z'.charCodeAt(0)], },
+    ]],
+
+    // char not
+    ['root ::= [^f] "o"', '', [
+      { type: RuleType.CHAR_EXCLUDE, value: ['f'.charCodeAt(0)], },
+    ]],
+    ['root ::= [^f] "o"', 'a', [
+      { type: RuleType.CHAR, value: ['o'.charCodeAt(0)], },
+    ]],
+    ['root ::= [^A-Z]', '', [
+      {
+        type: RuleType.CHAR_EXCLUDE, value: [
+          [
+            'A'.charCodeAt(0),
+            'Z'.charCodeAt(0),
+          ],
+        ],
+      },
+    ]],
+    ['root ::= [^A-Z0-9]', '', [
+      {
+        type: RuleType.CHAR_EXCLUDE, value: [
+          [
+            'A'.charCodeAt(0),
+            'Z'.charCodeAt(0),
+          ],
+          [
+            '0'.charCodeAt(0),
+            '9'.charCodeAt(0),
+          ],
+        ],
+      },
+    ]],
+    ['root ::= [^A-Z0-9_-]', '', [
+      {
+        type: RuleType.CHAR_EXCLUDE, value: [
+          [
+            'A'.charCodeAt(0),
+            'Z'.charCodeAt(0),
+          ],
+          [
+            '0'.charCodeAt(0),
+            '9'.charCodeAt(0),
+          ],
+          '_'.charCodeAt(0),
+          '-'.charCodeAt(0),
+        ],
+      },
     ]],
 
     // expressions
@@ -310,6 +374,55 @@ describe('creation with initial string', () => {
       { type: RuleType.END, },
     ]],
 
+    // char not with modifiers
+    ['root ::= [^f]+ "o"', 'aaa', [
+      { type: RuleType.CHAR_EXCLUDE, value: ['f'.charCodeAt(0)], },
+      { type: RuleType.CHAR, value: ['o'.charCodeAt(0)], },
+    ]],
+    ['root ::= [^A-Z]+', 'abc', [
+      {
+        type: RuleType.CHAR_EXCLUDE, value: [
+          [
+            'A'.charCodeAt(0),
+            'Z'.charCodeAt(0),
+          ],
+        ],
+      },
+      { type: RuleType.END, },
+    ]],
+    ['root ::= [^A-Z0-9]*', 'abc', [
+      {
+        type: RuleType.CHAR_EXCLUDE, value: [
+          [
+            'A'.charCodeAt(0),
+            'Z'.charCodeAt(0),
+          ],
+          [
+            '0'.charCodeAt(0),
+            '9'.charCodeAt(0),
+          ],
+        ],
+      },
+      { type: RuleType.END, },
+    ]],
+    ['root ::= [^A-Z0-9_-]*', 'abc', [
+      {
+        type: RuleType.CHAR_EXCLUDE, value: [
+          [
+            'A'.charCodeAt(0),
+            'Z'.charCodeAt(0),
+          ],
+          [
+            '0'.charCodeAt(0),
+            '9'.charCodeAt(0),
+          ],
+          '_'.charCodeAt(0),
+          '-'.charCodeAt(0),
+        ],
+      },
+      { type: RuleType.END, },
+    ]],
+
     // real world bugs
     // "baz" and "bazaar" are ambiguous, and a string "bazaa" should not result in an 'a' CHAR rule
     [
@@ -415,6 +528,59 @@ describe('creation with initial string', () => {
       '1=1', [
         { type: RuleType.CHAR, value: [['0'.charCodeAt(0), '9'.charCodeAt(0)]], },
         { type: RuleType.CHAR, value: ['\n'.charCodeAt(0)], },
+      ],
+    ],
+    [
+      `root ::= "\\\\"" ( [^"abcdefghA-Z])* `,
+      `" is not only in its lyrism, its vow to sustin it in its poo-sion, its r,v:l'y, it's tory,`,
+      [
+        {
+          type: RuleType.CHAR_EXCLUDE, value: [
+            '"'.charCodeAt(0),
+            'a'.charCodeAt(0),
+            'b'.charCodeAt(0),
+            'c'.charCodeAt(0),
+            'd'.charCodeAt(0),
+            'e'.charCodeAt(0),
+            'f'.charCodeAt(0),
+            'g'.charCodeAt(0),
+            'h'.charCodeAt(0),
+            ['A'.charCodeAt(0), 'Z'.charCodeAt(0)],
+          ],
+        },
+        { type: RuleType.END, },
+      ],
+    ],
+    // sticking to llama.cpp's implementation, for a char_not rule _and_ a char rule
+    // side by side, _either_ is valid.
+    // that means that input explicitly forbidden by char_not can be allowed by the char
+    // rule.
+    // it seems weird. but it's the way it is.
+    // so below, anything in b-z is allowed, because of the second rule. Anything _not_ a-z is
+    // also allowed, because of the first rule. So really the only character disallowed is 'a'.
+    [
+      `root ::= ( [^abcdefgh] | [b-z])* `,
+      'bcdefghzyxw0123ABCZ',
+      [
+        {
+          type: RuleType.CHAR_EXCLUDE, value: [
+            'a'.charCodeAt(0),
+            'b'.charCodeAt(0),
+            'c'.charCodeAt(0),
+            'd'.charCodeAt(0),
+            'e'.charCodeAt(0),
+            'f'.charCodeAt(0),
+            'g'.charCodeAt(0),
+            'h'.charCodeAt(0),
+          ],
+        },
+        {
+          type: RuleType.CHAR, value: [
+            ['b'.charCodeAt(0), 'z'.charCodeAt(0)],
+          ],
+        },
+        { type: RuleType.END, },
+
       ],
     ],
   ])('it parses a grammar `%s` against input: `%s`', (grammar, input, expected) => {
