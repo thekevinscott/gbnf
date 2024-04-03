@@ -80,7 +80,7 @@ describe("initialization", () => {
     // ]],
 
   ])('it returns initial set of rules for grammar `%s`', (grammar, expectation) => {
-    const graph = GBNF(grammar.split('\\n').join('\n'));
-    expect(Array.from(graph.rules())).toEqual(expectation);
+    const state = GBNF(grammar.split('\\n').join('\n'));
+    expect(Array.from(state.rules())).toEqual(expectation);
   });
 });

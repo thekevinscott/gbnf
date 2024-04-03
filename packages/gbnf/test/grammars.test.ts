@@ -43,10 +43,10 @@ describe('Grammars', () => {
   test.each(testDefs)(`%s %s`, (_, _testCase, grammar,) => {
     const testCase = unescape(_testCase);
 
-    const graph = GBNF(unescape(grammar));
+    const state = GBNF(unescape(grammar));
 
     for (let i = 0; i < testCase.length; i++) {
-      graph.add(testCase[i]);
+      state.add(testCase[i]);
     }
   });
 });
