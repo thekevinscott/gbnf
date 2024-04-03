@@ -1,12 +1,4 @@
-export const grammar = `
-root  ::= (expr "=" ws term "\n")+
-expr  ::= term ([-+*/] term)*
-term  ::= ident | num | "(" ws expr ")" ws
-ident ::= [a-z] [a-z0-9_]* ws
-num   ::= [0-9]+ ws
-ws    ::= [ \t\n]*
-`;
-export const testCases = [
+[
   "1",
   "1 +",
   "and",

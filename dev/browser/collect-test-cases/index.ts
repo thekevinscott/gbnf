@@ -42,7 +42,7 @@ const log = (obj: string) => {
 const generateTestCases = async (grammar: string, n: number) => {
   // log(output);
   const prompt = `
-  Write me a valid JSON object. It's contents can be anything.
+  Give ma the sweetest japanese poetry
   `
   const testCases: string[] = [];
   await fetchTestCases(prompt, grammar, ({ parsedChunk, partial }, i) => {
@@ -54,8 +54,8 @@ const generateTestCases = async (grammar: string, n: number) => {
       return a.length - b.length;
     });
     log([
-      `export const grammar = \`\n${grammar}\`;`,
-      `export const testCases = ${JSON.stringify(parsedTestCases, null, 2)}`
+      // `export const grammar = \`\n${grammar}\`;`,
+      `${JSON.stringify(parsedTestCases, null, 2)}`
     ].join('\n'));
   }, n);
 }

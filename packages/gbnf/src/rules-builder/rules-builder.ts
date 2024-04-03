@@ -103,7 +103,7 @@ export class RulesBuilder {
     outElements: InternalRuleDef[],
     depth = 0,
   ): void => {
-    const is_nested = depth !== 0;
+    const isNested = depth !== 0;
     const src = this.src;
     let lastSymStart: number = outElements.length;
     while (src[this.pos]) {
@@ -116,7 +116,7 @@ export class RulesBuilder {
           outElements.push({ type: InternalRuleType.CHAR, value: [value,], });
           this.pos += incPos; // Adjusting pos by the length of parsed characters
         }
-        this.pos = parseSpace(src, this.pos + 1, is_nested);
+        this.pos = parseSpace(src, this.pos + 1, isNested);
       } else if (src[this.pos] === '[') {
         this.pos += 1;
         let startType: InternalRuleType = InternalRuleType.CHAR;
@@ -143,12 +143,12 @@ export class RulesBuilder {
             this.pos += incPos;
           }
         }
-        this.pos = parseSpace(src, this.pos + 1, is_nested);
+        this.pos = parseSpace(src, this.pos + 1, isNested);
       } else if (isWordChar(src[this.pos])) {
         const name = parseName(src, this.pos);
         const refRuleId: number = this.getSymbolId(name, name.length);
         this.pos += name.length;
-        this.pos = parseSpace(src, this.pos, is_nested);
+        this.pos = parseSpace(src, this.pos, isNested);
 
         lastSymStart = outElements.length;
         outElements.push({ type: InternalRuleType.RULE_REF, value: refRuleId, });
@@ -161,7 +161,7 @@ export class RulesBuilder {
         if (src[this.pos] !== ')') {
           throw new GrammarParseError(src, this.pos, `Expecting ')' at ${this.pos}`);
         }
-        this.pos = parseSpace(src, this.pos + 1, is_nested);
+        this.pos = parseSpace(src, this.pos + 1, isNested);
       } else if (src[this.pos] === '*' || src[this.pos] === '+' || src[this.pos] === '?') {
         if (lastSymStart === outElements.length) {
           throw new GrammarParseError(src, this.pos, `Expecting preceding item to */+/? at ${this.pos}`);
@@ -179,7 +179,7 @@ export class RulesBuilder {
         this.addRule(subRuleId, subRule);
         outElements.splice(lastSymStart);
         outElements.push({ type: InternalRuleType.RULE_REF, value: subRuleId, });
-        this.pos = parseSpace(src, this.pos + 1, is_nested);
+        this.pos = parseSpace(src, this.pos + 1, isNested);
       } else {
         break;
       }
