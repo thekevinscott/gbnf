@@ -1,0 +1,24 @@
+version = 1
+
+test_patterns = ["packages/gbnf/src/**/*.ts"]
+
+exclude_patterns = [
+  "packages/gbnf/src/**/*.test.ts", 
+  "packages/gbnf/test/**/*.ts", 
+  # "examples/**", 
+  # "scripts/**", 
+  # "test/**", 
+  "dev/**",
+]
+
+[[analyzers]]
+name = "javascript"
+enabled = true
+
+  [analyzers.meta]
+  environment = [
+    "browser",
+    "nodejs",
+    "vitest"
+  ]
+  dialect = "typescript"
