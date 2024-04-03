@@ -1,5 +1,4 @@
 import { InternalRuleDef, } from "../rules-builder/types.js";
-import { AbstractGrammarParser, } from "./abstract-grammar-parser.js";
 import { buildRuleStack, } from "./build-rule-stack.js";
 import { InputParseError, } from "./errors.js";
 import { Graph, } from "./graph/index.js";
@@ -7,7 +6,7 @@ import type { GraphRule, Rule, } from "./graph/types.js";
 
 export const getGrammarParser = (ruleDefs: InternalRuleDef[][], rootId: number) => {
   const stackedRules: GraphRule[][][] = ruleDefs.map(buildRuleStack);
-  class _GrammarParser implements AbstractGrammarParser {
+  class GrammarParser {
     #graph: Graph;
 
     constructor(src: string) {
@@ -28,5 +27,5 @@ export const getGrammarParser = (ruleDefs: InternalRuleDef[][], rootId: number) 
     get rules(): Rule[] { return this.#graph.rules(); }
   }
 
-  return _GrammarParser;
+  return GrammarParser;
 };

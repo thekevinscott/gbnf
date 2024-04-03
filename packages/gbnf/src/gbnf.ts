@@ -11,5 +11,6 @@ export const GBNF = (grammar: string) => {
   }
   const rootId = symbolIds.get('root');
 
-  return getGrammarParser(rules, rootId);
+  const GrammarParser = getGrammarParser(rules, rootId);
+  return GrammarParser;
 };
