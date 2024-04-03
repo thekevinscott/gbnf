@@ -3,7 +3,7 @@ import { GraphNode, } from "./graph-node.js";
 import { RuleRef, } from "./rule-ref.js";
 import { GraphRule, Rule, RuleChar, RuleCharExclude, RuleEnd, isRuleChar, isRuleCharExcluded, isRuleEnd, isRuleRef, type PrintOpts, } from "./types.js";
 
-export type VisibleGraphPointer = GraphPointer<Rule>;
+export type PublicGraphPointer = GraphPointer<Rule>;
 const isGraphPointerRuleRef = (pointer: GraphPointer): pointer is GraphPointer<RuleRef> => isRuleRef(pointer.rule);
 const isGraphPointerRuleEnd = (pointer: GraphPointer): pointer is GraphPointer<RuleEnd> => isRuleEnd(pointer.rule);
 const isGraphPointerRuleChar = (pointer: GraphPointer): pointer is GraphPointer<RuleChar> => isRuleChar(pointer.rule);
@@ -22,7 +22,7 @@ export class GraphPointer<R extends GraphRule = GraphRule> {
     this.parent = parent;
   }
 
-  *resolve(resolved = false): IterableIterator<VisibleGraphPointer> {
+  *resolve(resolved = false): IterableIterator<PublicGraphPointer> {
     /*
      * 1. If the current node is an end node, and the pointer has a parent, return the parent's `fetchNext`; else return nothing.
      * 2. If the current node is a rule ref, yield the referenced nodes, _unless_ resolved is true, in which case it returns next.
@@ -50,7 +50,7 @@ export class GraphPointer<R extends GraphRule = GraphRule> {
     }
   }
 
-  *fetchNext(): IterableIterator<VisibleGraphPointer> {
+  *fetchNext(): IterableIterator<PublicGraphPointer> {
     // if this pointer is invalid, then we don't return any new pointers
     if (this.#valid === false) {
       return;
