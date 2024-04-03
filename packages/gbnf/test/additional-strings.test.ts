@@ -328,9 +328,9 @@ describe('additional strings', () => {
     ]],
 
   ])('it parses a grammar `%s` with starting `%s` and additional `%s`', (grammar, starting, additional, expected) => {
-    const state = GBNF(grammar.split('\\n').join('\n'));
-    state.add(starting);
-    state.add(additional);
+    let state = GBNF(grammar.split('\\n').join('\n'));
+    state = state.add(starting);
+    state = state.add(additional);
     expect(Array.from(state.rules())).toEqual(expected);
   });
 });

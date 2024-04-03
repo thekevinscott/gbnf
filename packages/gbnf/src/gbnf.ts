@@ -1,5 +1,6 @@
 import { buildRuleStack, } from "./grammar-parser/build-rule-stack.js";
 import { Graph, } from "./grammar-parser/graph/graph.js";
+import { State, } from "./grammar-parser/graph/state.js";
 // import { getGrammarParser, } from "./grammar-parser/grammar-parser.js";
 import { GraphRule, } from "./grammar-parser/graph/types.js";
 import { RulesBuilder, } from "./rules-builder/rules-builder.js";
@@ -16,7 +17,7 @@ export const GBNF = (grammar: string, initialString = '') => {
 
   const stackedRules: GraphRule[][][] = rules.map(buildRuleStack);
   const graph = new Graph(stackedRules, rootId);
-  graph.pointers = graph.getInitialPointers();
-  graph.add(initialString);
-  return graph.state();
+  let pointers = graph.getInitialPointers();
+  pointers = graph.add(pointers, initialString);
+  return new State(graph, pointers);
 };

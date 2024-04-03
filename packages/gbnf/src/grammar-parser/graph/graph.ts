@@ -120,13 +120,15 @@ export class Graph {
     }
   }
 
-  public add = (src: string) => {
+  public add = (_pointers: Pointers, src: string): Pointers => {
+    let pointers = _pointers;
     for (let strPos = 0; strPos < src.length; strPos++) {
-      this.pointers = this.parse(this.pointers, src.charCodeAt(strPos));
-      if (this.rules().length === 0) {
+      pointers = this.parse(pointers, src.charCodeAt(strPos));
+      if (pointers.size === 0) {
         throw new InputParseError(src, strPos);
       }
     }
+    return pointers;
   };
 
   // generator that yields either the node, or if a reference rule, the referenced node
@@ -162,18 +164,14 @@ export class Graph {
     return `\n${graphView.join('\n')}`;
   };
 
-  rules(): Rule[] {
+  rules(pointers: Pointers): Rule[] {
     const rules = new GenericSet<Rule, string>(getSerializedRuleKey);
 
-    for (const { rule, } of this.pointers) {
+    for (const { rule, } of pointers) {
       rules.add(rule);
     }
 
     return Array.from(rules);
-  }
-
-  state() {
-    return new State(this);
   }
 
   * iterateOverPointers(pointers: Pointers): IterableIterator<{ rule: GraphRule; rulePointers: GraphPointer[]; }> {

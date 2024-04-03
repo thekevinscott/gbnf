@@ -1,5 +1,7 @@
+import { GenericSet } from "./generic-set.js";
+import { getSerializedRuleKey } from "./get-serialized-rule-key.js";
 import type { Graph, } from "./graph.js";
-import type { Pointers, } from "./types.js";
+import type { Pointers, Rule, } from "./types.js";
 
 
 export class State {
@@ -12,8 +14,14 @@ export class State {
 
 
 
-  rules() {
-    return this.#graph.rules();
+  rules(): Rule[] {
+    const rules = new GenericSet<Rule, string>(getSerializedRuleKey);
+
+    for (const { rule, } of this.#pointers) {
+      rules.add(rule);
+    }
+
+    return Array.from(rules);
   }
   // *[Symbol.iterator](): IterableIterator<VisibleGraphPointer> {
   //   const rules = new GenericSet<Rule, string>(getSerializedRuleKey);
@@ -24,8 +32,9 @@ export class State {
   //   return Array.from(rules);
   // }
 
-  add(input: string) {
-    this.#graph.add(input);
+  add(input: string): State {
+    const pointers = this.#graph.add(this.#pointers, input);
+    return new State(this.#graph, pointers);
   }
   size() {
     return Array.from(this.rules()).length;
