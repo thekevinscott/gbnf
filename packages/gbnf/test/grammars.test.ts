@@ -42,10 +42,11 @@ for (const key of keys) {
 describe('Grammars', () => {
   test.each(testDefs)(`%s %s`, (_, _testCase, grammar,) => {
     const testCase = unescape(_testCase);
-    const Parser = GBNF(unescape(grammar));
-    const parser = new Parser('');
+
+    const graph = GBNF(unescape(grammar));
+
     for (let i = 0; i < testCase.length; i++) {
-      parser.add(testCase[i]);
+      graph.add(testCase[i]);
     }
   });
 });
