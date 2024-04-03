@@ -4,17 +4,18 @@ import { GraphNode, } from "./graph-node.js";
 import { getSerializedRuleKey, } from "./get-serialized-rule-key.js";
 import { colorize, } from "./colorize.js";
 import { GenericSet, } from "./generic-set.js";
-import { GraphRule, Rule, isRange, isRuleChar, isRuleCharExcluded, isRuleEnd, isRuleRef, } from "./types.js";
+import { GraphRule, Pointers, Rule, isRange, isRuleChar, isRuleCharExcluded, isRuleEnd, isRuleRef, } from "./types.js";
 import { isPointInRange, } from "../is-point-in-range.js";
 import { InputParseError, } from "../errors.js";
 import { RuleRef, } from "./rule-ref.js";
 import { State, } from "./state.js";
 
 const customInspectSymbol = Symbol.for('nodejs.util.inspect.custom');
-type Pointers = Set<PublicGraphPointer>;
+type RootNode = Map<number, GraphNode>;
 export class Graph {
-  roots = new Map<number, Map<number, GraphNode>>();
-
+  roots = new Map<number, RootNode>();
+  rootId: number;
+  rootNode: RootNode;
   pointers: Pointers = new Set();
 
   constructor(stackedRules: GraphRule[][][], rootId: number) {
@@ -38,24 +39,29 @@ export class Graph {
 
       this.roots.set(stackId, nodes);
     }
+    this.rootNode = this.roots.get(rootId);
 
     for (const ruleRef of ruleRefs) {
       const referencedNodes = new Set<GraphNode>();
       for (const node of this.roots.get(ruleRef.value).values()) {
-        // for (const { node, } of this.fetchNodesForRootNode(this.roots.get(ruleRef.value))) {
         referencedNodes.add(node);
-        // }
       }
       ruleRef.nodes = referencedNodes;
     }
-
-    const rootNode = this.roots.get(rootId);
-
-    for (const { node, parent, } of this.fetchNodesForRootNode(rootNode)) {
-      const pointer = new GraphPointer(node, parent);
-      this.addPointer(pointer);
-    }
   }
+
+  getInitialPointers = (): Pointers => {
+    const pointers: Pointers = new Set();
+
+    for (const { node, parent, } of this.fetchNodesForRootNode(this.rootNode)) {
+      const pointer = new GraphPointer(node, parent);
+      for (const resolvedPointer of this.resolvePointer(pointer)) {
+        pointers.add(resolvedPointer);
+      }
+    }
+    this.pointers = pointers;
+    return pointers;
+  };
 
   setValid(pointers: GraphPointer[], valid: boolean) {
     for (const pointer of pointers) {
@@ -94,22 +100,24 @@ export class Graph {
 
     const remainingPointers = [...this.pointers,];
     this.pointers = new Set<PublicGraphPointer>();
-    for (const pointer of remainingPointers) {
-      for (const nextPointer of pointer.fetchNext()) {
-        this.addPointer(nextPointer);
+    for (const currentPointer of remainingPointers) {
+      for (const unresolvedNextPointer of currentPointer.fetchNext()) {
+        for (const resolvedNextPointer of this.resolvePointer(unresolvedNextPointer)) {
+          this.pointers.add(resolvedNextPointer);
+        }
       }
     }
   }
 
-  addPointer(unresolvedPointer: GraphPointer) {
-    for (const pointer of unresolvedPointer.resolve()) {
-      if (isRuleRef(pointer.node.rule)) {
+  * resolvePointer(unresolvedPointer: GraphPointer): IterableIterator<PublicGraphPointer> {
+    for (const resolvedPointer of unresolvedPointer.resolve()) {
+      if (isRuleRef(resolvedPointer.node.rule)) {
         throw new Error('Encountered a reference rule when building pointers to the graph');
       }
-      if (isRuleEnd(pointer.node.rule) && !!pointer.parent) {
+      if (isRuleEnd(resolvedPointer.node.rule) && !!resolvedPointer.parent) {
         throw new Error('Encountered an ending rule with a parent when building pointers to the graph');
       }
-      this.pointers.add(pointer);
+      yield resolvedPointer;
     }
   }
 
