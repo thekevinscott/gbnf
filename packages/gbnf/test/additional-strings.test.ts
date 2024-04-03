@@ -77,9 +77,10 @@ describe('additional strings', () => {
     [`root ::= [a-z]*`, 'a', '0',],
     [`root ::= [a-z]*`, 'a', 'z0',],
   ])('it throws if encountering a grammar `%s` with starting `%s` and additional `%s`', (grammar, starting, additional) => {
-    const Parser = GBNF(grammar.split('\\n').join('\n'));
-    const parser = new Parser(starting);
-    expect(() => parser.add(additional)).toThrow();
+    expect(() => {
+      const graph = GBNF(grammar.split('\\n').join('\n'), starting);
+      graph.add(additional);
+    }).toThrow();
   });
 
   test.each([
@@ -327,9 +328,9 @@ describe('additional strings', () => {
     ]],
 
   ])('it parses a grammar `%s` with starting `%s` and additional `%s`', (grammar, starting, additional, expected) => {
-    const Parser = GBNF(grammar.split('\\n').join('\n'));
-    const parser = new Parser(starting);
-    parser.add(additional);
-    expect(parser.rules).toEqual(expected);
+    const graph = GBNF(grammar.split('\\n').join('\n'));
+    graph.add(starting);
+    graph.add(additional);
+    expect(Array.from(graph.rules())).toEqual(expected);
   });
 });

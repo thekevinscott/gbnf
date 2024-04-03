@@ -7,6 +7,7 @@ import { GenericSet, } from "./generic-set.js";
 import { GraphRule, Rule, RuleRef, isRange, isRuleChar, isRuleCharExcluded, isRuleEnd, isRuleRef, } from "./types.js";
 import { isPointInRange, } from "../is-point-in-range.js";
 import { State as State, } from "./state.js";
+import { InputParseError, } from "../errors.js";
 
 const customInspectSymbol = Symbol.for('nodejs.util.inspect.custom');
 export class Graph {
@@ -109,6 +110,15 @@ export class Graph {
       this.pointers.add(pointer);
     }
   }
+
+  public add = (src: string) => {
+    for (let strPos = 0; strPos < src.length; strPos++) {
+      this.parse(src.charCodeAt(strPos));
+      if (this.rules().length === 0) {
+        throw new InputParseError(src, strPos);
+      }
+    }
+  };
 
   // generator that yields either the node, or if a reference rule, the referenced node
   // we need these function, as distinct from leveraging the logic in GraphPointer,

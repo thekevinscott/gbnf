@@ -100,7 +100,12 @@ describe('creation with initial string', () => {
     // so below, anything in b-z is allowed, because of the second rule. Anything _not_ a-z is
     // also allowed, because of the first rule. So really the only character disallowed is 'a'.
     [`root ::= ( [^abcdefgh] | [b-z])* `, 'a',],
-  ])('it throws if encountering a grammar `%s` with invalid input: `%s`', (grammar, input) => { expect(() => new (GBNF(grammar.split('\\n').join('\n')))(input)).toThrow(); });
+  ])('it throws if encountering a grammar `%s` with invalid input: `%s`', (grammar, input) => {
+    expect(() => {
+      const graph = GBNF(grammar.split('\\n').join('\n'));
+      graph.add(input);
+    }).toThrow();
+  });
 
   test.each([
     // single char rule
@@ -584,8 +589,8 @@ describe('creation with initial string', () => {
       ],
     ],
   ])('it parses a grammar `%s` against input: `%s`', (grammar, input, expected) => {
-    const Parser = GBNF(grammar.split('\\n').join('\n'));
-    const parser = new Parser(input);
-    expect(parser.rules).toEqual(expected);
+    const graph = GBNF(grammar.split('\\n').join('\n'));
+    graph.add(input);
+    expect(Array.from(graph.rules())).toEqual(expected);
   });
 });
