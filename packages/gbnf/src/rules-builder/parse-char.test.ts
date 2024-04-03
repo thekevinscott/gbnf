@@ -1,6 +1,6 @@
 import { parseChar } from "./parse-char";
 
-describe.only('parseChar', () => {
+describe('parseChar', () => {
   test.each([
     [
       'escaped 8-bit unicode char',

@@ -3,7 +3,7 @@ import { InternalRuleDef, InternalRuleType, } from './types.js';
 
 interface Expectation { symbolIds: [string[]], rules: InternalRuleDef[][] }
 
-describe.only('Grammar Parser Tests', () => {
+describe('Grammar Parser Tests', () => {
   test.each(([
     [
       'single-string',
