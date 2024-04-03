@@ -1,5 +1,6 @@
 import { Color, } from "./colorize.js";
-import { isRuleChar, isRuleRef, type PrintOpts, type GraphRule, RuleRef, isRange, } from "./types.js";
+import { RuleRef, } from "./rule-ref.js";
+import { isRuleChar, isRuleRef, type PrintOpts, type GraphRule, isRange, } from "./types.js";
 
 const rules = new Map<GraphRule, number>();
 const getUniqueId = (rule: GraphRule) => {

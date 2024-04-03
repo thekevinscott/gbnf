@@ -1,6 +1,7 @@
 import { Color, Colorize, } from "./colorize.js";
 import { GraphNode, } from "./graph-node.js";
-import { GraphRule, Rule, RuleChar, RuleCharExclude, RuleEnd, RuleRef, isRuleChar, isRuleCharExcluded, isRuleEnd, isRuleRef, type PrintOpts, } from "./types.js";
+import { RuleRef, } from "./rule-ref.js";
+import { GraphRule, Rule, RuleChar, RuleCharExclude, RuleEnd, isRuleChar, isRuleCharExcluded, isRuleEnd, isRuleRef, type PrintOpts, } from "./types.js";
 
 export type VisibleGraphPointer = GraphPointer<Rule>;
 const isGraphPointerRuleRef = (pointer: GraphPointer): pointer is GraphPointer<RuleRef> => isRuleRef(pointer.rule);

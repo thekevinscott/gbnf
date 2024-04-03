@@ -10,7 +10,7 @@ import {
   isRuleDefRef,
   type InternalRuleDef,
 } from "../rules-builder/types.js";
-import { RuleRef } from "./graph/rule-ref.js";
+import { RuleRef, } from "./graph/rule-ref.js";
 import {
   GraphRule,
   RuleChar,
