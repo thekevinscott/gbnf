@@ -1,9 +1,9 @@
 import type { Colorize, } from "./colorize.js";
-import { VisibleGraphPointer, } from "./graph-pointer.js";
 import { RuleRef, } from "./rule-ref.js";
+import { PointersSet, } from "./rules.js";
 export { RuleRef, } from "./rule-ref.js";
 
-export interface PrintOpts { pointers?: Set<VisibleGraphPointer>; colorize: Colorize; showPosition: boolean };
+export interface PrintOpts { pointers?: PointersSet; colorize: Colorize; showPosition: boolean };
 
 export enum RuleType {
   CHAR = 'CHAR',

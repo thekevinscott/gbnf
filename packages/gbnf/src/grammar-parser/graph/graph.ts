@@ -1,15 +1,16 @@
 // import { CustomInspectFunction, InspectOptions } from "util";
-import { GraphPointer, VisibleGraphPointer, } from "./graph-pointer.js";
+import { GraphPointer, } from "./graph-pointer.js";
 import { GraphNode, } from "./graph-node.js";
 import { getSerializedRuleKey, } from "./get-serialized-rule-key.js";
 import { colorize, } from "./colorize.js";
 import { GenericSet, } from "./generic-set.js";
 import { GraphRule, Rule, RuleRef, isRange, isRuleChar, isRuleCharExcluded, isRuleEnd, isRuleRef, } from "./types.js";
 import { isPointInRange, } from "../is-point-in-range.js";
+import { PointersSet, } from "./rules.js";
 
 const customInspectSymbol = Symbol.for('nodejs.util.inspect.custom');
 
-const getPointersSet = () => new Set<VisibleGraphPointer>();
+const getPointersSet = () => new PointersSet();
 export class Graph {
   roots = new Map<number, Map<number, GraphNode>>();
 
@@ -59,11 +60,6 @@ export class Graph {
     for (const pointer of pointers) {
       pointer.valid = valid;
     }
-  }
-
-  #log = false;
-  set log(f: boolean) {
-    this.#log = f;
   }
 
   parse(codePoint: number) {
@@ -150,12 +146,7 @@ export class Graph {
   };
 
   rules(): Rule[] {
-    const rules = new GenericSet<Rule, string>(getSerializedRuleKey);
-
-    for (const { rule, } of this.pointers) {
-      rules.add(rule);
-    }
-    return Array.from(rules);
+    return this.pointers.rules();
   }
 
   * iterateOverPointers(): IterableIterator<{ rule: GraphRule; pointers: GraphPointer[]; }> {
