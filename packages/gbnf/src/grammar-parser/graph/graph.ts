@@ -164,16 +164,6 @@ export class Graph {
     return `\n${graphView.join('\n')}`;
   };
 
-  rules(pointers: Pointers): Rule[] {
-    const rules = new GenericSet<Rule, string>(getSerializedRuleKey);
-
-    for (const { rule, } of pointers) {
-      rules.add(rule);
-    }
-
-    return Array.from(rules);
-  }
-
   * iterateOverPointers(pointers: Pointers): IterableIterator<{ rule: GraphRule; rulePointers: GraphPointer[]; }> {
     const seenRules = new Map<string, { rule: GraphRule; pointers: GraphPointer[]; }>();
     const seen = new GenericSet<GraphNode, string>(pointer => getSerializedRuleKey(pointer.rule));

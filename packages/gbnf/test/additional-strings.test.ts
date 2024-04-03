@@ -331,6 +331,6 @@ describe('additional strings', () => {
     let state = GBNF(grammar.split('\\n').join('\n'));
     state = state.add(starting);
     state = state.add(additional);
-    expect(Array.from(state.rules())).toEqual(expected);
+    expect([...state.rules()]).toEqual(expected);
   });
 });
