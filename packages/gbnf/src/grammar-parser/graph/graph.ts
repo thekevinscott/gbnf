@@ -8,6 +8,7 @@ import { GraphRule, Rule, isRange, isRuleChar, isRuleCharExcluded, isRuleEnd, is
 import { isPointInRange, } from "../is-point-in-range.js";
 import { InputParseError, } from "../errors.js";
 import { RuleRef, } from "./rule-ref.js";
+import { State } from "./state.js";
 
 const customInspectSymbol = Symbol.for('nodejs.util.inspect.custom');
 export class Graph {
@@ -161,6 +162,10 @@ export class Graph {
     }
 
     return Array.from(rules);
+  }
+
+  state() {
+    return new State(this);
   }
 
   * iterateOverPointers(): IterableIterator<{ rule: GraphRule; pointers: GraphPointer[]; }> {

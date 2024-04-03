@@ -41,10 +41,15 @@ import { Rule, } from "./types.js";
 export class State {
   #graph: Graph;
   // #state: GraphState;
-  // constructor(state: GraphState) {
-  //   this.#state = state;
-  // }
+  constructor(graph: Graph) {
+    this.#graph = graph;
+  }
 
+
+
+  rules() {
+    return this.#graph.rules();
+  }
   // *[Symbol.iterator](): IterableIterator<VisibleGraphPointer> {
   //   const rules = new GenericSet<Rule, string>(getSerializedRuleKey);
 
@@ -54,9 +59,9 @@ export class State {
   //   return Array.from(rules);
   // }
 
-  // add(input: string) {
-  //   this.#state.add(pointer);
-  // }
+  add(input: string) {
+    this.#graph.add(input);
+  }
 
   // deletePointer(pointer: VisibleGraphPointer) {
   //   this.#state.delete(pointer);
