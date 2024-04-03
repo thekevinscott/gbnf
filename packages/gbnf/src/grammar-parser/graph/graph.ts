@@ -4,11 +4,10 @@ import { GraphNode, } from "./graph-node.js";
 import { getSerializedRuleKey, } from "./get-serialized-rule-key.js";
 import { colorize, } from "./colorize.js";
 import { GenericSet, } from "./generic-set.js";
-import { GraphRule, Pointers, Rule, isRange, isRuleChar, isRuleCharExcluded, isRuleEnd, isRuleRef, } from "./types.js";
+import { GraphRule, Pointers, isRange, isRuleChar, isRuleCharExcluded, isRuleEnd, isRuleRef, } from "./types.js";
 import { isPointInRange, } from "../is-point-in-range.js";
 import { InputParseError, } from "../errors.js";
 import { RuleRef, } from "./rule-ref.js";
-import { State, } from "./state.js";
 
 const customInspectSymbol = Symbol.for('nodejs.util.inspect.custom');
 type RootNode = Map<number, GraphNode>;
@@ -16,7 +15,7 @@ export class Graph {
   roots = new Map<number, RootNode>();
   rootId: number;
   rootNode: RootNode;
-  pointers: Pointers = new Set();
+  pointers: Pointers;
 
   constructor(stackedRules: GraphRule[][][], rootId: number) {
     const ruleRefs: RuleRef[] = [];
@@ -59,7 +58,6 @@ export class Graph {
         pointers.add(resolvedPointer);
       }
     }
-    this.pointers = pointers;
     return pointers;
   };
 
@@ -69,8 +67,8 @@ export class Graph {
     }
   }
 
-  parse(pointers: Pointers, codePoint: number) {
-    for (const { rule, rulePointers, } of this.iterateOverPointers(pointers)) {
+  parse(currentPointers: Pointers, codePoint: number): Pointers {
+    for (const { rule, rulePointers, } of this.iterateOverPointers(currentPointers)) {
       if (isRuleChar(rule)) {
         const valid = rule.value.reduce((
           isValid,
@@ -98,15 +96,15 @@ export class Graph {
       }
     }
 
-    const remainingPointers = [...this.pointers,];
-    this.pointers = new Set<PublicGraphPointer>();
-    for (const currentPointer of remainingPointers) {
+    const nextPointers: Pointers = new Set();
+    for (const currentPointer of currentPointers) {
       for (const unresolvedNextPointer of currentPointer.fetchNext()) {
         for (const resolvedNextPointer of this.resolvePointer(unresolvedNextPointer)) {
-          this.pointers.add(resolvedNextPointer);
+          nextPointers.add(resolvedNextPointer);
         }
       }
     }
+    return nextPointers;
   }
 
   * resolvePointer(unresolvedPointer: GraphPointer): IterableIterator<PublicGraphPointer> {
@@ -121,13 +119,15 @@ export class Graph {
     }
   }
 
-  public add = (src: string) => {
+  public add = (src: string, _pointers?: Pointers,): Pointers => {
+    let pointers = _pointers || this.getInitialPointers();
     for (let strPos = 0; strPos < src.length; strPos++) {
-      this.parse(this.pointers, src.charCodeAt(strPos));
-      if (this.rules().length === 0) {
+      pointers = this.parse(pointers, src.charCodeAt(strPos));
+      if (pointers.size === 0) {
         throw new InputParseError(src, strPos);
       }
     }
+    return pointers;
   };
 
   // generator that yields either the node, or if a reference rule, the referenced node
@@ -162,20 +162,6 @@ export class Graph {
     }))), []);
     return `\n${graphView.join('\n')}`;
   };
-
-  rules(): Rule[] {
-    const rules = new GenericSet<Rule, string>(getSerializedRuleKey);
-
-    for (const { rule, } of this.pointers) {
-      rules.add(rule);
-    }
-
-    return Array.from(rules);
-  }
-
-  state() {
-    return new State(this);
-  }
 
   * iterateOverPointers(pointers: Pointers): IterableIterator<{ rule: GraphRule; rulePointers: GraphPointer[]; }> {
     const seenRules = new Map<string, { rule: GraphRule; pointers: GraphPointer[]; }>();

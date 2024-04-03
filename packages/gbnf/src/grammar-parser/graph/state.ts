@@ -1,29 +1,35 @@
-import { Graph, } from "./graph.js";
+import type { Graph, } from "./graph.js";
+import type { Pointers, Rule, } from "./types.js";
 
 
-export class State {
+export class ParseState {
   #graph: Graph;
-  constructor(graph: Graph) {
+  #pointers: Pointers;
+  constructor(graph: Graph, pointers: Pointers) {
     this.#graph = graph;
+    this.#pointers = pointers;
   }
 
-
-
-  rules() {
-    return this.#graph.rules();
+  *[Symbol.iterator](): IterableIterator<Rule> {
+    yield* this.rules();
   }
-  // *[Symbol.iterator](): IterableIterator<VisibleGraphPointer> {
-  //   const rules = new GenericSet<Rule, string>(getSerializedRuleKey);
 
-  //   for (const { rule, } of this.#state) {
-  //     rules.add(rule);
-  //   }
-  //   return Array.from(rules);
-  // }
-
-  add(input: string) {
-    this.#graph.add(input);
+  *rules(): IterableIterator<Rule> {
+    const seen = new Set<string>();
+    for (const { rule, } of this.#pointers) {
+      const key = JSON.stringify(rule);
+      if (!seen.has(key)) {
+        seen.add(key);
+        yield rule;
+      }
+    }
   }
+
+  add(input: string): ParseState {
+    const pointers = this.#graph.add(input, this.#pointers);
+    return new ParseState(this.#graph, pointers);
+  }
+
   size() {
     return Array.from(this.rules()).length;
   }
