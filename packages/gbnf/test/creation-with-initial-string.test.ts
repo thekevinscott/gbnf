@@ -591,6 +591,6 @@ describe('creation with initial string', () => {
   ])('it parses a grammar `%s` against input: `%s`', (grammar, input, expected) => {
     let state = GBNF(grammar.split('\\n').join('\n'));
     state = state.add(input);
-    expect([...state.rules()]).toEqual(expected);
+    expect([...state]).toEqual(expected);
   });
 });

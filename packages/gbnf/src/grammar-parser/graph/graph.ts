@@ -4,11 +4,10 @@ import { GraphNode, } from "./graph-node.js";
 import { getSerializedRuleKey, } from "./get-serialized-rule-key.js";
 import { colorize, } from "./colorize.js";
 import { GenericSet, } from "./generic-set.js";
-import { GraphRule, Pointers, Rule, isRange, isRuleChar, isRuleCharExcluded, isRuleEnd, isRuleRef, } from "./types.js";
+import { GraphRule, Pointers, isRange, isRuleChar, isRuleCharExcluded, isRuleEnd, isRuleRef, } from "./types.js";
 import { isPointInRange, } from "../is-point-in-range.js";
 import { InputParseError, } from "../errors.js";
 import { RuleRef, } from "./rule-ref.js";
-import { State, } from "./state.js";
 
 const customInspectSymbol = Symbol.for('nodejs.util.inspect.custom');
 type RootNode = Map<number, GraphNode>;
@@ -120,8 +119,8 @@ export class Graph {
     }
   }
 
-  public add = (_pointers: Pointers, src: string): Pointers => {
-    let pointers = _pointers;
+  public add = (src: string, _pointers?: Pointers,): Pointers => {
+    let pointers = _pointers || this.getInitialPointers();
     for (let strPos = 0; strPos < src.length; strPos++) {
       pointers = this.parse(pointers, src.charCodeAt(strPos));
       if (pointers.size === 0) {

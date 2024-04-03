@@ -1,11 +1,10 @@
 import { buildRuleStack, } from "./grammar-parser/build-rule-stack.js";
 import { Graph, } from "./grammar-parser/graph/graph.js";
-import { State, } from "./grammar-parser/graph/state.js";
-// import { getGrammarParser, } from "./grammar-parser/grammar-parser.js";
+import { ParseState, } from "./grammar-parser/graph/state.js";
 import { GraphRule, } from "./grammar-parser/graph/types.js";
 import { RulesBuilder, } from "./rules-builder/rules-builder.js";
 
-export const GBNF = (grammar: string, initialString = '') => {
+export const GBNF = (grammar: string, initialString = ''): ParseState => {
   const { rules, symbolIds, } = new RulesBuilder(grammar);
   if (rules.length === 0) {
     throw new Error(`Failed to parse grammar: ${grammar}`);
@@ -17,7 +16,5 @@ export const GBNF = (grammar: string, initialString = '') => {
 
   const stackedRules: GraphRule[][][] = rules.map(buildRuleStack);
   const graph = new Graph(stackedRules, rootId);
-  let pointers = graph.getInitialPointers();
-  pointers = graph.add(pointers, initialString);
-  return new State(graph, pointers);
+  return new ParseState(graph, graph.add(initialString));
 };

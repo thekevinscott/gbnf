@@ -74,13 +74,9 @@ describe("initialization", () => {
         { type: RuleType.CHAR, value: [['0'.charCodeAt(0), '9'.charCodeAt(0)]], },
       ]
     ],
-    // // slightly complicated char not
-    // ['root ::= "\"" ( [^"abcdefgh] | [zyxw0-9A-Z])* '], [
-
-    // ]],
 
   ])('it returns initial set of rules for grammar `%s`', (grammar, expectation) => {
     const state = GBNF(grammar.split('\\n').join('\n'));
-    expect([...state.rules()]).toEqual(expectation);
+    expect([...state]).toEqual(expectation);
   });
 });
