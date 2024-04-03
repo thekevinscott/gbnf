@@ -1,10 +1,13 @@
-import { Graph, } from "./graph.js";
+import type { Graph, } from "./graph.js";
+import type { Pointers, } from "./types.js";
 
 
 export class State {
   #graph: Graph;
-  constructor(graph: Graph) {
+  #pointers: Pointers;
+  constructor(graph: Graph, pointers: Pointers) {
     this.#graph = graph;
+    this.#pointers = pointers;
   }
 
 

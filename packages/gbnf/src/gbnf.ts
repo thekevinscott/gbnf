@@ -16,7 +16,7 @@ export const GBNF = (grammar: string, initialString = '') => {
 
   const stackedRules: GraphRule[][][] = rules.map(buildRuleStack);
   const graph = new Graph(stackedRules, rootId);
-  graph.getInitialPointers();
+  graph.pointers = graph.getInitialPointers();
   graph.add(initialString);
   return graph.state();
 };

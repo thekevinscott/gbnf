@@ -16,7 +16,7 @@ export class Graph {
   roots = new Map<number, RootNode>();
   rootId: number;
   rootNode: RootNode;
-  pointers: Pointers = new Set();
+  pointers: Pointers;
 
   constructor(stackedRules: GraphRule[][][], rootId: number) {
     const ruleRefs: RuleRef[] = [];
@@ -59,7 +59,6 @@ export class Graph {
         pointers.add(resolvedPointer);
       }
     }
-    this.pointers = pointers;
     return pointers;
   };
 
