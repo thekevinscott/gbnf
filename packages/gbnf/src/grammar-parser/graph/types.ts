@@ -1,9 +1,9 @@
 import type { Colorize, } from "./colorize.js";
 import { RuleRef, } from "./rule-ref.js";
-import { PointersSet, } from "./rules.js";
+import { State, } from "./state.js";
 export { RuleRef, } from "./rule-ref.js";
 
-export interface PrintOpts { pointers?: PointersSet; colorize: Colorize; showPosition: boolean };
+export interface PrintOpts { pointers?: State; colorize: Colorize; showPosition: boolean };
 
 export enum RuleType {
   CHAR = 'CHAR',

@@ -6,15 +6,13 @@ import { colorize, } from "./colorize.js";
 import { GenericSet, } from "./generic-set.js";
 import { GraphRule, Rule, RuleRef, isRange, isRuleChar, isRuleCharExcluded, isRuleEnd, isRuleRef, } from "./types.js";
 import { isPointInRange, } from "../is-point-in-range.js";
-import { PointersSet, } from "./rules.js";
+import { State as State, } from "./state.js";
 
 const customInspectSymbol = Symbol.for('nodejs.util.inspect.custom');
-
-const getPointersSet = () => new PointersSet();
 export class Graph {
   roots = new Map<number, Map<number, GraphNode>>();
 
-  pointers = getPointersSet();
+  pointers = new State();
 
   constructor(stackedRules: GraphRule[][][], rootId: number) {
     const ruleRefs: RuleRef[] = [];
@@ -92,7 +90,7 @@ export class Graph {
     }
 
     const remainingPointers = [...this.pointers,];
-    this.pointers = getPointersSet();
+    this.pointers = new State();
     for (const pointer of remainingPointers) {
       for (const nextPointer of pointer.fetchNext()) {
         this.addPointer(nextPointer);

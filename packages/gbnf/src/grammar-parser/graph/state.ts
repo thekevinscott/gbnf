@@ -2,10 +2,8 @@ import { GenericSet, } from "./generic-set.js";
 import { getSerializedRuleKey, } from "./get-serialized-rule-key.js";
 import { VisibleGraphPointer, } from "./graph-pointer.js";
 import { Rule, } from "./types.js";
-// import { getSerializedRuleKey, } from "./get-serialized-rule-key.js";
-// import { Rule, } from "./types.js";
 
-export class PointersSet {
+export class State {
   #pointers = new Set<VisibleGraphPointer>();
 
   *[Symbol.iterator](): IterableIterator<VisibleGraphPointer> {
