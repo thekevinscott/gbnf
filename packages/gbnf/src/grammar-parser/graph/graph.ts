@@ -61,7 +61,7 @@ export class Graph {
     }
     this.pointers = pointers;
     return pointers;
-  }
+  };
 
   setValid(pointers: GraphPointer[], valid: boolean) {
     for (const pointer of pointers) {
