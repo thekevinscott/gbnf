@@ -68,8 +68,8 @@ export class Graph {
     }
   }
 
-  parse(pointers: Pointers, codePoint: number) {
-    for (const { rule, rulePointers, } of this.iterateOverPointers(pointers)) {
+  parse(currentPointers: Pointers, codePoint: number): Pointers {
+    for (const { rule, rulePointers, } of this.iterateOverPointers(currentPointers)) {
       if (isRuleChar(rule)) {
         const valid = rule.value.reduce((
           isValid,
@@ -97,15 +97,15 @@ export class Graph {
       }
     }
 
-    const remainingPointers = [...this.pointers,];
-    this.pointers = new Set<PublicGraphPointer>();
-    for (const currentPointer of remainingPointers) {
+    const nextPointers: Pointers = new Set();
+    for (const currentPointer of currentPointers) {
       for (const unresolvedNextPointer of currentPointer.fetchNext()) {
         for (const resolvedNextPointer of this.resolvePointer(unresolvedNextPointer)) {
-          this.pointers.add(resolvedNextPointer);
+          nextPointers.add(resolvedNextPointer);
         }
       }
     }
+    return nextPointers;
   }
 
   * resolvePointer(unresolvedPointer: GraphPointer): IterableIterator<PublicGraphPointer> {
@@ -122,7 +122,7 @@ export class Graph {
 
   public add = (src: string) => {
     for (let strPos = 0; strPos < src.length; strPos++) {
-      this.parse(this.pointers, src.charCodeAt(strPos));
+      this.pointers = this.parse(this.pointers, src.charCodeAt(strPos));
       if (this.rules().length === 0) {
         throw new InputParseError(src, strPos);
       }
