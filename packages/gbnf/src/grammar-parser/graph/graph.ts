@@ -11,10 +11,11 @@ import { RuleRef, } from "./rule-ref.js";
 import { State, } from "./state.js";
 
 const customInspectSymbol = Symbol.for('nodejs.util.inspect.custom');
+type Pointers = Set<PublicGraphPointer>;
 export class Graph {
   roots = new Map<number, Map<number, GraphNode>>();
 
-  pointers = new Set<PublicGraphPointer>();
+  pointers: Pointers = new Set();
 
   constructor(stackedRules: GraphRule[][][], rootId: number) {
     const ruleRefs: RuleRef[] = [];
@@ -141,13 +142,13 @@ export class Graph {
   [customInspectSymbol](
     // depth: number, inspectOptions: InspectOptions, inspect: CustomInspectFunction
   ) {
-    return this.print(true);
+    return this.print(this.pointers, true);
   }
 
-  print = (colors = false) => {
+  print = (pointers: Pointers, colors = false) => {
     const nodes: GraphNode[][] = Array.from(this.roots.values()).map(nodes => Array.from(nodes.values()));
     const graphView = nodes.reduce<string[]>((acc, rootNode) => acc.concat(rootNode.map(node => node.print({
-      pointers: this.pointers,
+      pointers,
       showPosition: true,
       colorize: colors ? colorize : str => `${str}`,
     }))), []);
