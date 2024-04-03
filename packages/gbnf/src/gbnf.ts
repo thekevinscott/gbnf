@@ -17,5 +17,5 @@ export const GBNF = (grammar: string, initialString = '') => {
   const stackedRules: GraphRule[][][] = rules.map(buildRuleStack);
   const graph = new Graph(stackedRules, rootId);
   graph.add(initialString);
-  return graph;
+  return graph.state();
 };
