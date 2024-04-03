@@ -63,8 +63,8 @@ export class Graph {
     }
   }
 
-  parse(codePoint: number) {
-    for (const { rule, pointers, } of this.iterateOverPointers()) {
+  parse(pointers: Pointers, codePoint: number) {
+    for (const { rule, rulePointers, } of this.iterateOverPointers(pointers)) {
       if (isRuleChar(rule)) {
         const valid = rule.value.reduce((
           isValid,
@@ -75,7 +75,7 @@ export class Graph {
           }
           return isRange(possibleCodePoint) ? isPointInRange(codePoint, possibleCodePoint) : codePoint === possibleCodePoint;
         }, false);
-        this.setValid(pointers, valid);
+        this.setValid(rulePointers, valid);
       } else if (isRuleCharExcluded(rule)) {
         const valid = rule.value.reduce((
           isValid,
@@ -86,7 +86,7 @@ export class Graph {
           }
           return isRange(possibleCodePoint) ? !isPointInRange(codePoint, possibleCodePoint) : codePoint !== possibleCodePoint;
         }, true);
-        this.setValid(pointers, valid);
+        this.setValid(rulePointers, valid);
       } else if (!isRuleEnd(rule)) {
         throw new Error(`Unsupported rule type: ${rule.type}`);
       }
@@ -115,7 +115,7 @@ export class Graph {
 
   public add = (src: string) => {
     for (let strPos = 0; strPos < src.length; strPos++) {
-      this.parse(src.charCodeAt(strPos));
+      this.parse(this.pointers, src.charCodeAt(strPos));
       if (this.rules().length === 0) {
         throw new InputParseError(src, strPos);
       }
@@ -169,10 +169,10 @@ export class Graph {
     return new State(this);
   }
 
-  * iterateOverPointers(): IterableIterator<{ rule: GraphRule; pointers: GraphPointer[]; }> {
+  * iterateOverPointers(pointers: Pointers): IterableIterator<{ rule: GraphRule; rulePointers: GraphPointer[]; }> {
     const seenRules = new Map<string, { rule: GraphRule; pointers: GraphPointer[]; }>();
     const seen = new GenericSet<GraphNode, string>(pointer => getSerializedRuleKey(pointer.rule));
-    for (const pointer of this.pointers) {
+    for (const pointer of pointers) {
       const rule = pointer.rule;
       const ruleKey = getSerializedRuleKey(rule);
       if (!seenRules.has(ruleKey)) {
@@ -189,8 +189,8 @@ export class Graph {
       }
     }
 
-    for (const { rule, pointers, } of seenRules.values()) {
-      yield { rule, pointers, };
+    for (const { rule, pointers: rulePointers, } of seenRules.values()) {
+      yield { rule, rulePointers: rulePointers, };
     }
 
   }
