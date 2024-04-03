@@ -142,10 +142,10 @@ export class Graph {
   [customInspectSymbol](
     // depth: number, inspectOptions: InspectOptions, inspect: CustomInspectFunction
   ) {
-    return this.print(this.pointers, true);
+    return this.print({ colors: true, });
   }
 
-  print = (pointers: Pointers, colors = false) => {
+  print = ({ pointers, colors = false, }: { pointers?: Pointers; colors?: boolean } = {}) => {
     const nodes: GraphNode[][] = Array.from(this.roots.values()).map(nodes => Array.from(nodes.values()));
     const graphView = nodes.reduce<string[]>((acc, rootNode) => acc.concat(rootNode.map(node => node.print({
       pointers,
