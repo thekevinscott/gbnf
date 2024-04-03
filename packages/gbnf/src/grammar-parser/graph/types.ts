@@ -3,6 +3,7 @@ import type { PublicGraphPointer, } from "./graph-pointer.js";
 import type { RuleRef, } from "./rule-ref.js";
 
 export interface PrintOpts { pointers?: Set<PublicGraphPointer>; colorize: Colorize; showPosition: boolean };
+export type Pointers = Set<PublicGraphPointer>;
 
 export enum RuleType {
   CHAR = 'CHAR',
