@@ -1,14 +1,12 @@
-import { UnresolvedRule, isGraphRule, isRuleChar, isRuleRef, } from "./types.js";
+import { UnresolvedRule, isRuleChar, isRuleCharExcluded, isRuleEnd, } from "./types.js";
 
-export const getSerializedRuleKey = (rule: UnresolvedRule) => {
-  if (isGraphRule(rule)) {
-    if (isRuleChar(rule)) {
-      return `${rule.type}-${rule.value.join(',')}`;
-    }
-    if (isRuleRef(rule)) {
-      return `${rule.type}-${rule.value}`;
-    }
-    return rule.type;
+export function getSerializedRuleKey<R extends UnresolvedRule>(rule: R): string {
+  if (isRuleEnd(rule)) {
+    return `${rule.type}`;
   }
-  return JSON.stringify(rule);
+
+  if (isRuleChar(rule) || isRuleCharExcluded(rule)) {
+    return `${rule.type}-${JSON.stringify(rule.value)}`;
+  }
+  return `${rule.type}-${rule.value}`;
 };
