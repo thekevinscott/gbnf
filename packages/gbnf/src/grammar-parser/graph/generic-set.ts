@@ -23,6 +23,7 @@ export class GenericSet<T, K> {
   };
 
   has = (el: T) => this.#set.has(el);
+  get = (el: T) => this.#keys.get(this.getKey(el));
 
   *[Symbol.iterator](): IterableIterator<T> {
     yield* this.#set;

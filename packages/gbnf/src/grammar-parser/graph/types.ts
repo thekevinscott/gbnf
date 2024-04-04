@@ -8,10 +8,10 @@ export type Pointers = GenericSet<ResolvedGraphPointer, string>;
 export interface PrintOpts { pointers?: Pointers; colorize: Colorize; showPosition: boolean };
 
 export enum RuleType {
-  CHAR = 'CHAR',
-  CHAR_EXCLUDE = 'CHAR_EXCLUDE',
-  REF = 'REF',
-  END = 'END',
+  CHAR,
+  CHAR_EXCLUDE,
+  REF,
+  END,
 }
 
 export type Range = [number, number];

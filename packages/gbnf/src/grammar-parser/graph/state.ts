@@ -15,11 +15,11 @@ export class ParseState {
   }
 
   *rules(): IterableIterator<ResolvedRule> {
-    const seen = new Set<string>();
+    const rules = new Set<string>();
     for (const { rule, } of this.#pointers) {
       const key = JSON.stringify(rule);
-      if (!seen.has(key)) {
-        seen.add(key);
+      if (!rules.has(key)) {
+        rules.add(key);
         yield rule;
       }
     }

@@ -19,6 +19,7 @@ export class Graph {
 
   constructor(stackedRules: UnresolvedRule[][][], rootId: number) {
     const ruleRefs: RuleRef[] = [];
+    const uniqueRules = new GenericSet<UnresolvedRule, string>(rule => getSerializedRuleKey(rule));
     for (let stackId = 0; stackId < stackedRules.length; stackId++) {
       const stack = stackedRules[stackId];
       const nodes = new Map<number, GraphNode>();
@@ -28,10 +29,15 @@ export class Graph {
         for (let stepId = path.length - 1; stepId >= 0; stepId--) {
           const next: GraphNode = node;
           const rule = stack[pathId][stepId];
+          uniqueRules.add(rule);
           if (isRuleRef(rule)) {
             ruleRefs.push(rule);
           }
-          node = new GraphNode(rule, { stackId, pathId, stepId, }, next);
+          // rules coming in may be identical but have different references.
+          // here, we ensure we always use the same reference for an identical rule.
+          // this makes future comparisons easier.
+          const uniqueRule = uniqueRules.get(rule);
+          node = new GraphNode(uniqueRule, { stackId, pathId, stepId, }, next);
         }
         nodes.set(pathId, node);
       }
@@ -167,28 +173,26 @@ export class Graph {
   };
 
   * iterateOverPointers(pointers: Pointers): IterableIterator<{ rule: UnresolvedRule; rulePointers: GraphPointer[]; }> {
-    const seenRules = new Map<string, { rule: UnresolvedRule; pointers: GraphPointer[]; }>();
-    const seen = new GenericSet<GraphNode, string>(pointer => getSerializedRuleKey(pointer.rule));
+    const seenRules = new Map<UnresolvedRule, GraphPointer[]>();
+    // const seen = new GenericSet<GraphNode, string>(pointer => getSerializedRuleKey(pointer.rule));
     for (const pointer of pointers) {
       const rule = pointer.rule;
-      const ruleKey = getSerializedRuleKey(rule);
-      if (!seenRules.has(ruleKey)) {
-        seenRules.set(ruleKey, { rule, pointers: [pointer,], });
-        if (seen.has(pointer.node)) {
-          throw new Error('encountered a node twice in the graph, this should not happen');
-        }
-        seen.add(pointer.node);
-        if (isRuleRef(rule)) {
-          throw new Error('Encountered a reference rule in the graph, this should not happen');
-        }
+      if (isRuleRef(rule)) {
+        throw new Error('Encountered a reference rule in the graph, this should not happen');
+      }
+      if (!seenRules.has(rule)) {
+        seenRules.set(rule, [pointer,],);
+        // if (seen.has(pointer.node)) {
+        //   throw new Error('encountered a node twice in the graph, this should not happen');
+        // }
+        // seen.add(pointer.node);
       } else {
-        seenRules.get(ruleKey).pointers.push(pointer);
+        seenRules.get(rule).push(pointer);
       }
     }
 
-    for (const { rule, pointers: rulePointers, } of seenRules.values()) {
-      yield { rule, rulePointers: rulePointers, };
+    for (const [rule, rulePointers,] of seenRules.entries()) {
+      yield { rule, rulePointers, };
     }
-
   }
 }
