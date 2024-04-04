@@ -1,7 +1,7 @@
 import GBNF, { RuleType, } from '../src/index.js';
 
 describe('additional strings', () => {
-  test.only.each([
+  test.each([
     // single char rule
     ['root ::= "foo"', 'f', '1',],
     ['root ::= "foo"', 'f', 'b',],

@@ -10,6 +10,7 @@ import { InputParseError, } from "../errors.js";
 import { RuleRef, } from "./rule-ref.js";
 
 type RootNode = Map<number, GraphNode>;
+const makePointers = () => new GenericSet<ResolvedGraphPointer, string>(p => p.id);
 export class Graph {
   roots = new Map<number, RootNode>();
   rootId: number;
@@ -49,7 +50,7 @@ export class Graph {
   }
 
   getInitialPointers = (): Pointers => {
-    const pointers: Pointers = new Set();
+    const pointers = makePointers();
 
     for (const { node, parent, } of this.fetchNodesForRootNode(this.rootNode)) {
       const pointer = new GraphPointer(node, parent);
@@ -98,7 +99,7 @@ export class Graph {
     // a pointer's id is the sum of its node's id and its parent's id chain.
     // if two pointers share the same id, it means they point to the same node and have identical parent chains.
     // for the purposes of walking the graph, we only need to keep one of them.
-    const nextPointers = new GenericSet<ResolvedGraphPointer, string>(p => p.id);
+    const nextPointers = makePointers();
     for (const currentPointer of currentPointers) {
       for (const unresolvedNextPointer of currentPointer.fetchNext()) {
         for (const resolvedNextPointer of this.resolvePointer(unresolvedNextPointer)) {
