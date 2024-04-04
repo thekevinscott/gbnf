@@ -1,18 +1,19 @@
-import { Color, Colorize, } from "./colorize.js";
+import { Color, Colorize, colorize, } from "./colorize.js";
 import { GraphNode, } from "./graph-node.js";
 import { RuleRef, } from "./rule-ref.js";
-import { GraphRule, Rule, RuleChar, RuleCharExclude, RuleEnd, isRuleChar, isRuleCharExcluded, isRuleEnd, isRuleRef, type PrintOpts, } from "./types.js";
+import { UnresolvedRule, ResolvedRule, RuleChar, RuleCharExclude, RuleEnd, customInspectSymbol, isRuleChar, isRuleCharExcluded, isRuleEnd, isRuleRef, type PrintOpts, } from "./types.js";
 
-export type PublicGraphPointer = GraphPointer<Rule>;
+export type ResolvedGraphPointer = GraphPointer<ResolvedRule>;
 const isGraphPointerRuleRef = (pointer: GraphPointer): pointer is GraphPointer<RuleRef> => isRuleRef(pointer.rule);
 const isGraphPointerRuleEnd = (pointer: GraphPointer): pointer is GraphPointer<RuleEnd> => isRuleEnd(pointer.rule);
 const isGraphPointerRuleChar = (pointer: GraphPointer): pointer is GraphPointer<RuleChar> => isRuleChar(pointer.rule);
 const isGraphPointerRuleCharExclude = (pointer: GraphPointer): pointer is GraphPointer<RuleCharExclude> => isRuleCharExcluded(pointer.rule);
 
-export class GraphPointer<R extends GraphRule = GraphRule> {
+export class GraphPointer<R extends UnresolvedRule = UnresolvedRule> {
   node: GraphNode<R>;
   parent?: GraphPointer;
   #valid?: boolean;
+  id: string;
 
   constructor(node: GraphNode<R>, parent?: GraphPointer) {
     if (node === undefined) {
@@ -20,9 +21,10 @@ export class GraphPointer<R extends GraphRule = GraphRule> {
     }
     this.node = node;
     this.parent = parent;
+    this.id = parent ? `${parent.id}-${node.id}` : node.id;
   }
 
-  *resolve(resolved = false): IterableIterator<PublicGraphPointer> {
+  *resolve(resolved = false): IterableIterator<ResolvedGraphPointer> {
     /*
      * 1. If the current node is an end node, and the pointer has a parent, return the parent's `fetchNext`; else return nothing.
      * 2. If the current node is a rule ref, yield the referenced nodes, _unless_ resolved is true, in which case it returns next.
@@ -50,7 +52,7 @@ export class GraphPointer<R extends GraphRule = GraphRule> {
     }
   }
 
-  *fetchNext(): IterableIterator<PublicGraphPointer> {
+  *fetchNext(): IterableIterator<ResolvedGraphPointer> {
     // if this pointer is invalid, then we don't return any new pointers
     if (this.#valid === false) {
       return;
@@ -77,6 +79,9 @@ export class GraphPointer<R extends GraphRule = GraphRule> {
   }
 
   print = ({ colorize: col, }: Omit<PrintOpts, 'pointers' | 'showPosition'>): string => col(`*${getParentStackId(this, col)}`, Color.RED);
+  [customInspectSymbol]() {
+    return this.print({ colorize, });
+  }
 }
 
 

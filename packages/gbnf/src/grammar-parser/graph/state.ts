@@ -1,5 +1,5 @@
 import type { Graph, } from "./graph.js";
-import type { Pointers, Rule, } from "./types.js";
+import type { Pointers, ResolvedRule, } from "./types.js";
 
 
 export class ParseState {
@@ -10,11 +10,11 @@ export class ParseState {
     this.#pointers = pointers;
   }
 
-  *[Symbol.iterator](): IterableIterator<Rule> {
+  *[Symbol.iterator](): IterableIterator<ResolvedRule> {
     yield* this.rules();
   }
 
-  *rules(): IterableIterator<Rule> {
+  *rules(): IterableIterator<ResolvedRule> {
     const seen = new Set<string>();
     for (const { rule, } of this.#pointers) {
       const key = JSON.stringify(rule);

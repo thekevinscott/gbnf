@@ -1,6 +1,6 @@
-import { GraphRule, isGraphRule, isRuleChar, isRuleRef, } from "./types.js";
+import { UnresolvedRule, isGraphRule, isRuleChar, isRuleRef, } from "./types.js";
 
-export const getSerializedRuleKey = (rule: GraphRule) => {
+export const getSerializedRuleKey = (rule: UnresolvedRule) => {
   if (isGraphRule(rule)) {
     if (isRuleChar(rule)) {
       return `${rule.type}-${rule.value.join(',')}`;
