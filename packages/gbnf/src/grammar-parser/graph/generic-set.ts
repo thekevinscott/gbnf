@@ -27,6 +27,6 @@ export class GenericSet<T, K> {
   *[Symbol.iterator](): IterableIterator<T> {
     yield* this.#set;
   }
-}
 
-// export const GenericSet = Set;
+  get size() { return this.#set.size; }
+}

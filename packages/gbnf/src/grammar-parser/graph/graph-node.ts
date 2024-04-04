@@ -1,16 +1,6 @@
-import { Color, } from "./colorize.js";
+import { Color, colorize, } from "./colorize.js";
 import { RuleRef, } from "./rule-ref.js";
-import { isRuleChar, isRuleRef, type PrintOpts, type GraphRule, isRange, } from "./types.js";
-
-const rules = new Map<GraphRule, number>();
-const getUniqueId = (rule: GraphRule) => {
-  let id = rules.get(rule);
-  if (id === undefined) {
-    id = rules.size;
-    rules.set(rule, id);
-    return id;
-  }
-};
+import { isRuleChar, isRuleRef, type PrintOpts, type UnresolvedRule, isRange, customInspectSymbol, } from "./types.js";
 
 interface GraphNodeMeta {
   stackId: number;
@@ -18,10 +8,11 @@ interface GraphNodeMeta {
   stepId: number;
 }
 export type GraphNodeRuleRef = GraphNode<RuleRef>;
-export class GraphNode<R extends GraphRule = GraphRule> {
+export class GraphNode<R extends UnresolvedRule = UnresolvedRule> {
   rule: R;
   next?: GraphNode;
   meta: GraphNodeMeta;
+  #id?: string;
   constructor(rule: R, meta: GraphNodeMeta, next?: GraphNode) {
     this.rule = rule;
     if (meta === undefined) {
@@ -32,7 +23,14 @@ export class GraphNode<R extends GraphRule = GraphRule> {
   }
 
   get id() {
-    return getUniqueId(this.rule);
+    if (!this.#id) {
+      this.#id = `${this.meta.stackId},${this.meta.pathId},${this.meta.stepId}`;
+    }
+    return this.#id;
+  }
+
+  [customInspectSymbol]() {
+    return this.print({ colorize, showPosition: false, });
   }
 
   print = ({ pointers, showPosition = false, colorize: col, }: PrintOpts): string => {
@@ -43,7 +41,7 @@ export class GraphNode<R extends GraphRule = GraphRule> {
     if (showPosition) {
       parts.push(
         col('{', Color.BLUE),
-        col(`${[this.meta.stackId, this.meta.pathId, this.meta.stepId,].join('-')}`, Color.GRAY),
+        col(this.id, Color.GRAY),
         col('}', Color.BLUE),
       );
     }

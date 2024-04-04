@@ -12,7 +12,7 @@ import {
 } from "../rules-builder/types.js";
 import { RuleRef, } from "./graph/rule-ref.js";
 import {
-  GraphRule,
+  UnresolvedRule,
   RuleChar,
   RuleCharExclude,
   RuleType,
@@ -27,10 +27,10 @@ function makeCharRule<R extends (InternalRuleDefChar | InternalRuleDefCharNot)>(
   } as R extends InternalRuleDefChar ? RuleChar : RuleCharExclude;
 }
 
-export const buildRuleStack = (linearRules: InternalRuleDef[]): GraphRule[][] => {
-  let paths: GraphRule[] = [];
+export const buildRuleStack = (linearRules: InternalRuleDef[]): UnresolvedRule[][] => {
+  let paths: UnresolvedRule[] = [];
 
-  const stack: GraphRule[][] = [];
+  const stack: UnresolvedRule[][] = [];
 
   let idx = 0;
   while (idx < linearRules.length) {
