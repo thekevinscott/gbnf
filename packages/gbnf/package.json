@@ -39,7 +39,7 @@
       "command": "vite build"
     },
     "build": {
-      "command": "rimraf ./dist && pnpm build:umd && pnpm build:esm && cp ../../README.md ./README.md",
+      "command": "rimraf ./dist && pnpm build:umd && pnpm build:esm && cp ../../README.md ./README.md && && cp ../../LICENSE ./LICENSE",
       "files": [
         "../../README.md",
         "./src/**/*.ts",
