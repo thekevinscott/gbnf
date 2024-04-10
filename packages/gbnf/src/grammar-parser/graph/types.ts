@@ -42,3 +42,5 @@ export const isRuleEnd = (rule?: UnresolvedRule): rule is RuleEnd => rule.type =
 export const isRuleChar = (rule?: UnresolvedRule): rule is RuleChar => rule.type === RuleType.CHAR;
 export const isRuleCharExcluded = (rule?: UnresolvedRule): rule is RuleCharExclude => rule.type === RuleType.CHAR_EXCLUDE;
 export const isRange = (range?: unknown): range is Range => Array.isArray(range) && range.length === 2 && range.every(n => typeof n === 'number');
+
+export type ValidInput = string | number | number[];
