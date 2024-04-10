@@ -4,10 +4,11 @@ import { GraphNode, } from "./graph-node.js";
 import { getSerializedRuleKey, } from "./get-serialized-rule-key.js";
 import { colorize, } from "./colorize.js";
 import { GenericSet, } from "./generic-set.js";
-import { UnresolvedRule, Pointers, customInspectSymbol, isRange, isRuleChar, isRuleCharExcluded, isRuleEnd, isRuleRef, } from "./types.js";
+import { UnresolvedRule, Pointers, customInspectSymbol, isRange, isRuleChar, isRuleCharExcluded, isRuleEnd, isRuleRef, ValidInput, } from "./types.js";
 import { isPointInRange, } from "../is-point-in-range.js";
 import { InputParseError, } from "../errors.js";
 import { RuleRef, } from "./rule-ref.js";
+import { getInputAsCodePoints } from "./get-input-as-code-points.js";
 
 type RootNode = Map<number, GraphNode>;
 const makePointers = () => new GenericSet<ResolvedGraphPointer, string>(p => p.id);
@@ -128,12 +129,14 @@ export class Graph {
     }
   }
 
-  public add = (src: string, _pointers?: Pointers,): Pointers => {
+  public add = (src: ValidInput, _pointers?: Pointers,): Pointers => {
     let pointers = _pointers || this.getInitialPointers();
-    for (let strPos = 0; strPos < src.length; strPos++) {
-      pointers = this.parse(pointers, src.charCodeAt(strPos));
+    const codePoints = getInputAsCodePoints(src);
+    for (let codePointPos = 0; codePointPos < codePoints.length; codePointPos++) {
+      const codePoint = codePoints[codePointPos];
+      pointers = this.parse(pointers, codePoint);
       if (pointers.size === 0) {
-        throw new InputParseError(src, strPos);
+        throw new InputParseError(codePoints, codePointPos);
       }
     }
     return pointers;
@@ -174,7 +177,6 @@ export class Graph {
 
   * iterateOverPointers(pointers: Pointers): IterableIterator<{ rule: UnresolvedRule; rulePointers: GraphPointer[]; }> {
     const seenRules = new Map<UnresolvedRule, GraphPointer[]>();
-    // const seen = new GenericSet<GraphNode, string>(pointer => getSerializedRuleKey(pointer.rule));
     for (const pointer of pointers) {
       const rule = pointer.rule;
       if (isRuleRef(rule)) {
@@ -182,10 +184,6 @@ export class Graph {
       }
       if (!seenRules.has(rule)) {
         seenRules.set(rule, [pointer,],);
-        // if (seen.has(pointer.node)) {
-        //   throw new Error('encountered a node twice in the graph, this should not happen');
-        // }
-        // seen.add(pointer.node);
       } else {
         seenRules.get(rule).push(pointer);
       }

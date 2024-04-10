@@ -1,4 +1,4 @@
-// const escape = (str: string) => str.replace(/\n/g, '\\n').replace(/\t/g, '\\t');
+import type { ValidInput, } from "./graph/types.js";
 
 export class GrammarParseError extends Error {
   constructor(grammar: string, pos: number, reason: string) {
@@ -14,13 +14,13 @@ export class GrammarParseError extends Error {
 }
 
 export class InputParseError extends Error {
-  src: string;
+  src: ValidInput;
   strPos: number;
-  constructor(src: string, strPos: number) {
+  constructor(src: ValidInput, strPos: number) {
     super([
       `Failed to parse input string:`,
       '',
-      `${limit(src)}`,
+      `${limit(getInputAsString(src))}`,
       ' '.repeat(strPos) + '^',
       '',
     ].join('\n'));
@@ -37,4 +37,12 @@ const replaceEscapeSequences = (src: string) => {
 
 const limit = (str: string, limit: number = 30 * 100) => {
   return str.length > limit ? `${replaceEscapeSequences(str).substring(0, limit - 3)}...` : replaceEscapeSequences(str);
+};
+
+const getInputAsString = (src: ValidInput) => {
+  if (typeof src === 'string') {
+    return src;
+  }
+  const codePoints = Array.isArray(src) ? src : [src,];
+  return codePoints.map(cp => String.fromCodePoint(cp)).join('');
 };
