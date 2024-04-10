@@ -8,7 +8,7 @@ import { UnresolvedRule, Pointers, customInspectSymbol, isRange, isRuleChar, isR
 import { isPointInRange, } from "../is-point-in-range.js";
 import { InputParseError, } from "../errors.js";
 import { RuleRef, } from "./rule-ref.js";
-import { getInputAsCodePoints } from "./get-input-as-code-points.js";
+import { getInputAsCodePoints, } from "./get-input-as-code-points.js";
 
 type RootNode = Map<number, GraphNode>;
 const makePointers = () => new GenericSet<ResolvedGraphPointer, string>(p => p.id);
