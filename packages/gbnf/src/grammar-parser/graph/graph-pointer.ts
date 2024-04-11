@@ -1,5 +1,6 @@
-import { Color, Colorize, colorize, } from "./colorize.js";
+import { colorize, } from "./colorize.js";
 import { GraphNode, } from "./graph-node.js";
+import { printGraphPointer, } from "./print.js";
 import { RuleRef, } from "./rule-ref.js";
 import { UnresolvedRule, ResolvedRule, RuleChar, RuleCharExclude, RuleEnd, customInspectSymbol, isRuleChar, isRuleCharExcluded, isRuleEnd, isRuleRef, type PrintOpts, } from "./types.js";
 
@@ -78,42 +79,12 @@ export class GraphPointer<R extends UnresolvedRule = UnresolvedRule> {
     this.#valid = valid;
   }
 
-  print = ({ colorize: col, }: Omit<PrintOpts, 'pointers' | 'showPosition'>): string => col(`*${getParentStackId(this, col)}`, Color.RED);
+  print = printGraphPointer(this);
+
   [customInspectSymbol]() {
     return this.print({ colorize, });
   }
 }
 
-
-const getParentStackId = (pointer: GraphPointer, col: Colorize): string => {
-  const stackIds: string[] = [];
-  let parent: undefined | GraphPointer = pointer.parent;
-  while (parent) {
-    const { node: { meta: { stackId, pathId, stepId, }, }, } = parent;
-    // stackIds.push(`${parent.node.stackId}`);
-    stackIds.push(`${stackId},${pathId},${stepId}`);
-    parent = parent.parent;
-  }
-  return stackIds.map(id => col(id, Color.RED)).join(col('<-', Color.GRAY));
-};
-
-export const getPointerKey = ({
-  node: {
-    id,
-    meta: {
-      stackId,
-      pathId,
-      stepId,
-    },
-  },
-  parent,
-}: GraphPointer): string => {
-  return `${Math.random()}`;
-  return JSON.stringify({
-    id,
-    stackId, pathId, stepId,
-    parent: parent ? getPointerKey(parent) : null,
-  });
-};
 
 export type GraphPointerKey = string;
