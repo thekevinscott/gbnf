@@ -1,4 +1,10 @@
-import { UnresolvedRule, isRuleChar, isRuleCharExcluded, isRuleEnd, } from "./types.js";
+import {
+  type UnresolvedRule,
+  isRuleChar,
+  isRuleCharExcluded,
+  isRuleEnd,
+  isRuleRef,
+} from "./types.js";
 
 export function getSerializedRuleKey<R extends UnresolvedRule>(rule: R): string {
   if (isRuleEnd(rule)) {
@@ -8,5 +14,8 @@ export function getSerializedRuleKey<R extends UnresolvedRule>(rule: R): string 
   if (isRuleChar(rule) || isRuleCharExcluded(rule)) {
     return `${rule.type}-${JSON.stringify(rule.value)}`;
   }
-  return `${rule.type}-${rule.value}`;
+  if (isRuleRef(rule)) {
+    return `REF-${rule.value}`;
+  }
+  throw new Error(`Unknown rule type: ${JSON.stringify(rule)}`);
 };

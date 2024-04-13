@@ -2,7 +2,7 @@ export { GBNF as default, } from './gbnf.js';
 export {
   isRange,
   RuleType,
-  type PublicRule as Rule,
+  type ResolvedRule as Rule,
   type RuleCharExclude,
   type RuleChar,
   type RuleEnd,
