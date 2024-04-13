@@ -48,7 +48,7 @@ export class GraphPointer<R extends UnresolvedRule = UnresolvedRule> {
     } else if (isGraphPointerRuleChar(this) || isGraphPointerRuleCharExclude(this)) {
       yield this;
     } else {
-      throw new Error(`Unknown rule type: ${this.node.rule.type}`);
+      throw new Error(`Unknown rule: ${JSON.stringify(this.node.rule)}`);
     }
   }
 

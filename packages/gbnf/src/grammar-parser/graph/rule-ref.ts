@@ -1,4 +1,5 @@
 import type { GraphNode, } from "./graph-node.js";
+
 export class RuleRef {
   #nodes?: Set<GraphNode>;
   constructor(public value: number) { }

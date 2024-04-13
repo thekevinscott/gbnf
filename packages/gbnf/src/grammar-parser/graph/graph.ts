@@ -99,7 +99,7 @@ export class Graph {
         }, true);
         this.setValid(rulePointers, valid);
       } else if (!isRuleEnd(rule)) {
-        throw new Error(`Unsupported rule type: ${rule.type}`);
+        throw new Error(`Unsupported rule: ${JSON.stringify(rule)}`);
       }
     }
 

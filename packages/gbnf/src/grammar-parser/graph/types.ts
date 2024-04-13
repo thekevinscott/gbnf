@@ -36,9 +36,9 @@ export const isGraphRule = (rule?: unknown): rule is UnresolvedRule => !!rule &&
 export const isRuleType = (type?: unknown): type is RuleType => !!type && Object.values(RuleType).includes(type as RuleType);
 export const isRule = (rule?: unknown): rule is UnresolvedRule => !!rule && typeof rule === 'object' && 'type' in rule && isRuleType(rule.type);
 export const isRuleRef = (rule?: UnresolvedRule): rule is RuleRef => rule instanceof RuleRef;
-export const isRuleEnd = (rule?: UnresolvedRule): rule is RuleEnd => 'type' in rule && rule.type === RuleType.END;
-export const isRuleChar = (rule?: UnresolvedRule): rule is RuleChar => 'type' in rule && rule.type === RuleType.CHAR;
-export const isRuleCharExcluded = (rule?: UnresolvedRule): rule is RuleCharExclude => 'type' in rule && rule.type === RuleType.CHAR_EXCLUDE;
+export const isRuleEnd = (rule?: UnresolvedRule): rule is RuleEnd => !(isRuleRef(rule)) && rule.type === RuleType.END;
+export const isRuleChar = (rule?: UnresolvedRule): rule is RuleChar => !(isRuleRef(rule)) && rule.type === RuleType.CHAR;
+export const isRuleCharExcluded = (rule?: UnresolvedRule): rule is RuleCharExclude => !(isRuleRef(rule)) && rule.type === RuleType.CHAR_EXCLUDE;
 export const isRange = (range?: unknown): range is Range => Array.isArray(range) && range.length === 2 && range.every(n => typeof n === 'number');
 
 export type ValidInput = string | number | number[];
