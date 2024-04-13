@@ -1,6 +1,7 @@
-import { Color, colorize, } from "./colorize.js";
+import { colorize, } from "./colorize.js";
+import { printGraphNode, } from "./print.js";
 import { RuleRef, } from "./rule-ref.js";
-import { isRuleChar, isRuleRef, type PrintOpts, type UnresolvedRule, isRange, customInspectSymbol, } from "./types.js";
+import { type UnresolvedRule, customInspectSymbol, } from "./types.js";
 
 interface GraphNodeMeta {
   stackId: number;
@@ -33,63 +34,5 @@ export class GraphNode<R extends UnresolvedRule = UnresolvedRule> {
     return this.print({ colorize, showPosition: false, });
   }
 
-  print = ({ pointers, showPosition = false, colorize: col, }: PrintOpts): string => {
-    // [customInspectSymbol](depth: number, inspectOptions: InspectOptions, inspect: CustomInspectFunction) {
-    const rule = this.rule;
-
-    const parts: (string | number)[] = [];
-    if (showPosition) {
-      parts.push(
-        col('{', Color.BLUE),
-        col(this.id, Color.GRAY),
-        col('}', Color.BLUE),
-      );
-    }
-    if (isRuleChar(rule)) {
-      parts.push(
-        col('[', Color.GRAY),
-        col(rule.value.map(v => {
-          if (isRange(v)) {
-            return v.map(val => col(String.fromCharCode(val), Color.YELLOW));
-          }
-          return getChar(v);
-        }).join(''), Color.YELLOW),
-        col(']', Color.GRAY),
-      );
-    } else if (isRuleRef(rule)) {
-      parts.push(col('Ref(', Color.GRAY) + col(`${rule.value}`, Color.GREEN) + col(')', Color.GRAY));
-    } else {
-      parts.push(col(rule.type, Color.YELLOW));
-    }
-
-    if (pointers) {
-      for (const pointer of pointers) {
-        const pointerParts: string[] = [];
-        if (pointer.node === this) {
-          pointerParts.push(
-            pointer.print({ colorize: col, }),
-          );
-        }
-        if (pointerParts.length) {
-          parts.push(col('[', Color.GRAY));
-          parts.push(...pointerParts);
-          parts.push(col(']', Color.GRAY));
-        }
-      }
-    }
-    return [
-      parts.join(''),
-      this.next?.print({ pointers, colorize: col, showPosition, }),
-    ].filter(Boolean).join(col('-> ', Color.GRAY));
-  };
+  print = printGraphNode(this);
 }
-
-const getChar = (charCode: number) => {
-  const char = String.fromCharCode(charCode);
-  switch (char) {
-    case '\n':
-      return '\\n';
-    default:
-      return char;
-  }
-};
