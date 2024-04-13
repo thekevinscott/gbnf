@@ -33,4 +33,8 @@ export class ParseState {
   size() {
     return Array.from(this.rules()).length;
   }
+
+  get grammar() {
+    return this.#graph.grammar;
+  }
 }
