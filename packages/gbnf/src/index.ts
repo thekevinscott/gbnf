@@ -1,8 +1,8 @@
 export { GBNF as default, } from './gbnf.js';
 export {
   isRange,
-  type PublicRuleType as RuleType,
-  type PublicRule as Rule,
+  RuleType,
+  type ResolvedRule as Rule,
   type RuleCharExclude,
   type RuleChar,
   type RuleEnd,
