@@ -8,4 +8,4 @@ export {
   type RuleEnd,
   type Range,
 } from './grammar-parser/graph/types.js';
-export { ParseState, } from './grammar-parser/graph/state.js';
+export { ParseState, } from './grammar-parser/graph/parse-state.js';

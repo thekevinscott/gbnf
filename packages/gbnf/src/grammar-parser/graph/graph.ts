@@ -17,8 +17,10 @@ export class Graph {
   rootId: number;
   rootNode: RootNode;
   pointers: Pointers;
+  grammar: string;
 
-  constructor(stackedRules: UnresolvedRule[][][], rootId: number) {
+  constructor(grammar: string, stackedRules: UnresolvedRule[][][], rootId: number) {
+    this.grammar = grammar;
     const ruleRefs: RuleRef[] = [];
     const uniqueRules = new GenericSet<UnresolvedRule, string>(rule => getSerializedRuleKey(rule));
     for (let stackId = 0; stackId < stackedRules.length; stackId++) {
