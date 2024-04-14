@@ -2,12 +2,12 @@ import { describe, it, expect, vi } from 'vitest';
 import { printGraphPointer, printGraphNode } from './print.js';
 import { RuleChar, RuleType } from './types.js';
 import { RuleRef } from './rule-ref.js';
-import { Color, type Colorize } from './colorize.js';
+import { type Colorize } from './colorize.js';
 import { GraphPointer } from './graph-pointer.js';
 
+import type { GraphNode } from './graph-node.js';
 import { getParentStackId, } from "./get-parent-stack-id.js";
 import * as _getParentStackId from "./get-parent-stack-id.js";
-import type { GraphNode } from './graph-node.js';
 
 // Mock the entire module
 vi.mock('./get-parent-stack-id.js', async () => {

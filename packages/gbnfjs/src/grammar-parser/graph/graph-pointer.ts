@@ -16,10 +16,10 @@ import {
 } from "./types.js";
 
 export type ResolvedGraphPointer = GraphPointer<ResolvedRule>;
-const isGraphPointerRuleRef = (pointer: GraphPointer): pointer is GraphPointer<RuleRef> => isRuleRef(pointer.rule);
-const isGraphPointerRuleEnd = (pointer: GraphPointer): pointer is GraphPointer<RuleEnd> => isRuleEnd(pointer.rule);
-const isGraphPointerRuleChar = (pointer: GraphPointer): pointer is GraphPointer<RuleChar> => isRuleChar(pointer.rule);
-const isGraphPointerRuleCharExclude = (pointer: GraphPointer): pointer is GraphPointer<RuleCharExclude> => isRuleCharExcluded(pointer.rule);
+export const isGraphPointerRuleRef = (pointer: GraphPointer): pointer is GraphPointer<RuleRef> => isRuleRef(pointer.rule);
+export const isGraphPointerRuleEnd = (pointer: GraphPointer): pointer is GraphPointer<RuleEnd> => isRuleEnd(pointer.rule);
+export const isGraphPointerRuleChar = (pointer: GraphPointer): pointer is GraphPointer<RuleChar> => isRuleChar(pointer.rule);
+export const isGraphPointerRuleCharExclude = (pointer: GraphPointer): pointer is GraphPointer<RuleCharExclude> => isRuleCharExcluded(pointer.rule);
 
 export class GraphPointer<R extends UnresolvedRule = UnresolvedRule> {
   node: GraphNode<R>;
