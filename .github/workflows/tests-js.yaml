@@ -1,4 +1,4 @@
-name: 'Tests'
+name: 'Javascript Tests'
 on: [push]
 
 jobs:
@@ -35,11 +35,11 @@ jobs:
             ${{ runner.os }}-pnpm-store-
 
       - name: Install dependencies
-        working-directory: ./packages/gbnf
+        working-directory: ./packages/gbnfjs
         run: pnpm install
 
       - name: 'Lint'
-        working-directory: ./packages/gbnf
+        working-directory: ./packages/gbnfjs
         run: 'pnpm lint'
 
   unit-test:
@@ -75,11 +75,11 @@ jobs:
             ${{ runner.os }}-pnpm-store-
 
       - name: Install dependencies
-        working-directory: ./packages/gbnf
+        working-directory: ./packages/gbnfjs
         run: pnpm install
 
       - name: 'Test'
-        working-directory: ./packages/gbnf
+        working-directory: ./packages/gbnfjs
         run: 'pnpm test -- --coverage'
 
       - name: Upload coverage reports to Codecov
@@ -121,13 +121,13 @@ jobs:
             ${{ runner.os }}-pnpm-store-
 
       - name: Install dependencies
-        working-directory: ./packages/gbnf
+        working-directory: ./packages/gbnfjs
         run: pnpm install
 
       - name: 'Build'
-        working-directory: ./packages/gbnf
+        working-directory: ./packages/gbnfjs
         run: 'pnpm build'
 
       - name: 'Check build output'
-        working-directory: ./packages/gbnf
+        working-directory: ./packages/gbnfjs
         run: 'pnpm build:check'
