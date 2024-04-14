@@ -1,4 +1,4 @@
-import GBNF, { RuleType } from '../../../packages/gbnf/src/index.js';
+import GBNF, { RuleType } from '../../../packages/gbnfjs/src/index.js';
 
 // (() => {
 //   console.log('throw test')

@@ -1,10 +1,10 @@
 version = 1
 
-test_patterns = ["packages/gbnf/src/**/*.ts"]
+test_patterns = ["packages/gbnfjs/src/**/*.ts"]
 
 exclude_patterns = [
-  "packages/gbnf/src/**/*.test.ts", 
-  "packages/gbnf/test/**/*.ts", 
+  "packages/gbnfjs/src/**/*.test.ts", 
+  "packages/gbnfjs/test/**/*.ts", 
   # "examples/**", 
   # "scripts/**", 
   # "test/**", 

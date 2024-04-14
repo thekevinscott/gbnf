@@ -36,14 +36,14 @@ jobs:
             ${{ runner.os }}-pnpm-store-
 
       - name: Install dependencies
-        working-directory: ./packages/gbnf
+        working-directory: ./packages/gbnfjs
         run: pnpm install
 
       - name: Build package
-        working-directory: ./packages/gbnf
+        working-directory: ./packages/gbnfjs
         run: pnpm build
 
       - run: pnpm publish --no-git-checks
-        working-directory: ./packages/gbnf
+        working-directory: ./packages/gbnfjs
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

@@ -1,5 +1,5 @@
 import '@vanillawc/wc-monaco-editor';
-import GBNF from '../../../packages/gbnf/src/index.js';
+import GBNF from '../../../packages/gbnfjs/src/index.js';
 const grammars = import.meta.glob('./grammars/*.gbnf', {
   eager: true,
   query: '?raw',
