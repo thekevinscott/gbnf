@@ -1,6 +1,6 @@
 [project]
 name = "gbnf"
-version = "0.0.3"
+version = "0.0.4"
 # Notes
 authors = [{ name = "Kevin Scott", email = "kevin@gbnf.dev" }]
 readme = "README.md"

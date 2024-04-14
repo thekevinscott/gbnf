@@ -1,1 +1,1 @@
-# import RulesBuilder from .rules_builder
+from .rules_builder import RulesBuilder
