@@ -11,7 +11,7 @@ export const GBNF = (grammar: string, initialString: ValidInput = ''): ParseStat
     throw new GrammarParseError(grammar, 0, 'No rules were found');
   }
   if (symbolIds.get('root') === undefined) {
-    throw new Error("Grammar does not contain a 'root' symbol");
+    throw new GrammarParseError(grammar, 0, `Grammar does not contain a root symbol. Available symbols are: ${JSON.stringify(symbolIds.keys())}`);
   }
   const rootId = symbolIds.get('root');
 
