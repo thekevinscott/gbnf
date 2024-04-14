@@ -1,3 +1,4 @@
+name: "JS"
 on: [push]
 
 env:
