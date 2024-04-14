@@ -93,3 +93,7 @@ jobs:
 
       - run: make build_package
         working-directory: ./packages/gbnfpy
+
+      - name: Check dist
+        working-directory: ./packages/gbnfpy
+        run: twine check dist/*
