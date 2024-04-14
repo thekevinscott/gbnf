@@ -1,25 +1,17 @@
 import { colorize, } from "./colorize.js";
 import { GraphNode, } from "./graph-node.js";
 import { printGraphPointer, } from "./print.js";
-import { RuleRef, } from "./rule-ref.js";
 import {
   UnresolvedRule,
-  ResolvedRule,
-  RuleChar,
-  RuleCharExclude,
-  RuleEnd,
   customInspectSymbol,
-  isRuleChar,
-  isRuleCharExcluded,
   isRuleEnd,
-  isRuleRef,
+  type ResolvedGraphPointer,
+  isGraphPointerRuleRef,
+  isGraphPointerRuleEnd,
+  isGraphPointerRuleChar,
+  isGraphPointerRuleCharExclude,
 } from "./types.js";
 
-export type ResolvedGraphPointer = GraphPointer<ResolvedRule>;
-export const isGraphPointerRuleRef = (pointer: GraphPointer): pointer is GraphPointer<RuleRef> => isRuleRef(pointer.rule);
-export const isGraphPointerRuleEnd = (pointer: GraphPointer): pointer is GraphPointer<RuleEnd> => isRuleEnd(pointer.rule);
-export const isGraphPointerRuleChar = (pointer: GraphPointer): pointer is GraphPointer<RuleChar> => isRuleChar(pointer.rule);
-export const isGraphPointerRuleCharExclude = (pointer: GraphPointer): pointer is GraphPointer<RuleCharExclude> => isRuleCharExcluded(pointer.rule);
 
 export class GraphPointer<R extends UnresolvedRule = UnresolvedRule> {
   node: GraphNode<R>;
