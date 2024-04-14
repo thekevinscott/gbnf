@@ -1,4 +1,4 @@
-name: Publish Package to npm
+name: Publish Package to pypi
 on: [push]
 # on:
 #   push:
