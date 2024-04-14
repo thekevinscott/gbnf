@@ -27,7 +27,7 @@ vi.mock('./types.js', async () => {
 });
 
 // Example tests
-describe.only('getSerializedRuleKey', () => {
+describe('getSerializedRuleKey', () => {
   beforeEach(() => {
     vi.mocked(isRuleEnd).mockReturnValue(false);
     vi.mocked(isRuleChar).mockReturnValue(false);
