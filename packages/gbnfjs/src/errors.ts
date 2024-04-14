@@ -6,7 +6,7 @@ export const MAXIMUM_NUMBER_OF_ERROR_LINES_TO_SHOW = 3;
 
 export const buildErrorPosition = (src: string, pos: number): string[] => {
   if (src === "") {
-    return ["No input provided"];
+    return ["No input provided",];
   }
 
   const grammarLines = src.split('\n');
