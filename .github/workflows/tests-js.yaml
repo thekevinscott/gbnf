@@ -1,4 +1,3 @@
-name: 'Javascript Tests'
 on: [push]
 
 env:
@@ -6,7 +5,7 @@ env:
 
 jobs:
   lint:
-    name: 'Lint'
+    name: 'JS Lint'
     runs-on: ubuntu-latest
     steps:
       - name: 'Checkout repository'
@@ -46,7 +45,7 @@ jobs:
         run: 'pnpm lint'
 
   unit-test:
-    name: 'Unit Test'
+    name: 'JS Unit Tests'
     runs-on: ubuntu-latest
     steps:
       - name: 'Checkout repository'
@@ -92,7 +91,7 @@ jobs:
           slug: thekevinscott/gbnf
 
   build:
-    name: 'Build'
+    name: 'JS Build'
     runs-on: ubuntu-latest
     steps:
       - name: 'Checkout repository'
