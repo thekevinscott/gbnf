@@ -1,4 +1,4 @@
-name: "PY"
+name: "Python"
 on: [push]
 
 env:
@@ -6,7 +6,7 @@ env:
 
 jobs:
   lint:
-    name: 'Python Lint'
+    name: 'Lint'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -26,7 +26,7 @@ jobs:
       - run: ruff check .
 
   test:
-    name: 'Python Unit Test ${{ matrix.pyversion }}'
+    name: 'Unit Tests for ${{ matrix.pyversion }}'
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -69,7 +69,7 @@ jobs:
           fail_ci_if_error: false  # https://github.com/codecov/codecov-action/issues/557
 
   build:
-    name: 'Python Build'
+    name: 'Build'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
