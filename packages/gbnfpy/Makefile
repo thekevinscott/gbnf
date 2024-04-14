@@ -8,4 +8,4 @@ copy_assets:
 	cp ../../README.md ./ && cp ../../LICENSE ./ 
 
 build_package:
-	python3 -m build && make copy_assets
+	make copy_assets && python3 -m build
