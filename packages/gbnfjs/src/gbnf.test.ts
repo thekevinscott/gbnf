@@ -3,7 +3,7 @@ import { describe, test, expect, vi } from 'vitest';
 import { GBNF } from './gbnf.js';
 import { RulesBuilder, } from './rules-builder/index.js';
 import * as _RulesBuilder from './rules-builder/index.js';
-import { GrammarParseError } from './errors.js';
+import { GrammarParseError } from './utils/errors.js';
 import { afterEach } from 'node:test';
 
 // Mock the entire module

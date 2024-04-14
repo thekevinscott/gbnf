@@ -1,4 +1,4 @@
-import { GrammarParseError, } from "../errors.js";
+import { GrammarParseError, } from "../utils/errors.js";
 import { isWordChar, } from "./is-word-char.js";
 
 export const PARSE_NAME_ERROR = 'Failed to find a valid name';

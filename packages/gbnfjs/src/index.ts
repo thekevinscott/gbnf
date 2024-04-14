@@ -7,9 +7,9 @@ export {
   type RuleChar,
   type RuleEnd,
   type Range,
-} from './grammar-parser/graph/types.js';
-export { ParseState, } from './grammar-parser/graph/parse-state.js';
+} from './grammar-parser/grammar-graph/types.js';
+export { ParseState, } from './grammar-parser/grammar-graph/parse-state.js';
 export {
   InputParseError,
   GrammarParseError,
-} from './errors.js';
+} from './utils/errors.js';
