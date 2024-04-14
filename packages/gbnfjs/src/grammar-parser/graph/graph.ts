@@ -6,7 +6,7 @@ import { colorize, } from "./colorize.js";
 import { GenericSet, } from "./generic-set.js";
 import { UnresolvedRule, Pointers, customInspectSymbol, isRange, isRuleChar, isRuleCharExcluded, isRuleEnd, isRuleRef, ValidInput, } from "./types.js";
 import { isPointInRange, } from "../is-point-in-range.js";
-import { InputParseError, } from "../errors.js";
+import { InputParseError, } from "../../errors.js";
 import { RuleRef, } from "./rule-ref.js";
 import { getInputAsCodePoints, } from "./get-input-as-code-points.js";
 
