@@ -1,5 +1,5 @@
 import { describe, it, expect, } from 'vitest';
-import { GrammarParseError } from '../errors.js';
+import { GrammarParseError } from '../utils/errors.js';
 import { PARSE_NAME_ERROR, parseName } from './parse-name.js';
 
 describe('parseName', () => {

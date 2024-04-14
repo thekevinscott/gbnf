@@ -32,7 +32,6 @@ export type UnresolvedRule = RuleChar | RuleCharExclude | RuleRef | RuleEnd;
 export type ResolvedRule = RuleCharExclude | RuleChar | RuleEnd;
 
 /** Type Guards */
-export const isGraphRule = (rule?: unknown): rule is UnresolvedRule => !!rule && typeof rule === 'object' && 'type' in rule && isRuleType(rule.type);
 export const isRuleType = (type?: unknown): type is RuleType => !!type && Object.values(RuleType).includes(type as RuleType);
 export const isRule = (rule?: unknown): rule is UnresolvedRule => !!rule && typeof rule === 'object' && 'type' in rule && isRuleType(rule.type);
 export const isRuleRef = (rule?: UnresolvedRule): rule is RuleRef => rule instanceof RuleRef;

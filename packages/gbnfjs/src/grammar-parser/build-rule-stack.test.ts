@@ -1,6 +1,7 @@
+import { describe, test, expect, } from "vitest";
 import { InternalRuleDef, InternalRuleType, } from "../rules-builder/types";
 import { buildRuleStack, } from "./build-rule-stack";
-import { GraphRule, RuleType } from "./graph/types";
+import { UnresolvedRule, RuleType } from "../grammar-graph/types.js";
 
 describe('buildRuleStack', () => {
   test('it builds rule stack for a single path', () => {
@@ -140,7 +141,7 @@ describe('buildRuleStack', () => {
             ],
           ]
         ],
-      ] as [string, InternalRuleDef[], GraphRule[][]][])('it builds rule stack for a CHAR `%s`', (_grammar, input, expected) => {
+      ] as [string, InternalRuleDef[], UnresolvedRule[][]][])('it builds rule stack for a CHAR `%s`', (_grammar, input, expected) => {
         expect(buildRuleStack(input)).toEqual(expected);
       });
     });
@@ -208,7 +209,7 @@ describe('buildRuleStack', () => {
             ],
           ]
         ],
-      ] as [string, InternalRuleDef[], GraphRule[][]][])('it builds rule stack for a CHAR `%s`', (_grammar, input, expected) => {
+      ] as [string, InternalRuleDef[], UnresolvedRule[][]][])('it builds rule stack for a CHAR `%s`', (_grammar, input, expected) => {
         expect(buildRuleStack(input)).toEqual(expected);
       });
     });
@@ -296,7 +297,7 @@ describe('buildRuleStack', () => {
             ],
           ]
         ],
-      ] as [string, InternalRuleDef[], GraphRule[][]][])('it builds rule stack for a CHAR `%s`', (_grammar, input, expected) => {
+      ] as [string, InternalRuleDef[], UnresolvedRule[][]][])('it builds rule stack for a CHAR `%s`', (_grammar, input, expected) => {
         expect(buildRuleStack(input)).toEqual(expected);
       });
     });
@@ -362,7 +363,7 @@ describe('buildRuleStack', () => {
             ],
           ]
         ],
-      ] as [string, InternalRuleDef[], GraphRule[][]][])('it builds rule stack for an optionally repeating CHAR `%s`', (_grammar, input, expected) => {
+      ] as [string, InternalRuleDef[], UnresolvedRule[][]][])('it builds rule stack for an optionally repeating CHAR `%s`', (_grammar, input, expected) => {
         expect(buildRuleStack(input)).toEqual(expected);
       });
     });

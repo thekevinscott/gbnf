@@ -1,8 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import {
-  isGraphRule,
-  isRuleType,
   isRule,
+  isRuleType,
   isRuleRef,
   isRuleEnd,
   isRuleChar,
@@ -16,19 +15,19 @@ import {
 import { RuleRef } from './rule-ref.js';
 
 describe('Rule Type Guards', () => {
-  describe('isGraphRule', () => {
+  describe('isRule', () => {
     it('should return true for valid rule objects', () => {
       const ruleChar: RuleChar = { type: RuleType.CHAR, value: [65, [66, 67]] };
-      expect(isGraphRule(ruleChar)).toBe(true);
+      expect(isRule(ruleChar)).toBe(true);
     });
 
     it('should return false for invalid objects', () => {
-      expect(isGraphRule({ type: 'invalid', value: [] })).toBe(false);
+      expect(isRule({ type: 'invalid', value: [] })).toBe(false);
     });
 
     it('should return false for null and undefined', () => {
-      expect(isGraphRule(null)).toBe(false);
-      expect(isGraphRule(undefined)).toBe(false);
+      expect(isRule(null)).toBe(false);
+      expect(isRule(undefined)).toBe(false);
     });
   });
 
@@ -45,7 +44,7 @@ describe('Rule Type Guards', () => {
 
   describe('isRuleRef', () => {
     it('should recognize RuleRef instances', () => {
-      const ruleRef = new RuleRef();
+      const ruleRef = new RuleRef(1);
       expect(isRuleRef(ruleRef)).toBe(true);
     });
 

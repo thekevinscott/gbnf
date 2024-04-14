@@ -1,12 +1,11 @@
-// import { CustomInspectFunction, InspectOptions } from "util";
 import { GraphPointer, ResolvedGraphPointer, } from "./graph-pointer.js";
 import { GraphNode, } from "./graph-node.js";
 import { getSerializedRuleKey, } from "./get-serialized-rule-key.js";
 import { colorize, } from "./colorize.js";
 import { GenericSet, } from "./generic-set.js";
 import { UnresolvedRule, Pointers, customInspectSymbol, isRange, isRuleChar, isRuleCharExcluded, isRuleEnd, isRuleRef, ValidInput, } from "./types.js";
-import { isPointInRange, } from "../is-point-in-range.js";
-import { InputParseError, } from "../../errors.js";
+import { isPointInRange, } from "../utils/is-point-in-range.js";
+import { InputParseError, } from "../utils/errors.js";
 import { RuleRef, } from "./rule-ref.js";
 import { getInputAsCodePoints, } from "./get-input-as-code-points.js";
 
