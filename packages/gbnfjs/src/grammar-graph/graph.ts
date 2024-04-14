@@ -1,4 +1,3 @@
-// import { CustomInspectFunction, InspectOptions } from "util";
 import { GraphPointer, ResolvedGraphPointer, } from "./graph-pointer.js";
 import { GraphNode, } from "./graph-node.js";
 import { getSerializedRuleKey, } from "./get-serialized-rule-key.js";

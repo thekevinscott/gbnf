@@ -1,8 +1,8 @@
 import { GrammarParseError, } from "./utils/errors.js";
 import { buildRuleStack, } from "./grammar-parser/build-rule-stack.js";
-import { Graph, } from "./grammar-parser/grammar-graph/graph.js";
-import { ParseState, } from "./grammar-parser/grammar-graph/parse-state.js";
-import { UnresolvedRule, ValidInput, } from "./grammar-parser/grammar-graph/types.js";
+import { Graph, } from "./grammar-graph/graph.js";
+import { ParseState, } from "./grammar-graph/parse-state.js";
+import { UnresolvedRule, ValidInput, } from "./grammar-graph/types.js";
 import { RulesBuilder, } from "./rules-builder/index.js";
 
 export const GBNF = (grammar: string, initialString: ValidInput = ''): ParseState => {

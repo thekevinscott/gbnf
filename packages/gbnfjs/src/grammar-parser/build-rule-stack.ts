@@ -10,7 +10,7 @@ import {
   isRuleDefRef,
   type InternalRuleDef,
 } from "../rules-builder/types.js";
-import { RuleRef, } from "./grammar-graph/rule-ref.js";
+import { RuleRef, } from "../grammar-graph/rule-ref.js";
 import {
   UnresolvedRule,
   RuleChar,
@@ -18,7 +18,7 @@ import {
   RuleType,
   isRange,
   isRuleEnd,
-} from "./grammar-graph/types.js";
+} from "../grammar-graph/types.js";
 
 function makeCharRule<R extends (InternalRuleDefChar | InternalRuleDefCharNot)>(ruleDef: R): R extends InternalRuleDefChar ? RuleChar : RuleCharExclude {
   return {
