@@ -9,3 +9,7 @@ export {
   type Range,
 } from './grammar-parser/graph/types.js';
 export { ParseState, } from './grammar-parser/graph/parse-state.js';
+export {
+  InputParseError,
+  GrammarParseError,
+} from './errors.js';

@@ -1,4 +1,4 @@
-import { GrammarParseError, } from "../grammar-parser/errors.js";
+import { GrammarParseError, } from "../errors.js";
 import { isWordChar, } from "./is-word-char.js";
 import { parseChar, } from "./parse-char.js";
 import { parseName, } from "./parse-name.js";
