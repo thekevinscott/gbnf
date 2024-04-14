@@ -1,4 +1,4 @@
-name: Publish Package to npm
+name: Publish Package to pypi
 on:
   push:
     tags:
@@ -27,14 +27,6 @@ jobs:
         with:
           verbose: true
           packages-dir: ./packages/gbnfpy/dist
-
-      - uses: "marvinpinto/action-automatic-releases@latest"
-        with:
-          repo_token: "${{ secrets.GITHUB_TOKEN }}"
-          prerelease: false
-          # files: |
-          #   LICENSE.txt
-          #   *.jar
 
 permissions:
   id-token: write

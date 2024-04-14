@@ -6,6 +6,7 @@ env:
 
 jobs:
   lint:
+    name: 'Lint'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -25,7 +26,7 @@ jobs:
       - run: ruff check .
 
   test:
-    name: ${{ matrix.pyversion }}
+    name: 'Test ${{ matrix.pyversion }}'
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -68,6 +69,7 @@ jobs:
           fail_ci_if_error: false  # https://github.com/codecov/codecov-action/issues/557
 
   build:
+    name: 'Build'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
