@@ -1,11 +1,12 @@
+import { describe, test, expect } from 'vitest';
 import {
   GRAMMAR_PARSER_ERROR_HEADER_MESSAGE,
   GrammarParseError,
   INPUT_PARSER_ERROR_HEADER_MESSAGE,
   InputParseError,
   buildErrorPosition,
-
 } from './errors.js';
+
 describe('errors', () => {
   describe('buildErrorPosition', () => {
     test.each([
@@ -106,6 +107,11 @@ describe('errors', () => {
     });
   });
 
+  test('it renders a message for empty input', () => {
+    const result = buildErrorPosition('', 0);
+    expect(result).toEqual(["No input provided"]);
+  });
+
   describe('GrammarParseError', () => {
     test('it renders a message', () => {
       const grammar = 'aa\\nbb\\ncc\\ndd\\nee';
@@ -158,4 +164,5 @@ describe('errors', () => {
       ].join('\n'));
     });
   });
+
 });
