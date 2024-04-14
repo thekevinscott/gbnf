@@ -17,8 +17,10 @@ export default defineConfig({
   test: {
     coverage: {
       provider: 'istanbul', // or 'v8'
+      include: ['src/**']
     },
-    include: ['**/*.test.ts', './test/**/*.test.ts',],
+    include: ['./src/**/*.test.ts', './test/**/*.test.ts',],
+    exclude: ['./dev/**/*',],
     globals: true,
     // ts
     typecheck: {
