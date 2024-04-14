@@ -138,7 +138,7 @@ describe('errors', () => {
 
     test('it renders a message for code point', () => {
       const pos = 0;
-      const err = new InputParseError([97], pos);
+      const err = new InputParseError(97, pos);
       expect(err.message).toEqual([
         INPUT_PARSER_ERROR_HEADER_MESSAGE,
         '',

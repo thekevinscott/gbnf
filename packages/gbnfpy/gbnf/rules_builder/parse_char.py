@@ -4,7 +4,9 @@ from .errors import GrammarParseError
 def parse_char(src: str, pos: int):
     if pos >= len(src):
         raise GrammarParseError(
-            src, pos, "Unexpected end of grammar input, failed to complete parse",
+            src,
+            pos,
+            "Unexpected end of grammar input, failed to complete parse",
         )
 
     if src[pos] == "\\":
