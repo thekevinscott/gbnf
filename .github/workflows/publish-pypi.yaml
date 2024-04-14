@@ -1,8 +1,9 @@
 name: Publish Package to npm
-on:
-  push:
-    tags:
-      - "v*"
+on: [push]
+# on:
+#   push:
+#     tags:
+#       - "v*"
 jobs:
   release:
     runs-on: ubuntu-latest
