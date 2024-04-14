@@ -1,15 +1,16 @@
 import pytest
-from .errors import GrammarParseError, InputParseError, build_error_position
+
+from .errors import build_error_position
 
 
 @pytest.mark.parametrize(
-    "grammar,pos,expected",
+    ("grammar", "pos", "expected"),
     [
         ('root ::= "foo"', 1, ['root ::= "foo"', " ^"]),
         ('root ::= "foo"', 5, ['root ::= "foo"', "     ^"]),
         ("aa\nbb", 1, ["aa", " ^"]),
         ("aa\nbb", 2, ["aa", "bb", "^"]),
-        # ("aa\nbb", 3, ["aa", "bb", " ^"]),
+        ("aa\nbb", 3, ["aa", "bb", " ^"]),
         # ("aa\nbb\ncc", 3, ["aa", "bb", " ^"]),
         # ("aa\nbb\ncc", 6, ["aa", "bb", "cc", "^"]),
         # ("aa\nbb\ncc", 7, ["aa", "bb", "cc", " ^"]),

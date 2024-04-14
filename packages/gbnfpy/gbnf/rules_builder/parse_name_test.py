@@ -1,6 +1,7 @@
 import pytest
-from .parse_name import parse_name, PARSE_NAME_ERROR
+
 from .errors import GrammarParseError
+from .parse_name import PARSE_NAME_ERROR, parse_name
 
 
 def test_should_return_correct_name_when_encountering_a_valid_name():

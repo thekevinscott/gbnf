@@ -1,6 +1,7 @@
 import pytest
+
 from .rules_builder import RulesBuilder
-from .types import InternalRuleType, InternalRuleDef
+from .types import InternalRuleType
 
 test_cases = [
     (
@@ -14,7 +15,7 @@ test_cases = [
                     {"type": InternalRuleType.CHAR, "value": [ord("o")]},
                     {"type": InternalRuleType.CHAR, "value": [ord("o")]},
                     {"type": InternalRuleType.END},
-                ]
+                ],
             ],
         ),
     ),
@@ -27,7 +28,7 @@ test_cases = [
                 [
                     {"type": InternalRuleType.CHAR, "value": [ord('"')]},
                     {"type": InternalRuleType.END},
-                ]
+                ],
             ],
         ),
     ),
@@ -73,7 +74,7 @@ test_cases = [
     ),
     (
         "simple-grammar",
-        f"""
+        """
         root  ::= (expr "=" term "\n")+
         expr  ::= term ([-+*/] term)*
         term  ::= [0-9]+
@@ -145,7 +146,7 @@ test_cases = [
     ),
     (
         "longer-grammar",
-        f"""
+        """
         root  ::= (expr "=" ws term "\n")+
         expr  ::= term ([-+*/] term)*
         term  ::= ident | num | "(" ws expr ")" ws
@@ -276,7 +277,7 @@ test_cases = [
                     {"type": InternalRuleType.CHAR, "value": [ord("ぁ")]},
                     {"type": InternalRuleType.CHAR_RNG_UPPER, "value": ord("ゟ")},
                     {"type": InternalRuleType.END},
-                ]
+                ],
             ],
         ),
     ),
@@ -290,7 +291,7 @@ test_cases = [
                     {"type": InternalRuleType.CHAR, "value": [ord("a")]},
                     {"type": InternalRuleType.CHAR_ALT, "value": ord("z")},
                     {"type": InternalRuleType.END},
-                ]
+                ],
             ],
         ),
     ),
@@ -308,7 +309,7 @@ test_cases = [
                     {"type": InternalRuleType.CHAR_ALT, "value": ord("0")},
                     {"type": InternalRuleType.CHAR_RNG_UPPER, "value": ord("9")},
                     {"type": InternalRuleType.END},
-                ]
+                ],
             ],
         ),
     ),
@@ -323,7 +324,7 @@ test_cases = [
                     {"type": InternalRuleType.CHAR_RNG_UPPER, "value": ord("z")},
                     {"type": InternalRuleType.CHAR_ALT, "value": ord("-")},
                     {"type": InternalRuleType.END},
-                ]
+                ],
             ],
         ),
     ),
@@ -463,7 +464,7 @@ test_cases = [
                 [
                     {"type": InternalRuleType.CHAR_NOT, "value": [ord("\n")]},
                     {"type": InternalRuleType.END},
-                ]
+                ],
             ],
         ),
     ),
@@ -477,7 +478,7 @@ test_cases = [
                     {"type": InternalRuleType.CHAR_NOT, "value": [ord("0")]},
                     {"type": InternalRuleType.CHAR_RNG_UPPER, "value": ord("9")},
                     {"type": InternalRuleType.END},
-                ]
+                ],
             ],
         ),
     ),
@@ -578,7 +579,7 @@ test_cases = [
                     [
                         {"type": InternalRuleType.CHAR, "value": [actual_char]},
                         {"type": InternalRuleType.END},
-                    ]
+                    ],
                 ],
             ),
         )
@@ -783,13 +784,14 @@ test_cases = [
                     {"type": InternalRuleType.CHAR, "value": [93]},  # \]
                     {"type": InternalRuleType.CHAR, "value": [92]},  # \\
                     {"type": InternalRuleType.END},
-                ]
+                ],
             ],
         ),
     ),
     (
         "lots of escape and alternate escapes",
-        r'root ::= "\x2A" "\u006F" "\U0001F4A9" "\t" "\n" "\r" "\"" "\[" "\]" "\\" ("\x2A" | "\u006F" | "\U0001F4A9" | "\t" | "\n" | "\r" | "\"" | "\[" | "\]"  | "\\" )',
+        r"""root ::= "\x2A" "\u006F" "\U0001F4A9" "\t" "\n" "\r" "\"" "\[" "\]" "\\" (
+            "\x2A" | "\u006F" | "\U0001F4A9" | "\t" | "\n" | "\r" | "\"" | "\[" | "\]"  | "\\" )""",
         (
             [("root", 0), ("root_1", 1)],
             [
@@ -962,7 +964,7 @@ test_cases = [
         "\"" (
             [^"\\\x7F\x00-\x1F] |
             "\\" (["\\/bfnrt] | "u" [0-9a-fA-F] [0-9a-fA-F] [0-9a-fA-F] [0-9a-fA-F]) # escapes
-        )* "\"" 
+        )* "\""
         """,
         (
             [("root", 0), ("root_1", 1), ("root_2", 2), ("root_3", 3)],
@@ -1443,7 +1445,7 @@ test_cases = [
 ]
 
 
-@pytest.mark.parametrize("key, grammar, expected", test_cases)
+@pytest.mark.parametrize(("key", "grammar", "expected"), test_cases)
 def test_grammar_parser(key, grammar, expected):
     symbol_ids_expected, rules_expected = expected
     parsed_grammar = RulesBuilder(grammar.replace("\\n", "\n"))

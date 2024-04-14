@@ -1,10 +1,11 @@
 from time import perf_counter
+
 from .errors import GrammarParseError
 from .is_word_char import is_word_char
 from .parse_char import parse_char
 from .parse_name import parse_name
 from .parse_space import parse_space
-from .types import InternalRuleType, InternalRuleDef, SymbolIds
+from .types import InternalRuleType
 
 
 class RulesBuilder:
@@ -33,7 +34,7 @@ class RulesBuilder:
                         for key, value in self.symbol_ids.items():
                             if value == elem["value"]:
                                 raise GrammarParseError(
-                                    src, self.pos, f"Undefined rule identifier '{key}'"
+                                    src, self.pos, f"Undefined rule identifier '{key}'",
                                 )
 
     def parse_rule(self, src):
@@ -61,7 +62,7 @@ class RulesBuilder:
             self.pos += 1
         elif self.pos < len(src) and src[self.pos]:
             raise GrammarParseError(
-                src, self.pos, f"Expecting newline or end at {self.pos}"
+                src, self.pos, f"Expecting newline or end at {self.pos}",
             )
         self.pos = parse_space(src, self.pos, True)
 
@@ -85,7 +86,7 @@ class RulesBuilder:
     def check_duration(self):
         if perf_counter() - self.start > self.time_limit:
             raise GrammarParseError(
-                self.src, self.pos, f"Duration of {self.time_limit} exceeded"
+                self.src, self.pos, f"Duration of {self.time_limit} exceeded",
             )
 
     def parse_sequence(self, rule_name, out_elements, depth=0):
@@ -101,7 +102,7 @@ class RulesBuilder:
                     self.check_duration()
                     value, inc_pos = parse_char(src, self.pos)
                     out_elements.append(
-                        {"type": InternalRuleType.CHAR, "value": [value]}
+                        {"type": InternalRuleType.CHAR, "value": [value]},
                     )
                     self.pos += inc_pos
                 self.pos = parse_space(src, self.pos + 1, is_nested)
@@ -130,7 +131,7 @@ class RulesBuilder:
                                 in (InternalRuleType.CHAR, InternalRuleType.CHAR_NOT)
                                 else startchar_value
                             ),
-                        }
+                        },
                     )
 
                     if src[self.pos] == "-" and src[self.pos + 1] != "]":
@@ -140,7 +141,7 @@ class RulesBuilder:
                             {
                                 "type": InternalRuleType.CHAR_RNG_UPPER,
                                 "value": endchar_value,
-                            }
+                            },
                         )
                         self.pos += inc_pos
                 self.pos = parse_space(src, self.pos + 1, is_nested)
@@ -152,7 +153,7 @@ class RulesBuilder:
 
                 last_sym_start = len(out_elements)
                 out_elements.append(
-                    {"type": InternalRuleType.RULE_REF, "value": ref_rule_id}
+                    {"type": InternalRuleType.RULE_REF, "value": ref_rule_id},
                 )
             elif src[self.pos] == "(":
                 self.pos = parse_space(src, self.pos + 1, True)
@@ -160,11 +161,11 @@ class RulesBuilder:
                 self.parse_alternates(rule_name, sub_rule_id, depth + 1)
                 last_sym_start = len(out_elements)
                 out_elements.append(
-                    {"type": InternalRuleType.RULE_REF, "value": sub_rule_id}
+                    {"type": InternalRuleType.RULE_REF, "value": sub_rule_id},
                 )
                 if src[self.pos] != ")":
                     raise GrammarParseError(
-                        src, self.pos, f"Expecting ')' at {self.pos}"
+                        src, self.pos, f"Expecting ')' at {self.pos}",
                     )
                 self.pos = parse_space(src, self.pos + 1, is_nested)
             elif src[self.pos] in "*+?":
@@ -178,7 +179,7 @@ class RulesBuilder:
                 sub_rule = out_elements[last_sym_start:]
                 if src[self.pos] in "*+":
                     sub_rule.append(
-                        {"type": InternalRuleType.RULE_REF, "value": sub_rule_id}
+                        {"type": InternalRuleType.RULE_REF, "value": sub_rule_id},
                     )
                 sub_rule.append({"type": InternalRuleType.ALT})
                 if src[self.pos] == "+":
@@ -186,7 +187,7 @@ class RulesBuilder:
                 sub_rule.append({"type": InternalRuleType.END})
                 self.add_rule(sub_rule_id, sub_rule)
                 out_elements[last_sym_start:] = [
-                    {"type": InternalRuleType.RULE_REF, "value": sub_rule_id}
+                    {"type": InternalRuleType.RULE_REF, "value": sub_rule_id},
                 ]
                 self.pos = parse_space(src, self.pos + 1, is_nested)
             else:

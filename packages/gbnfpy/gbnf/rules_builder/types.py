@@ -1,6 +1,5 @@
-from enum import Enum
 from dataclasses import dataclass
-from typing import Union, List, Dict
+from enum import Enum
 
 
 class InternalRuleType(Enum):
@@ -22,13 +21,13 @@ class InternalRuleDefWithNumericValue:
 @dataclass
 class InternalRuleDefChar:
     type: InternalRuleType
-    value: List[int]
+    value: list[int]
 
 
 @dataclass
 class InternalRuleDefCharNot:
     type: InternalRuleType
-    value: List[int]
+    value: list[int]
 
 
 @dataclass
@@ -53,15 +52,15 @@ class InternalRuleDefWithoutValue:
     type: InternalRuleType
 
 
-InternalRuleDef = Union[
-    InternalRuleDefChar,
-    InternalRuleDefCharNot,
-    InternalRuleDefWithNumericValue,
-    InternalRuleDefWithoutValue,
-]
-InternalRuleDefCharOrAltChar = Union[InternalRuleDefChar, InternalRuleDefAltChar]
+InternalRuleDef = (
+    InternalRuleDefChar
+    | InternalRuleDefCharNot
+    | InternalRuleDefWithNumericValue
+    | InternalRuleDefWithoutValue
+)
+InternalRuleDefCharOrAltChar = InternalRuleDefChar | InternalRuleDefAltChar
 
-SymbolIds = Dict[str, int]
+SymbolIds = dict[str, int]
 
 
 # Type Guards (Python version)
@@ -99,7 +98,10 @@ def is_rule_def_char_alt(rule):
 
 def is_rule_def_char_rng_upper(rule):
     return getattr(
-        rule, "type", None
+        rule,
+        "type",
+        None,
     ) == InternalRuleType.CHAR_RNG_UPPER and isinstance(
-        getattr(rule, "value", None), int
+        getattr(rule, "value", None),
+        int,
     )

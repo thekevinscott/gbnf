@@ -23,7 +23,7 @@ from .rules_builder import RulesBuilder
 # };
 
 
-def GBNF(grammar: str, initial_string: str = ""):
+def GBNF(grammar: str, _initial_string: str = ""):
     rules_builder = RulesBuilder(grammar)
     rules = rules_builder.rules
     symbol_ids = rules_builder.symbol_ids
@@ -31,7 +31,7 @@ def GBNF(grammar: str, initial_string: str = ""):
         raise Exception(f"Failed to parse grammar: {grammar}")
     if symbol_ids.get("root") is None:
         raise Exception("Grammar does not contain a 'root' symbol")
-    root_id = symbol_ids.get("root")
+    # root_id = symbol_ids.get("root")
 
     return rules, symbol_ids
 
