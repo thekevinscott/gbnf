@@ -39,6 +39,7 @@ describe('GraphNode', () => {
   it('should correctly calculate and cache its id', () => {
     const node = new GraphNode(rule, meta);
     expect(node.id).toBe('1,2,3');
+    node.meta = { stackId: 4, pathId: 5, stepId: 6 };
     // Check if it uses cached value on second access
     expect(node.id).toBe('1,2,3');
   });
