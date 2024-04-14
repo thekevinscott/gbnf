@@ -11,7 +11,7 @@ export const KEY_TRANSLATION = {
   [RuleType.END]: 0,
   [RuleType.CHAR]: 1,
   [RuleType.CHAR_EXCLUDE]: 2,
-}
+};
 
 export function getSerializedRuleKey<R extends UnresolvedRule>(rule: R): string {
   if (isRuleEnd(rule)) {
