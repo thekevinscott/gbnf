@@ -8,7 +8,7 @@
     "outDir": "./dist",
     "rootDir": "./src"
   },
-  "include": ["./src/**/*.ts", "./src/umd.cjs"],
+  "include": ["./src/**/*.ts", "./src/umd.cjs", "src/grammar-graph/graph-pointer.test.ts.bk"],
   "exclude": [
     "node_modules",
     ".vscode-test",

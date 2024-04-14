@@ -10,11 +10,72 @@ import {
   RuleType,
   RuleChar,
   RuleCharExclude,
-  RuleEnd
+  RuleEnd,
+  isGraphPointerRuleCharExclude,
+  isGraphPointerRuleChar,
+  isGraphPointerRuleEnd,
+  isGraphPointerRuleRef
 } from './types.js';
 import { RuleRef } from './rule-ref.js';
+import { GraphPointer } from './graph-pointer.js';
+import { GraphNode } from './graph-node.js';
 
 describe('Rule Type Guards', () => {
+  describe('isGraphPointerRuleRef', () => {
+    test('it returns true', async () => {
+      const node = new GraphNode(new RuleRef(1), { stackId: 1, pathId: 2, stepId: 3 });
+      const pointer = new GraphPointer(node);
+      expect(isGraphPointerRuleRef(pointer)).toEqual(true);
+    });
+
+    test('it returns false', async () => {
+      const node = new GraphNode({ type: RuleType.END }, { stackId: 1, pathId: 2, stepId: 3 });
+      const pointer = new GraphPointer(node);
+      expect(isGraphPointerRuleRef(pointer)).toEqual(false);
+    });
+  });
+
+  describe('isGraphPointerRuleEnd', () => {
+    test('it returns false', async () => {
+      const node = new GraphNode(new RuleRef(1), { stackId: 1, pathId: 2, stepId: 3 });
+      const pointer = new GraphPointer(node);
+      expect(isGraphPointerRuleEnd(pointer)).toEqual(false);
+    });
+
+    test('it returns true', async () => {
+      const node = new GraphNode({ type: RuleType.END }, { stackId: 1, pathId: 2, stepId: 3 });
+      const pointer = new GraphPointer(node);
+      expect(isGraphPointerRuleEnd(pointer)).toEqual(true);
+    });
+  });
+
+  describe('isGraphPointerRuleChar', () => {
+    test('it returns true', async () => {
+      const node = new GraphNode({ type: RuleType.CHAR, value: [97] }, { stackId: 1, pathId: 2, stepId: 3 });
+      const pointer = new GraphPointer(node);
+      expect(isGraphPointerRuleChar(pointer)).toEqual(true);
+    });
+
+    test('it returns false', async () => {
+      const node = new GraphNode({ type: RuleType.END }, { stackId: 1, pathId: 2, stepId: 3 });
+      const pointer = new GraphPointer(node);
+      expect(isGraphPointerRuleChar(pointer)).toEqual(false);
+    });
+  });
+
+  describe('isGraphPointerRuleCharExclude', () => {
+    test('it returns true', async () => {
+      const node = new GraphNode({ type: RuleType.CHAR_EXCLUDE, value: [97] }, { stackId: 1, pathId: 2, stepId: 3 });
+      const pointer = new GraphPointer(node);
+      expect(isGraphPointerRuleCharExclude(pointer)).toEqual(true);
+    });
+
+    test('it returns false', async () => {
+      const node = new GraphNode({ type: RuleType.CHAR, value: [97] }, { stackId: 1, pathId: 2, stepId: 3 });
+      const pointer = new GraphPointer(node);
+      expect(isGraphPointerRuleCharExclude(pointer)).toEqual(false);
+    });
+  });
   describe('isRule', () => {
     it('should return true for valid rule objects', () => {
       const ruleChar: RuleChar = { type: RuleType.CHAR, value: [65, [66, 67]] };
