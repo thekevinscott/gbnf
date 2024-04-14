@@ -1,2 +1,1 @@
-class GBNF:
-    pass
+from .GBNF import GBNF as GBNF
