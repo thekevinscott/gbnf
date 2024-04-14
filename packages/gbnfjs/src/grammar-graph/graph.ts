@@ -1,9 +1,20 @@
-import { GraphPointer, ResolvedGraphPointer, } from "./graph-pointer.js";
+import { GraphPointer, } from "./graph-pointer.js";
 import { GraphNode, } from "./graph-node.js";
 import { getSerializedRuleKey, } from "./get-serialized-rule-key.js";
 import { colorize, } from "./colorize.js";
 import { GenericSet, } from "./generic-set.js";
-import { UnresolvedRule, Pointers, customInspectSymbol, isRange, isRuleChar, isRuleCharExcluded, isRuleEnd, isRuleRef, ValidInput, } from "./types.js";
+import {
+  type UnresolvedRule,
+  type Pointers,
+  customInspectSymbol,
+  isRange,
+  isRuleChar,
+  isRuleCharExcluded,
+  isRuleEnd,
+  isRuleRef,
+  type ValidInput,
+  type ResolvedGraphPointer,
+} from "./types.js";
 import { isPointInRange, } from "../utils/is-point-in-range.js";
 import { InputParseError, } from "../utils/errors.js";
 import { RuleRef, } from "./rule-ref.js";
