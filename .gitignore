@@ -5,3 +5,8 @@ env
 .wireit
 .parcel-cache
 .mypy-cache
+.env
+.vscode
+.ipynb_checkpoints
+build
+*.egg-info
