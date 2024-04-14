@@ -37,7 +37,7 @@ module.exports = {
       ],
 
       "parserOptions": {
-        "project": "./packages/gbnfjs/tsconfig.json",
+        "project": "./tsconfig.json",
         "sourceType": "module"
       },
     },
