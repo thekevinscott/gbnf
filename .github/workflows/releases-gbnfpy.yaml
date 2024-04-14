@@ -1,11 +1,14 @@
-name: Publish Package to pypi
+name: "Cut Release for GBNFpy"
+
 on:
   push:
     tags:
       - "gbnfpy-v*"
+
 jobs:
-  release:
-    runs-on: ubuntu-latest
+  tagged-release:
+    name: "Cut Release for GBNFpy"
+    runs-on: "ubuntu-latest"
 
     steps:
       - uses: actions/checkout@8ade135a41bc03ea155e62e844d188df1ea18608
@@ -22,12 +25,12 @@ jobs:
       - run: make build_package 
         working-directory: ./packages/gbnfpy
 
-      - name: Publish
-        uses: pypa/gh-action-pypi-publish@b7f401de30cb6434a1e19f805ff006643653240e
+      - name: Release
+        uses: softprops/action-gh-release@v2
         with:
-          verbose: true
-          packages-dir: ./packages/gbnfpy/dist
+          fail_on_unmatched_files: true
+          generate_release_notes: true
+          files: |
+            packages/gbnfpy/dist/gbnf-*.tar.gz
+            packages/gbnfpy/dist/gbnf-*.whl
 
-permissions:
-  id-token: write
-  contents: read
