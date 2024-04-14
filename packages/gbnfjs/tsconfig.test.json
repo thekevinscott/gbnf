@@ -5,5 +5,5 @@
     "types": ["vite/client"]
   },
   "include": ["src/**/*.ts", "test/**/*.ts"],
-  "exclude": ["node_modules", ".vscode-test", "out", ".wireit", "env"]
+  "exclude": ["node_modules", ".vscode-test", "out", ".wireit", "env", "dev"]
 }
