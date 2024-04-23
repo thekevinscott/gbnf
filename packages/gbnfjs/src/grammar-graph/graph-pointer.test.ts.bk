@@ -1,8 +1,0 @@
-import { describe, test, expect } from "vitest";
-import { GraphPointer, isGraphPointerRuleChar, isGraphPointerRuleCharExclude, isGraphPointerRuleEnd, isGraphPointerRuleRef } from "./graph-pointer.js";
-import { RuleRef } from "./rule-ref.js";
-import { GraphNode } from "./graph-node.js";
-import { RuleType } from "./types.js";
-
-describe('graph-pointer', () => {
-});
