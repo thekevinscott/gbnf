@@ -2,7 +2,7 @@
   "name": "gbnf",
   "type": "module",
   "description": "A library for parsing GBNF grammars",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "repository": {
     "type": "git",
     "url": "https://github.com/thekevinscott/gbnf.git"
