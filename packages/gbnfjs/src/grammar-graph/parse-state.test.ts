@@ -46,7 +46,7 @@ describe('ParseState', () => {
 
   it('calculates the size of unique rules correctly', () => {
     const parseState = new ParseState(mockGraph, mockPointers);
-    const size = parseState.size();
+    const size = parseState.size;
     expect(size).toBe(1);
   });
 
