@@ -1,7 +1,6 @@
 # GBNF
 
 <a href="https://github.com/thekevinscott/gbnf/blob/master/LICENSE"><img alt="License for gbnf" src="https://img.shields.io/npm/l/gbnf" /></a>
-<a href="https://github.com/thekevinscott/gbnf/actions/workflows/tests.yaml"><img src="https://github.com/thekevinscott/gbnf/actions/workflows/tests.yaml/badge.svg" alt="Status of tests for gbnf repository" /></a>
 <a href="https://codecov.io/gh/thekevinscott/gbnf"><img alt="Code Coverage for gbnf" src="https://img.shields.io/codecov/c/github/thekevinscott/gbnf" /></a>
 <a href="https://deepsource.io/gh/thekevinscott/gbnf/?ref=repository-badge"><img alt="DeepSource issues for gbnf" src="https://deepsource.io/gh/thekevinscott/gbnf.svg/?label=active+issues&show_trend=true" /></a>
 
