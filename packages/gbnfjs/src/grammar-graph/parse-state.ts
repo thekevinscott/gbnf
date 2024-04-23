@@ -30,7 +30,7 @@ export class ParseState {
     return new ParseState(this.#graph, pointers);
   }
 
-  size() {
+  get size() {
     return Array.from(this.rules()).length;
   }
 
