@@ -2,7 +2,7 @@ name: Publish Package to pypi
 on:
   push:
     tags:
-      - "v*"
+      - "py*"
 jobs:
   release:
     runs-on: ubuntu-latest
