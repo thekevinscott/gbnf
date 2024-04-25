@@ -1,110 +1,92 @@
-import GBNF, { RuleType, } from '../src/index.js';
+import { describe, test, expect } from 'vitest';
+import GBNF, { InputParseError, RuleType, } from '../src/index.js';
 
 describe('creation with initial string', () => {
   test.each([
-    // single char rule
-    ['root ::= "foo"', '1',],
-    ['root ::= "foo"', 'b',],
-    ['root ::= "foo"', 'f1',],
-    ['root ::= "foo"', 'fo1',],
-    ['root ::= "foo"', 'fooo',],
-    ['root ::= "foo"', 'fooooooo',],
+    ['root ::= "foo"', '1', new InputParseError('1', 0)],
+    ['root ::= "foo"', 'b', new InputParseError('b', 0)],
+    ['root ::= "foo"', 'f1', new InputParseError('f1', 1)],
+    ['root ::= "foo"', 'fo1', new InputParseError('fo1', 2)],
+    ['root ::= "foo"', 'fooo', new InputParseError('fooo', 3)],
+    ['root ::= "foo"', 'fooooooo', new InputParseError('fooooooo', 3)],
 
-    // two char rules
-    ['root ::= "foo" | "bar"', '1',],
-    ['root ::= "foo" | "bar"', 'z',],
-    ['root ::= "foo" | "bar"', 'f1',],
-    ['root ::= "foo" | "bar"', 'b1',],
-    ['root ::= "foo" | "bar"', 'fo1',],
-    ['root ::= "foo" | "bar"', 'ba1',],
-    ['root ::= "foo" | "bar"', 'fooo',],
-    ['root ::= "foo" | "bar"', 'barrr',],
+    ['root ::= "foo" | "bar"', '1', new InputParseError('1', 0)],
+    ['root ::= "foo" | "bar"', 'z', new InputParseError('z', 0)],
+    ['root ::= "foo" | "bar"', 'f1', new InputParseError('f1', 1)],
+    ['root ::= "foo" | "bar"', 'b1', new InputParseError('b1', 1)],
+    ['root ::= "foo" | "bar"', 'fo1', new InputParseError('fo1', 2)],
+    ['root ::= "foo" | "bar"', 'ba1', new InputParseError('ba1', 2)],
+    ['root ::= "foo" | "bar"', 'fooo', new InputParseError('fooo', 3)],
+    ['root ::= "foo" | "bar"', 'barrr', new InputParseError('barrr', 3)],
 
-    // three char rules
-    ['root ::= "foo" | "bar" | "baz"', '1',],
-    ['root ::= "foo" | "bar" | "baz"', 'z',],
-    ['root ::= "foo" | "bar" | "baz"', 'f1',],
-    ['root ::= "foo" | "bar" | "baz"', 'b1',],
-    ['root ::= "foo" | "bar" | "baz"', 'fo1',],
-    ['root ::= "foo" | "bar" | "baz"', 'bal',],
-    ['root ::= "foo" | "bar" | "baz"', 'fooo',],
-    ['root ::= "foo" | "bar" | "baz"', 'bazrr',],
+    ['root ::= "foo" | "bar" | "baz"', '1', new InputParseError('1', 0)],
+    ['root ::= "foo" | "bar" | "baz"', 'z', new InputParseError('z', 0)],
+    ['root ::= "foo" | "bar" | "baz"', 'f1', new InputParseError('f1', 1)],
+    ['root ::= "foo" | "bar" | "baz"', 'b1', new InputParseError('b1', 1)],
+    ['root ::= "foo" | "bar" | "baz"', 'fo1', new InputParseError('fo1', 2)],
+    ['root ::= "foo" | "bar" | "baz"', 'bal', new InputParseError('bal', 2)],
+    ['root ::= "foo" | "bar" | "baz"', 'fooo', new InputParseError('fooo', 3)],
+    ['root ::= "foo" | "bar" | "baz"', 'bazrr', new InputParseError('bazrr', 3)],
 
-    // char not
-    ['root ::= [^a]', 'a'],
-    ['root ::= [^abc]', 'b'],
-    ['root ::= [^a-z]', 'z'],
-    ['root ::= [^a-zA-Z]', 'X'],
-    ['root ::= [^a-zA-Z0-9]', '8'],
+    ['root ::= [^a]', 'a', new InputParseError('a', 0)],
+    ['root ::= [^abc]', 'b', new InputParseError('b', 0)],
+    ['root ::= [^a-z]', 'z', new InputParseError('z', 0)],
+    ['root ::= [^a-zA-Z]', 'X', new InputParseError('X', 0)],
+    ['root ::= [^a-zA-Z0-9]', '8', new InputParseError('8', 0)],
 
-    // expressions
-    ['root ::= foo\\nfoo ::="foo"', '1',],
-    ['root ::= foo\\nfoo ::="foo"', 'b',],
-    ['root ::= foo\\nfoo ::="foo"', 'f1',],
-    ['root ::= foo\\nfoo ::="foo"', 'fo1',],
-    ['root ::= foo\\nfoo ::="foo"', 'fooo',],
+    ['root ::= foo\nfoo ::= "foo"', '1', new InputParseError('1', 0)],
+    ['root ::= foo\nfoo ::= "foo"', 'b', new InputParseError('b', 0)],
+    ['root ::= foo\nfoo ::= "foo"', 'f1', new InputParseError('f1', 1)],
+    ['root ::= foo\nfoo ::= "foo"', 'fo1', new InputParseError('fo1', 2)],
+    ['root ::= foo\nfoo ::= "foo"', 'fooo', new InputParseError('fooo', 3)],
 
-    // expression and a char rule
-    ['root::=foo|"bar"\\nfoo::="foo"', '1',],
-    ['root::=foo|"bar"\\nfoo::="foo"', 'z',],
-    ['root::=foo|"bar"\\nfoo::="foo"', 'f1',],
-    ['root::=foo|"bar"\\nfoo::="foo"', 'b1',],
-    ['root::=foo|"bar"\\nfoo::="foo"', 'fo1',],
-    ['root::=foo|"bar"\\nfoo::="foo"', 'fooo',],
-    ['root::=foo|"bar"\\nfoo::="foo"', 'barr',],
+    ['root::=foo|"bar"\nfoo::="foo"', '1', new InputParseError('1', 0)],
+    ['root::=foo|"bar"\nfoo::="foo"', 'z', new InputParseError('z', 0)],
+    ['root::=foo|"bar"\nfoo::="foo"', 'f1', new InputParseError('f1', 1)],
+    ['root::=foo|"bar"\nfoo::="foo"', 'b1', new InputParseError('b1', 1)],
+    ['root::=foo|"bar"\nfoo::="foo"', 'fo1', new InputParseError('fo1', 2)],
+    ['root::=foo|"bar"\nfoo::="foo"', 'fooo', new InputParseError('fooo', 3)],
+    ['root::=foo|"bar"\nfoo::="foo"', 'barr', new InputParseError('barr', 3)],
 
-    // two expressions
-    ['root::= foo | bar\\n foo::="foo"\\n bar::="bar"', '1',],
-    ['root::= foo | bar\\n foo::="foo"\\n bar::="bar"', 'z',],
-    ['root::= foo | bar\\n foo::="foo"\\n bar::="bar"', 'f1',],
-    ['root::= foo | bar\\n foo::="foo"\\n bar::="bar"', 'b1',],
-    ['root::= foo | bar\\n foo::="foo"\\n bar::="bar"', 'fo1',],
-    ['root::= foo | bar\\n foo::="foo"\\n bar::="bar"', 'fooo',],
-    ['root::= foo | bar\\n foo::="foo"\\n bar::="bar"', 'barr',],
+    ['root::= foo | bar\n foo::="foo"\n bar::="bar"', '1', new InputParseError('1', 0)],
+    ['root::= foo | bar\n foo::="foo"\n bar::="bar"', 'z', new InputParseError('z', 0)],
+    ['root::= foo | bar\n foo::="foo"\n bar::="bar"', 'f1', new InputParseError('f1', 1)],
+    ['root::= foo | bar\n foo::="foo"\n bar::="bar"', 'b1', new InputParseError('b1', 1)],
+    ['root::= foo | bar\n foo::="foo"\n bar::="bar"', 'fo1', new InputParseError('fo1', 2)],
+    ['root::= foo | bar\n foo::="foo"\n bar::="bar"', 'fooo', new InputParseError('fooo', 3)],
+    ['root::= foo | bar\n foo::="foo"\n bar::="bar"', 'barr', new InputParseError('barr', 3)],
 
-    // nested expressions
-    ['root ::= f | b\\nf ::= fo\\nb ::= ba\\nfo ::= foo\\nba ::= bar | baz\\nfoo ::= "foo"\\nbar ::= "bar"\\nbaz ::= "baz"', '1',],
-    ['root ::= f | b\\nf ::= fo\\nb ::= ba\\nfo ::= foo\\nba ::= bar | baz\\nfoo ::= "foo"\\nbar ::= "bar"\\nbaz ::= "baz"', 'z',],
-    ['root ::= f | b\\nf ::= fo\\nb ::= ba\\nfo ::= foo\\nba ::= bar | baz\\nfoo ::= "foo"\\nbar ::= "bar"\\nbaz ::= "baz"', 'f1',],
-    ['root ::= f | b\\nf ::= fo\\nb ::= ba\\nfo ::= foo\\nba ::= bar | baz\\nfoo ::= "foo"\\nbar ::= "bar"\\nbaz ::= "baz"', 'b1',],
-    ['root ::= f | b\\nf ::= fo\\nb ::= ba\\nfo ::= foo\\nba ::= bar | baz\\nfoo ::= "foo"\\nbar ::= "bar"\\nbaz ::= "baz"', 'fo1',],
-    ['root ::= f | b\\nf ::= fo\\nb ::= ba\\nfo ::= foo\\nba ::= bar | baz\\nfoo ::= "foo"\\nbar ::= "bar"\\nbaz ::= "baz"', 'fooo',],
-    ['root ::= f | b\\nf ::= fo\\nb ::= ba\\nfo ::= foo\\nba ::= bar | baz\\nfoo ::= "foo"\\nbar ::= "bar"\\nbaz ::= "baz"', 'barr',],
-    ['root ::= f | b\\nf ::= fo\\nb ::= ba\\nfo ::= foo\\nba ::= bar | baz\\nfoo ::= "foo"\\nbar ::= "bar"\\nbaz ::= "baz"', 'bazr',],
+    ['root ::= f | b\nf ::= fo\nb ::= ba\nfo ::= foo\nba ::= bar | baz\nfoo ::= "foo"\nbar ::= "bar"\nbaz ::= "baz"', '1', new InputParseError('1', 0)],
+    ['root ::= f | b\nf ::= fo\nb ::= ba\nfo ::= foo\nba ::= bar | baz\nfoo ::= "foo"\nbar ::= "bar"\nbaz ::= "baz"', 'z', new InputParseError('z', 0)],
+    ['root ::= f | b\nf ::= fo\nb ::= ba\nfo ::= foo\nba ::= bar | baz\nfoo ::= "foo"\nbar ::= "bar"\nbaz ::= "baz"', 'f1', new InputParseError('f1', 1)],
+    ['root ::= f | b\nf ::= fo\nb ::= ba\nfo ::= foo\nba ::= bar | baz\nfoo ::= "foo"\nbar ::= "bar"\nbaz ::= "baz"', 'b1', new InputParseError('b1', 1)],
+    ['root ::= f | b\nf ::= fo\nb ::= ba\nfo ::= foo\nba ::= bar | baz\nfoo ::= "foo"\nbar ::= "bar"\nbaz ::= "baz"', 'fo1', new InputParseError('fo1', 2)],
+    ['root ::= f | b\nf ::= fo\nb ::= ba\nfo ::= foo\nba ::= bar | baz\nfoo ::= "foo"\nbar ::= "bar"\nbaz ::= "baz"', 'fooo', new InputParseError('fooo', 3)],
+    ['root ::= f | b\nf ::= fo\nb ::= ba\nfo ::= foo\nba ::= bar | baz\nfoo ::= "foo"\nbar ::= "bar"\nbaz ::= "baz"', 'barr', new InputParseError('barr', 3)],
+    ['root ::= f | b\nf ::= fo\nb ::= ba\nfo ::= foo\nba ::= bar | baz\nfoo ::= "foo"\nbar ::= "bar"\nbaz ::= "baz"', 'bazr', new InputParseError('bazr', 3)],
 
-    // ranges
-    ['root ::= [a-z]', 'A',],
-    ['root ::= [a-z]', '0',],
-    ['root ::= [a-z]', 'az',],
+    ['root ::= [a-z]', 'A', new InputParseError('A', 0)],
+    ['root ::= [a-z]', '0', new InputParseError('0', 0)],
+    ['root ::= [a-z]', 'az', new InputParseError('az', 1)],
 
-    // range with ? modifier
-    [`root ::= [a-z]?`, 'A',],
-    [`root ::= [a-z]?`, '0',],
-    [`root ::= [a-z]?`, 'az',],
+    [`root ::= [a-z]?`, 'A', new InputParseError('A', 0)],
+    [`root ::= [a-z]?`, '0', new InputParseError('0', 0)],
+    [`root ::= [a-z]?`, 'az', new InputParseError('az', 1)],
 
-    // range with + modifier
-    [`root ::= [a-z]+`, 'A',],
-    [`root ::= [a-z]+`, '0',],
-    [`root ::= [a-z]+`, 'az0',],
+    [`root ::= [a-z]+`, 'A', new InputParseError('A', 0)],
+    [`root ::= [a-z]+`, '0', new InputParseError('0', 0)],
+    ['root ::= [a-z]+', 'az0', new InputParseError('az0', 2)],
 
-    // range with * modifier
-    [`root ::= [a-z]*`, 'A',],
-    [`root ::= [a-z]*`, '0',],
-    [`root ::= [a-z]*`, 'az0',],
+    [`root ::= [a-z]*`, 'A', new InputParseError('A', 0)],
+    [`root ::= [a-z]*`, '0', new InputParseError('0', 0)],
+    ['root ::= [a-z]*', 'az0', new InputParseError('az0', 2)],
 
-    // sticking to llama.cpp's implementation, for a char_not rule _and_ a char rule
-    // side by side, _either_ is valid.
-    // that means that input explicitly forbidden by char_not can be allowed by the char
-    // rule.
-    // it seems weird. but it's the way it is.
-    // so below, anything in b-z is allowed, because of the second rule. Anything _not_ a-z is
-    // also allowed, because of the first rule. So really the only character disallowed is 'a'.
-    [`root ::= ( [^abcdefgh] | [b-z])* `, 'a',],
-  ])('it throws if encountering a grammar `%s` with invalid input: `%s`', (grammar, input) => {
+    [`root ::= ( [^abcdefgh] | [b-z])*`, 'a', new InputParseError('a', 0)],
+  ])('it throws if encountering a grammar `%s` with invalid input: `%s`', (grammar, input, error) => {
     expect(() => {
       const graph = GBNF(grammar.split('\\n').join('\n'));
       graph.add(input);
-    }).toThrow();
+    }).toThrowError(error);
   });
 
   test.each([

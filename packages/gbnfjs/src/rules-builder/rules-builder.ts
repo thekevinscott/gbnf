@@ -3,18 +3,18 @@ import { isWordChar, } from "./is-word-char.js";
 import { parseChar, } from "./parse-char.js";
 import { parseName, } from "./parse-name.js";
 import { parseSpace, } from "./parse-space.js";
-import { InternalRuleType, InternalRuleDef, SymbolIds, } from "./types.js";
+import { SymbolIds, } from "./symbol-ids.js";
+import { InternalRuleType, InternalRuleDef, } from "./types.js";
 
 export class RulesBuilder {
   private pos = 0;
-  symbolIds: SymbolIds;
+  symbolIds: SymbolIds = new SymbolIds();
   rules: InternalRuleDef[][];
   src: string;
   start: number = performance.now();
   #timeLimit: number;
   constructor(src: string, limit = 1000) {
     this.#timeLimit = limit;
-    this.symbolIds = new Map();
     this.rules = [];
     this.src = src;
     this.parse(src);
@@ -23,23 +23,27 @@ export class RulesBuilder {
   private parse = (src: string) => {
     this.pos = parseSpace(src, 0, true); // move cursor forward until we reach non-whitespace content
 
-    // debugger;
     while (this.pos < src.length) {
       this.parseRule(src);
     }
+
 
     // Validate the state to ensure that all rules are defined
     for (const rule of this.rules) {
       for (const elem of rule) {
         if (elem.type === InternalRuleType.RULE_REF) {
           // Ensure that the rule at that location exists
-          if (elem.value >= this.rules.length || this.rules[elem.value].length === 0) {
-            // Get the name of the rule that is missing
-            for (const [key, value,] of this.symbolIds) {
-              if (value === elem.value) {
-                throw new GrammarParseError(src, this.pos, `Undefined rule identifier '${key}'`);
-              }
+          const ruleExists = elem.value < this.rules.length && this.rules[elem.value]?.length > 0;
+          if (!ruleExists) {
+            const missingRuleName = this.symbolIds.reverseGet(elem.value);
+            let missingRulePos = this.symbolIds.getPos(missingRuleName);
+
+            // Skip over the ::= and any whitespace
+            while (missingRulePos < src.length && (src[missingRulePos] === ':' || src[missingRulePos] === '=' || /\s/.test(src[missingRulePos]))) {
+              missingRulePos++;
             }
+
+            throw new GrammarParseError(src, missingRulePos, `Undefined rule identifier "${missingRuleName}"`);
           }
         }
       }
@@ -71,17 +75,17 @@ export class RulesBuilder {
   };
 
   getSymbolId = (src: string, len: number): number => {
-    const nextId = this.symbolIds.size;
+    const nextId: number = this.symbolIds.size;
     const key = src.slice(0, len);
     if (!this.symbolIds.has(key)) {
-      this.symbolIds.set(key, nextId);
+      this.symbolIds.set(key, nextId, this.pos);
     }
     return this.symbolIds.get(key);
   };
 
   generateSymbolId = (base_name: string): number => {
     const next_id = this.symbolIds.size;
-    this.symbolIds.set(`${base_name}_${next_id}`, next_id);
+    this.symbolIds.set(`${base_name}_${next_id}`, next_id, this.pos);
     return next_id;
   };
 

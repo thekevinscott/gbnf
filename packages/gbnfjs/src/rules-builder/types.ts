@@ -39,8 +39,6 @@ export interface InternalRuleDefWithoutValue {
 export type InternalRuleDef = InternalRuleDefChar | InternalRuleDefCharNot | InternalRuleDefWithNumericValue | InternalRuleDefWithoutValue;
 export type InternalRuleDefCharOrAltChar = InternalRuleDefChar | InternalRuleDefAltChar;
 
-export type SymbolIds = Map<string, number>;
-
 /** Type Guards */
 export const isRuleDefType = (type?: unknown): type is InternalRuleType => !!type && Object.values(InternalRuleType).includes(type as InternalRuleType);
 export const isRuleDef = (rule?: unknown): rule is InternalRuleDef => !!rule && typeof rule === 'object' && 'type' in rule && isRuleDefType(rule.type);
