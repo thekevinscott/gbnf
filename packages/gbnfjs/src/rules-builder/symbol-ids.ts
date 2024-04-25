@@ -8,6 +8,10 @@ export class SymbolIds {
     return this.#map.size;
   }
 
+  keys(): IterableIterator<string> {
+    return this.#map.keys();
+  }
+
   has(key: string): boolean {
     return this.#map.has(key);
   }
