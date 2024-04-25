@@ -1,3 +1,4 @@
+import { describe, test, expect } from 'vitest';
 import GBNF, { RuleType, } from '../src/index.js';
 
 describe("initialization", () => {

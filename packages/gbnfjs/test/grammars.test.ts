@@ -1,3 +1,4 @@
+import { describe, test, expect } from 'vitest';
 import GBNF from '../src/index.js';
 /**
  * For this test, we take the grammar files from llama.cpp, and for each one,
