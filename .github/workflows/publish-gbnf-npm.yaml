@@ -1,4 +1,4 @@
-name: Publish Package to npm
+name: Publish GBNF (Javascript) to NPM
 on:
   push:
     tags:
@@ -47,7 +47,10 @@ jobs:
         working-directory: ./packages/gbnfjs
         run: 'pnpm build:check'
 
-      - run: pnpm publish --no-git-checks
+      - run: pnpm publish --no-git-checks --provenance --access public
         working-directory: ./packages/gbnfjs
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+permissions:
+  id-token: write
